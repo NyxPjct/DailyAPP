@@ -9,7 +9,7 @@ on:
       release_tag:
         description: Tag da versão pessoal já enviada ao GitHub
         required: true
-        default: personal-v1.1.0
+        default: personal-v1.1.0-r1
 
 permissions:
   contents: read
@@ -35,6 +35,17 @@ jobs:
       - name: Conferir a integridade do APK
         working-directory: downloads
         run: sha256sum --check DailyAPP-1.1-pessoal.apk.sha256
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Preparar prévia para computador
+        run: |
+          npm ci
+          npm run preview:computer
+          zip --junk-paths artifacts/DailyAPP-index.zip artifacts/index.html
+          cd artifacts
+          sha256sum DailyAPP-index.zip > DailyAPP-index.zip.sha256
       - name: Publicar release pessoal com APK
         env:
           GH_TOKEN: ${{ github.token }}
@@ -42,12 +53,16 @@ jobs:
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" \
               downloads/DailyAPP-1.1-pessoal.apk \
-              downloads/DailyAPP-1.1-pessoal.apk.sha256 --clobber
+              downloads/DailyAPP-1.1-pessoal.apk.sha256 \
+              artifacts/DailyAPP-index.zip \
+              artifacts/DailyAPP-index.zip.sha256 --clobber
           else
             gh release create "$RELEASE_TAG" \
               downloads/DailyAPP-1.1-pessoal.apk \
               downloads/DailyAPP-1.1-pessoal.apk.sha256 \
-              --verify-tag --title 'DailyAPP 1.1 — uso pessoal' \
+              artifacts/DailyAPP-index.zip \
+              artifacts/DailyAPP-index.zip.sha256 \
+              --verify-tag --title 'DailyAPP 1.1 — planejamento e uso pessoal' \
               --notes-file docs/RELEASE-1.1.md
           fi
 

@@ -61,7 +61,8 @@ import {
   createDemo,
   FREQUENCIES,
 } from "./domain";
-import type { AppData, Task, Transaction, Frequency, CreditCard } from "./domain";
+import type { AppData, Task, Transaction, Frequency, CreditCard, FinancialGoal } from "./domain";
+import { TodayMoney, ForecastPanel, GoalsPanel, GoalForm, OpeningBalanceForm } from "./features/FinancialPlanning";
 import { materializeRecurrences, repeatingTask, repeatingTransaction, stopRecurrence, purchaseInstallments, cardSummary } from "./planning";
 import { CardsPanel, CardForm, PurchaseForm, RecurrencePanel } from "./features/PlanningPanels";
 import type { PurchaseInput } from "./features/PlanningPanels";
@@ -96,6 +97,8 @@ type Editor =
   | { kind: "budget" }
   | { kind: "card"; item?: CreditCard }
   | { kind: "purchase"; cardId: string }
+  | { kind: "goal"; item?: FinancialGoal }
+  | { kind: "opening" }
   | null;
 const navItems = [
   { id: "overview" as const, label: "Visão geral", icon: LayoutDashboard },
@@ -260,6 +263,9 @@ function MobileHelp({ onClose }: { onClose: () => void }) {
       <div className="mobile-help">
         <div><ListTodo size={22} /><section><h3>Organize o dia</h3><p>Em Hoje ou Tarefas, crie uma tarefa com data e horário. Escolha Repetir para uma rotina diária, semanal, mensal ou anual. Marque o círculo quando concluir e gerencie as rotinas em Tarefas.</p></section></div>
         <div><Wallet size={22} /><section><h3>Acompanhe seu dinheiro</h3><p>Registre receitas e despesas. Marque como recebida ou paga para incluir no saldo; os valores previstos continuam visíveis para seu planejamento.</p></section></div>
+        <div><Clock3 size={22} /><section><h3>Veja as próximas contas</h3><p>Em Hoje, confira contas e recebimentos pendentes, incluindo parcelas: dias anteriores, hoje e próximos sete dias. Toque na descrição para editar ou em Pagar/Receber para atualizar o status.</p></section></div>
+        <div><TrendingUp size={22} /><section><h3>Planeje o saldo</h3><p>Em Finanças → Planejamento, informe o saldo no início do mês. A previsão soma receitas e desconta despesas pagas e previstas desse mês. Não consulta bancos; ajuste datas e valores para manter a estimativa útil.</p></section></div>
+        <div><Target size={22} /><section><h3>Avance nas suas metas</h3><p>Em Planejamento, crie uma meta com valor desejado e prazo. Atualize o total guardado para acompanhar seu progresso. Esse valor não movimenta dinheiro nem altera o saldo automaticamente.</p></section></div>
         <div><Target size={22} /><section><h3>Defina seu orçamento</h3><p>Em Finanças, escolha o mês e defina um limite de gastos. O orçamento considera despesas pagas e previstas.</p></section></div>
         <div><Wallet size={22} /><section><h3>Controle cartões e parcelas</h3><p>Em Finanças → Cartões e parcelas, cadastre o cartão e registre o valor total de cada compra. As parcelas entram nas faturas. Marcar uma fatura como paga atualiza os gastos sem duplicá-los.</p></section></div>
         <div><Bell size={22} /><section><h3>Receba lembretes</h3><p>Escolha um lembrete na tarefa, conta ou cartão e permita notificações no celular. Ao concluir ou pagar, os próximos avisos são retirados. Em Ajustes, confira os lembretes programados.</p></section></div>
@@ -983,7 +989,7 @@ export default function App({
   const [financeFilter, setFinanceFilter] = useState("Todas");
   const [financeStatus, setFinanceStatus] = useState("Todos os status");
   const [financeSearch, setFinanceSearch] = useState("");
-  const [financeTab, setFinanceTab] = useState<"summary" | "cards">("summary");
+  const [financeTab, setFinanceTab] = useState<"summary" | "cards" | "planning">("summary");
   const [today, setToday] = useState(dateKey);
   const [refreshTick, setRefreshTick] = useState(0);
   const [reminders, setReminders] = useState<ReminderState>(initialReminderState);
@@ -1044,7 +1050,7 @@ export default function App({
   const categoryCount = new Set(
     totals.entries.filter((t) => t.type === "expense").map((t) => t.category),
   ).size;
-  const hasData = data.tasks.length > 0 || data.transactions.length > 0 || !!data.cards?.length || !!data.recurrences?.length;
+  const hasData = data.tasks.length > 0 || data.transactions.length > 0 || !!data.cards?.length || !!data.recurrences?.length || !!data.goals?.length || !!Object.keys(data.openingBalances ?? {}).length;
   const selectedTasks = sortTasks(
     data.tasks.filter((t) => t.date === selectedDate),
   );
@@ -1297,6 +1303,37 @@ export default function App({
   function archiveCard(card: CreditCard) {
     setConfirm({ title: card.archived ? "Reativar cartão?" : "Arquivar cartão?", text: card.archived ? "O cartão voltará a aceitar novas compras. Seu histórico será mantido." : "O cartão não aceitará novas compras. As parcelas, faturas e o histórico continuarão disponíveis.", action: () => { if (save({ ...data, cards: data.cards?.map(c => c.id === card.id ? { ...c, archived: !card.archived } : c) })) setToast(card.archived ? "Cartão reativado." : "Cartão arquivado. Suas parcelas foram mantidas."); } });
   }
+  function settleTransaction(item: Transaction) {
+    if (save({ ...data, transactions: data.transactions.map(t => t.id === item.id ? { ...t, paid: true } : t) }))
+      setToast(item.type === "income" ? "Recebimento confirmado." : "Pagamento confirmado.");
+  }
+  function openPlanning() {
+    setFinanceTab("planning"); changeMonth(today.slice(0, 7)); go("finance");
+  }
+  function saveGoal(goal: FinancialGoal) {
+    const goals = data.goals ?? [];
+    const ok = save({ ...data, goals: goals.some(g => g.id === goal.id) ? goals.map(g => g.id === goal.id ? goal : g) : [...goals, goal] });
+    if (ok) setToast("Meta salva. Seu progresso está atualizado.");
+    return ok;
+  }
+  function archiveGoal(goal: FinancialGoal) {
+    setConfirm({ title: goal.archived ? "Reativar meta?" : "Arquivar meta?", text: "O nome, o prazo e o progresso da meta serão preservados. Isso não altera suas movimentações.", action: () => {
+      if (save({ ...data, goals: data.goals?.map(g => g.id === goal.id ? { ...g, archived: !g.archived } : g) })) setToast(goal.archived ? "Meta reativada." : "Meta arquivada.");
+    } });
+  }
+  function deleteGoal(goal: FinancialGoal) {
+    setConfirm({ title: "Excluir meta?", text: `A meta “${goal.name}” e seu progresso serão removidos. Nenhuma movimentação será alterada.`, destructive: true, action: () => {
+      if (save({ ...data, goals: data.goals?.filter(g => g.id !== goal.id) })) setToast("Meta excluída.");
+    } });
+  }
+  function saveOpening(amount?: number) {
+    const openingBalances = { ...data.openingBalances };
+    if (amount === undefined) delete openingBalances[month];
+    else openingBalances[month] = amount;
+    const ok = save({ ...data, openingBalances });
+    if (ok) setToast(amount === undefined ? "Saldo inicial removido deste mês." : "Saldo inicial salvo. Previsão atualizada.");
+    return ok;
+  }
   function startDemo() {
     const action = () => {
       const example = { ...createDemo(), name: data.name };
@@ -1367,7 +1404,7 @@ export default function App({
       const imported = validateData(JSON.parse(await file.text()));
       setConfirm({
         title: "Restaurar este backup?",
-        text: `O arquivo contém ${imported.tasks.length} tarefas e ${imported.transactions.length} movimentações. Os dados atuais serão substituídos.`,
+        text: `O arquivo contém ${imported.tasks.length} tarefas, ${imported.transactions.length} movimentações e ${imported.goals?.length ?? 0} metas, além dos demais dados de planejamento. Os dados atuais serão substituídos.`,
         action: () => {
           if (save(imported, true)) {
             setName(imported.name);
@@ -1866,6 +1903,7 @@ export default function App({
                     Adicionar tarefa
                   </button>
                 </section>
+                <TodayMoney data={data} today={today} onEdit={item => setEditor({ kind: "transaction", item })} onSettle={settleTransaction} onPlanning={openPlanning} />
                 <section className="panel chart-panel">
                   <div className="panel-heading">
                     <div className="section-icon sage">
@@ -2142,9 +2180,9 @@ export default function App({
 
           {view === "finance" && (
             <>
-              <div className="finance-subnav" role="group" aria-label="Visão financeira"><button aria-pressed={financeTab === "summary"} className={financeTab === "summary" ? "selected" : ""} onClick={() => setFinanceTab("summary")}>Resumo</button><button aria-pressed={financeTab === "cards"} className={financeTab === "cards" ? "selected" : ""} onClick={() => setFinanceTab("cards")}>Cartões e parcelas</button></div>
+              <div className="finance-subnav" role="group" aria-label="Visão financeira"><button aria-pressed={financeTab === "summary"} className={financeTab === "summary" ? "selected" : ""} onClick={() => setFinanceTab("summary")}>Resumo</button><button aria-pressed={financeTab === "cards"} className={financeTab === "cards" ? "selected" : ""} onClick={() => setFinanceTab("cards")}>Cartões e parcelas</button><button aria-pressed={financeTab === "planning"} className={financeTab === "planning" ? "selected" : ""} onClick={() => setFinanceTab("planning")}>Planejamento</button></div>
               <div className="section-toolbar">
-                <h2>{financeTab === "cards" ? "Suas faturas" : "Seu resumo financeiro"}</h2>
+                <h2>{financeTab === "cards" ? "Suas faturas" : financeTab === "planning" ? "Seu planejamento" : "Seu resumo financeiro"}</h2>
                 <div className="month-tools">
                   {month !== monthKey() && (
                     <button className="text-button" onClick={resetMonth}>
@@ -2154,7 +2192,7 @@ export default function App({
                   <MonthControl month={month} onChange={changeMonth} />
                 </div>
               </div>
-              {financeTab === "cards" ? <CardsPanel data={data} month={month} onNew={() => setEditor({ kind: "card" })} onEdit={item => setEditor({ kind: "card", item })} onArchive={archiveCard} onPurchase={card => setEditor({ kind: "purchase", cardId: card.id })} onPay={payInvoice} /> : <>
+              {financeTab === "cards" ? <CardsPanel data={data} month={month} onNew={() => setEditor({ kind: "card" })} onEdit={item => setEditor({ kind: "card", item })} onArchive={archiveCard} onPurchase={card => setEditor({ kind: "purchase", cardId: card.id })} onPay={payInvoice} /> : financeTab === "planning" ? <div className="planning-layout"><ForecastPanel data={data} month={month} onOpening={() => setEditor({ kind: "opening" })} /><GoalsPanel goals={data.goals ?? []} today={today} onNew={() => setEditor({ kind: "goal" })} onEdit={item => setEditor({ kind: "goal", item })} onArchive={archiveGoal} onDelete={deleteGoal} /></div> : <>
               <RecurrencePanel data={data} kind="transaction" onStop={stopRepeating} />
               <div className="stats-grid">
                 {financialCards}
@@ -2550,6 +2588,7 @@ export default function App({
                   <span>
                     <strong>{data.transactions.length}</strong> movimentações
                   </span>
+                  {!!data.goals?.length && <span><strong>{data.goals.length}</strong> metas</span>}
                 </div>
                 <div className="backup-actions">
                   <button className="button secondary" onClick={exportData}>
@@ -2611,7 +2650,7 @@ export default function App({
                   </div>
                 </div>
                 <p>
-                  Apague todas as tarefas, movimentações e orçamentos deste
+                  Apague tarefas, movimentações, cartões, metas, saldos iniciais e orçamentos deste
                   dispositivo. Exporte um backup antes de continuar.
                 </p>
                 <button
@@ -2619,7 +2658,7 @@ export default function App({
                   onClick={() =>
                     setConfirm({
                       title: "Apagar todos os dados?",
-                      text: "Esta ação remove todas as tarefas, movimentações, orçamentos e seu nome. Você só poderá recuperá-los se tiver exportado um backup.",
+                      text: "Esta ação remove tarefas, movimentações, cartões, rotinas, metas, saldos iniciais, orçamentos e seu nome. Você só poderá recuperá-los se tiver exportado um backup.",
                       destructive: true,
                       action: () => {
                         if (save(freshData(), true)) {
@@ -2717,6 +2756,8 @@ export default function App({
           onClose={() => setEditor(null)}
         />
       )}
+      {editor?.kind === "goal" && <Modal title={editor.item ? "Atualizar meta" : "Nova meta"} subtitle="Um objetivo claro, no seu ritmo." onClose={() => setEditor(null)}><GoalForm item={editor.item} today={today} onSave={saveGoal} onClose={() => setEditor(null)} /></Modal>}
+      {editor?.kind === "opening" && <Modal title="Saldo inicial do mês" subtitle={monthLabel(month)} onClose={() => setEditor(null)}><OpeningBalanceForm month={month} amount={data.openingBalances?.[month]} onSave={saveOpening} onClear={() => saveOpening()} onClose={() => setEditor(null)} /></Modal>}
       {editor?.kind === "card" && <Modal title={editor.item ? "Editar cartão" : "Novo cartão"} subtitle="Cadastre somente o nome e os dias da fatura." onClose={() => setEditor(null)}><CardForm item={editor.item} onSave={saveCard} onClose={() => setEditor(null)} /></Modal>}
       {editor?.kind === "purchase" && <Modal title="Compra no cartão" subtitle="O valor total será dividido nas próximas faturas." onClose={() => setEditor(null)}><PurchaseForm cards={data.cards ?? []} selectedId={editor.cardId} onSave={savePurchase} onClose={() => setEditor(null)} /></Modal>}
       {confirm && (

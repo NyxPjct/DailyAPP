@@ -3483,6 +3483,63 @@ td:last-child {
 .recurrence-row button { min-height: 44px; flex-shrink: 0; font-size: 12px; }
 .planning-badge { display: inline-flex; gap: 4px; align-items: center; font-size: 10px; color: #59734c; }
 .installment-label { font-weight: 600; color: #477d64; }
+.today-money { min-width: 0; padding: 22px; }
+.today-money .panel-heading { padding: 0 0 17px; }
+.today-money .panel-heading { align-items: flex-start; }
+.today-money .panel-heading p { line-height: 1.6; }
+.money-due { display: flex; align-items: center; gap: 8px; color: #895125; background: #fcf3e5; padding: 12px; border-radius: 10px; font-size: 13px; }
+.money-agenda { list-style: none; padding: 0; margin: 12px 0; }
+.money-agenda li { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #e8ede3; }
+.money-agenda-detail { flex: 1; min-width: 0; text-align: left; }
+.money-agenda-detail strong, .money-agenda-detail small, .money-agenda-detail span { display: block; overflow-wrap: anywhere; }
+.money-agenda-detail strong { font-size: 14px; }
+.money-agenda-detail small { color: #5d6a56; font-size: 12px; line-height: 1.6; margin: 5px 0; }
+.money-agenda-detail small.agenda-overdue { color: #914b30; }
+.money-agenda-detail span { font-size: 14px; font-weight: 600; }
+.money-agenda .compact { min-height: 44px; padding: 9px 12px; font-size: 12px; flex-shrink: 0; }
+.planning-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; align-items: start; }
+.forecast-panel, .goals-panel { min-width: 0; padding: 22px; }
+.forecast-panel .panel-heading, .goals-panel .panel-heading { padding: 0 0 4px; }
+.planning-explanation { font-size: 13px; line-height: 1.8; color: #596651; margin: 18px 0; }
+.forecast-opening { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 14px; padding: 18px 0; border-top: 1px solid #e8ede3; }
+.forecast-opening span, .forecast-opening strong { display: block; overflow-wrap: anywhere; }
+.forecast-opening span { color: #596651; font-size: 12px; margin-bottom: 6px; }
+.forecast-opening strong { font-size: 18px; }
+.forecast-result { background: #f0f5eb; border: 1px solid #e1e9d8; border-radius: 14px; padding: 22px 18px; }
+.forecast-result span, .forecast-result strong, .forecast-result small { display: block; }
+.forecast-result span { font-size: 13px; color: #4b6340; }
+.forecast-result strong { font-size: 30px; margin: 10px 0; font-family: Manrope, sans-serif; overflow-wrap: anywhere; }
+.forecast-result small { color: #596651; font-size: 11px; line-height: 1.7; }
+.forecast-components { margin: 15px 0; }
+.forecast-components > div { display: flex; justify-content: space-between; gap: 14px; padding: 13px 0; font-size: 13px; border-bottom: 1px solid #e8ede3; }
+.forecast-components dt { color: #596651; }
+.forecast-components dd { margin: 0; text-align: right; font-weight: 600; overflow-wrap: anywhere; }
+.forecast-components small { display: block; font-size: 11px; font-weight: 400; margin-top: 5px; }
+.planning-warning { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; line-height: 1.8; color: #805024; background: #fcf3e5; padding: 14px; border-radius: 10px; margin: 14px 0; }
+.planning-warning svg { flex-shrink: 0; margin-top: 3px; }
+.forecast-panel .negative { color: #a34635; }
+.forecast-details { padding: 12px 0; }
+.forecast-details summary { cursor: pointer; min-height: 44px; font-size: 13px; font-weight: 600; color: #23664b; padding: 12px 0; }
+.forecast-details ol { list-style: none; padding: 0; margin: 0; }
+.forecast-details li { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid #e8ede3; font-size: 13px; }
+.forecast-details li > div { min-width: 0; }
+.forecast-details li > strong { text-align: right; overflow-wrap: anywhere; }
+.forecast-details small { display: block; font-size: 11px; color: #596651; line-height: 1.7; margin-top: 4px; }
+.goal-list { display: grid; gap: 18px; margin-top: 20px; }
+.goal-card { border: 1px solid #e2e9d9; border-radius: 14px; padding: 18px; }
+.goal-card.archived { background: #f7f8f5; }
+.goal-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.goal-header h3 { font-size: 16px; overflow-wrap: anywhere; }
+.goal-card > p { font-size: 13px; line-height: 1.8; margin: 14px 0; overflow-wrap: anywhere; }
+.goal-card .progress-track { height: 7px; margin-bottom: 12px; }
+.goal-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 11px; color: #596651; line-height: 1.7; }
+.goal-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.goal-actions button { min-height: 44px; }
+.form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.modal .form-row label { min-width: 0; font-size: 13px; font-weight: 600; color: #5a6b4e; margin-bottom: 18px; line-height: 1.5; }
+@media (max-width: 1100px) {
+  .planning-layout { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 720px) {
   .cards-grid { grid-template-columns: minmax(0, 1fr); }
   .planning-heading { align-items: stretch; flex-direction: column; gap: 14px; }
@@ -3492,6 +3549,11 @@ td:last-child {
   .card-actions .button { justify-content: center; }
   .finance-subnav { width: 100%; }
   .finance-subnav button { flex: 1; font-size: 13px; padding: 10px; }
+  .finance-subnav { flex-wrap: wrap; }
+  .finance-subnav button { flex: 1 1 auto; }
+  .form-row { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .forecast-result strong { font-size: 27px; }
+  .today-money, .forecast-panel, .goals-panel { padding: 18px; }
   .recurrence-row { align-items: stretch; flex-direction: column; gap: 6px; }
   .recurrence-row button { align-self: flex-start; }
 }

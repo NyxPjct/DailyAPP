@@ -14,7 +14,7 @@ Obtenha `artifacts/DailyAPP-1.1-pessoal.apk`, transfira-o para o celular Android
 
 Requer Android 7 ou superior e uma WebView atualizada. O pacote pessoal usa o build **Release**, com depuração da aplicação e da WebView desativadas, mas conserva o certificado de desenvolvimento da instalação anterior. É uma distribuição pessoal; a publicação na Play Store terá uma configuração própria de assinatura.
 
-Se instalou o APK de teste anterior desta sessão, exporte um backup em Ajustes e abra o novo APK **sem desinstalar o DailyAPP**. O identificador `com.nyxpjct.dailyapp` e o certificado foram mantidos; o código da versão passa para 3, com nome 1.1.0. Isso permite atualizar preservando os dados. O formato local também foi mantido. A instalação sobre a versão anterior ainda deve ser confirmada em um aparelho real.
+Se instalou o APK de teste anterior desta sessão, exporte um backup em Ajustes e abra o novo APK **sem desinstalar o DailyAPP**. O identificador `com.nyxpjct.dailyapp` e o certificado foram mantidos; o código da versão passa para 4, com nome 1.1.0. Isso permite atualizar preservando os dados. O formato local também foi mantido. A instalação sobre a versão anterior ainda deve ser confirmada em um aparelho real.
 
 Para gerar futuras atualizações compatíveis, preserve a chave local de desenvolvimento em `.cache/android-user/debug.keystore`. Ela fica fora do Git e do ZIP de código. Compilar em uma máquina com uma chave diferente cria uma assinatura diferente; nesse caso, a atualização pode ser recusada pelo Android. Desinstalar ou limpar os dados pode apagar os registros; restaure um backup se precisar fazer isso.
 
@@ -49,7 +49,7 @@ Esse comando preserva o build nativo em `dist/mobile`. Os dados ficam no navegad
 
 ## iPhone sem Mac pessoal
 
-Baixe [DailyAPP-1.1-sem-assinatura.ipa](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0/DailyAPP-1.1-sem-assinatura.ipa) da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0). O pacote foi compilado com Xcode 26.3 no GitHub Actions para arm64, iOS 15.4 ou superior, versão 1.1.0 (código 3). Seu SHA-256, integridade do ZIP, manifesto de privacidade e os 22 arquivos da interface foram conferidos após o download. Ele ainda precisa de assinatura pessoal; não instala sozinho.
+Baixe [DailyAPP-1.1-sem-assinatura.ipa](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0/DailyAPP-1.1-sem-assinatura.ipa) da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0). O pacote foi compilado com Xcode 26.3 no GitHub Actions para arm64, iOS 15.4 ou superior, versão 1.1.0. A atualização com planejamento mantém 1.1.0 e usa código 4. Os pacotes estão sendo publicados; os links serão atualizados após a verificação. Ele ainda precisa de assinatura pessoal; não instala sozinho.
 
 No Windows, instale o **AltServer** pelo site oficial [altstore.io](https://altstore.io), siga as instruções oficiais para instalar o AltStore no seu próprio iPhone e importe o IPA nele. Forneça sua conta Apple apenas nas ferramentas oficiais do seu computador/aparelho.
 
@@ -86,6 +86,12 @@ Esta máquina cloud é Linux: não possui Xcode e não gera um IPA assinado. O I
 O manifesto `ios/App/App/PrivacyInfo.xcprivacy` está registrado no target e declara o acesso a timestamps de arquivos exigido pelo plugin Filesystem. O backup usa o cache privado e o seletor de compartilhamento do sistema. O app não solicita acesso amplo à pasta de documentos, câmera ou localização.
 
 ## Usar os novos recursos da versão 1.1
+
+Em **Hoje → Contas e recebimentos**, acompanhe pendências anteriores, de hoje e dos próximos sete dias, incluindo parcelas. Toque na descrição para editar e em **Pagar** ou **Receber** para confirmar o mesmo registro. Para desfazer, mude o status da movimentação em Finanças.
+
+Em **Finanças → Planejamento**, defina o saldo disponível no início do mês, antes da primeira movimentação desse mês. Zero e valores negativos são aceitos. A previsão soma receitas e desconta despesas, confirmadas e previstas, incluindo cada parcela no seu vencimento. **Ver evolução por dia** mostra os saldos ao fim de cada data e o aviso destaca estimativas negativas. Saldos iniciais são independentes entre meses. Contas antigas aparecem como aviso e em Hoje; ajuste a data caso o pagamento passe a ocorrer no mês atual. Não há consulta a bancos.
+
+Em **Planejamento → Nova meta**, cadastre o valor desejado, prazo e total guardado. **Atualizar meta** modifica o total guardado, em vez de somar um depósito; o progresso e a sugestão mensal acompanham a mudança. Você pode arquivar/reativar ou excluir com confirmação. Metas não movimentam dinheiro nem alteram o saldo da previsão automaticamente. O [guia completo das funções no README](../README.md#o-que-cada-função-faz) explica cada tela e botão.
 
 Em **Nova tarefa**, escolha uma frequência em **Repetir tarefa**. Em **Nova movimentação**, use **Repetir movimentação** para receitas ou contas fixas. As novas ocorrências começam pendentes, e uma edição muda apenas o registro escolhido. Abra **Rotinas recorrentes** em Tarefas ou Finanças para encerrar uma rotina: registros anteriores, os de hoje e ocorrências já concluídas/pagas são mantidos. Excluir só uma ocorrência não a recria ao abrir novamente.
 

@@ -70,6 +70,15 @@ export interface CreditCard {
   reminderDays?: number;
   archived?: boolean;
 }
+export interface FinancialGoal {
+  id: string;
+  name: string;
+  targetCents: number;
+  savedCents: number;
+  targetDate: string;
+  notes: string;
+  archived?: boolean;
+}
 export type Recurrence = {
   id: string;
   frequency: Frequency;
@@ -90,6 +99,8 @@ export interface AppData {
   demoBudgetMonth: string | null;
   cards?: CreditCard[];
   recurrences?: Recurrence[];
+  goals?: FinancialGoal[];
+  openingBalances?: Record<string, number>;
 }
 
 export const freshData = (): AppData => ({
@@ -179,7 +190,29 @@ const object = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
 function planningFields(value: Record<string, unknown>, ids: Set<string>) {
-  const result: Pick<AppData, "cards" | "recurrences"> = {};
+  const result: Pick<AppData, "cards" | "recurrences" | "goals" | "openingBalances"> = {};
+  if (value.goals !== undefined) {
+    if (!Array.isArray(value.goals) || value.goals.length > 100) throw new Error("O backup contém metas inválidas.");
+    result.goals = value.goals.map(goal => {
+      if (!object(goal) || !validText(goal.id, 60) || ids.has(goal.id) || !validText(goal.name, 80) ||
+        !validCents(goal.targetCents) || typeof goal.savedCents !== "number" || !Number.isSafeInteger(goal.savedCents) ||
+        goal.savedCents < 0 || goal.savedCents > 100_000_000_000 || !validDate(goal.targetDate) ||
+        !validText(goal.notes, 1000, true) || (goal.archived !== undefined && typeof goal.archived !== "boolean"))
+        throw new Error("O backup contém uma meta inválida.");
+      ids.add(goal.id);
+      return { id: goal.id, name: goal.name, targetCents: goal.targetCents, savedCents: goal.savedCents,
+        targetDate: goal.targetDate, notes: goal.notes, ...(goal.archived !== undefined ? { archived: goal.archived } : {}) };
+    });
+  }
+  if (value.openingBalances !== undefined) {
+    if (!object(value.openingBalances) || Object.keys(value.openingBalances).length > 1000) throw new Error("O backup contém saldos iniciais inválidos.");
+    result.openingBalances = {};
+    for (const [month, amount] of Object.entries(value.openingBalances)) {
+      if (!validDate(`${month}-01`) || typeof amount !== "number" || !Number.isSafeInteger(amount) || Math.abs(amount) > 100_000_000_000)
+        throw new Error("O backup contém um saldo inicial inválido.");
+      result.openingBalances[month] = amount;
+    }
+  }
   if (value.cards !== undefined) {
     if (!Array.isArray(value.cards) || value.cards.length > 100) throw new Error("O backup contém cartões inválidos.");
     result.cards = value.cards.map(card => {
