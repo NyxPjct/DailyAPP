@@ -2,14 +2,16 @@
 
 ## Downloads
 
-- **Android:** [Baixar APK 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0/DailyAPP-1.1-pessoal.apk) — abra o arquivo no celular para instalar. Requer Android 7 ou superior.
-- **iPhone:** [Baixar IPA 1.1 sem assinatura](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0/DailyAPP-1.1-sem-assinatura.ipa) — requer iOS 15.4 ou superior e assinatura pessoal antes de instalar. No Windows, siga [as instruções com AltServer/AltStore](docs/CELULAR.md#iphone-sem-mac-pessoal). O IPA não instala sozinho ao ser aberto.
+- **Android:** [Baixar APK 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r1/DailyAPP-1.1-pessoal.apk) — abra o arquivo no celular para instalar. Requer Android 7 ou superior.
+- **iPhone:** [Baixar IPA 1.1 sem assinatura](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r1/DailyAPP-1.1-sem-assinatura.ipa) — requer iOS 15.4 ou superior e assinatura pessoal antes de instalar. No Windows, siga [as instruções com AltServer/AltStore](docs/CELULAR.md#iphone-sem-mac-pessoal). O IPA não instala sozinho ao ser aberto.
 
-[Abrir a Release com os arquivos e hashes SHA-256](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0). Os dois downloads foram baixados e conferidos após a publicação.
+- **Computador:** [Baixar prévia com index.html](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r1/DailyAPP-index.zip) — extraia o ZIP e abra `index.html` no Chrome ou Edge.
+
+[Abrir a Release com os arquivos e hashes SHA-256](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0-r1). Os três downloads foram baixados e conferidos após a publicação.
 
 Se já instalou o DailyAPP no Android, exporte um backup em Ajustes e instale o novo APK sem desinstalar o aplicativo. [Conferir SHA-256 do APK](downloads/DailyAPP-1.1-pessoal.apk.sha256).
 
-**Atualização em publicação:** os links acima ainda apontam para a compilação anterior da 1.1 (build 3). Esta revisão acrescenta as funções de planejamento descritas abaixo e mantém a versão 1.1.0, com build 4. Os links serão atualizados ao concluir a publicação dos pacotes.
+**Atualização da 1.1:** esta revisão mantém a versão 1.1.0, agora com compilação 4, e acrescenta contas na tela Hoje, metas financeiras e previsão de saldo. O [guia de cada função](#o-que-cada-função-faz) está abaixo.
 
 Aplicativo de tarefas, agenda e finanças pessoais em português. A interface React é empacotada com Capacitor em aplicativos instalados no celular. As telas, fontes e ícones fazem parte da instalação; o funcionamento local dispensa hospedagem, Netlify e Supabase.
 
