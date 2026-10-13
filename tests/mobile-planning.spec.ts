@@ -1,0 +1,160 @@
+import { test, expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { nativeBridge } from "./helpers/native";
+
+async function start(page: Page, platform: "android" | "ios" = "android") {
+  await nativeBridge(page, platform);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.setFixedTime(new Date("2026-10-13T15:00:00Z"));
+  await page.goto("http://127.0.0.1:5176", { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "Começar sem configurar", exact: true }).click();
+}
+const saved = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem("dailyapp.v1")!));
+
+test("rotina de tarefas persiste, não recria ocorrência excluída e pode ser encerrada sem apagar hoje", async ({ page }) => {
+  await start(page);
+  await page.getByRole("button", { name: "Nova tarefa", exact: true }).click();
+  await page.getByLabel("O que você precisa fazer?").fill("Planejar revisão");
+  await page.getByLabel("Repetir tarefa").selectOption("monthly");
+  await page.getByRole("button", { name: "Criar tarefa", exact: true }).click();
+  await page.getByRole("button", { name: "Minhas tarefas", exact: true }).click();
+  await expect(page.locator(".task-row")).toHaveCount(3);
+  const removed = (await saved(page)).tasks[1].id;
+  await page.locator(".task-row").nth(1).getByRole("button", { name: "Excluir tarefa: Planejar revisão", exact: true }).click();
+  await page.getByRole("button", { name: "Confirmar", exact: true }).click();
+  await page.reload({ waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "Minhas tarefas", exact: true }).click();
+  await expect(page.locator(".task-row")).toHaveCount(2);
+  expect((await saved(page)).tasks.some((t: any) => t.id === removed)).toBe(false);
+  await page.locator(".recurrence-panel summary").click();
+  await page.getByRole("button", { name: /Parar repetição/ }).click();
+  await page.getByRole("button", { name: "Confirmar", exact: true }).click();
+  await expect(page.locator(".task-row")).toHaveCount(1);
+  expect((await saved(page)).recurrences[0].active).toBe(false);
+});
+
+test("conta recorrente gera valores previstos e editar um mês não altera as demais ocorrências", async ({ page }) => {
+  await start(page);
+  await page.getByRole("button", { name: "Nova movimentação", exact: true }).click();
+  await page.getByLabel("Descrição", { exact: true }).fill("Internet recorrente");
+  await page.getByLabel("Valor (R$)", { exact: true }).fill("99,90");
+  await page.getByLabel("Repetir movimentação").selectOption("monthly");
+  await expect(page.getByRole("checkbox", { name: /Esta despesa já foi paga/ })).not.toBeChecked();
+  await page.getByRole("button", { name: "Registrar movimentação", exact: true }).click();
+  const initial = await saved(page);
+  expect(initial.transactions).toHaveLength(13);
+  expect(initial.transactions.every((t: any) => !t.paid)).toBe(true);
+  await page.getByRole("button", { name: "Minhas finanças", exact: true }).click();
+  await page.getByRole("button", { name: "Próximo mês", exact: true }).click();
+  await page.getByRole("button", { name: "Marcar como paga: Internet recorrente", exact: true }).click();
+  await expect(page.locator(".stat-card").filter({ hasText: "Saldo do mês" })).toContainText("-R$ 99,90");
+  await page.locator(".transaction-description button").click();
+  await page.getByLabel("Valor (R$)", { exact: true }).fill("120,00");
+  await page.getByRole("button", { name: "Salvar alterações", exact: true }).click();
+  const data = await saved(page);
+  expect(data.transactions.find((t: any) => t.date === "2026-11-13")).toMatchObject({ amountCents: 12000, paid: true });
+  expect(data.transactions.find((t: any) => t.date === "2026-12-13")).toMatchObject({ amountCents: 9990, paid: false });
+  expect(data.recurrences[0].template.amountCents).toBe(9990);
+});
+
+for (const platform of ["android", "ios"] as const) {
+  test(`${platform}: lembrete solicita permissão, agenda no fuso local, abre a tarefa e cancela ao concluir`, async ({ page }) => {
+    await start(page, platform);
+    await page.getByRole("button", { name: "Nova tarefa", exact: true }).click();
+    await page.getByLabel("O que você precisa fazer?").fill("Consulta com lembrete");
+    await page.getByLabel("Horário").fill("18:00");
+    await page.getByLabel("Lembrete da tarefa").selectOption("15");
+    await page.getByRole("button", { name: "Criar tarefa", exact: true }).click();
+    await expect.poll(() => page.evaluate(() => (window as any).dailyappNativeTest.pendingNotifications.filter((n: any) => n.extra?.dailyapp).length)).toBe(1);
+    const calls = await page.evaluate(() => (window as any).dailyappNativeTest.calls);
+    expect(calls.filter((c: any) => c.plugin === "LocalNotifications" && c.method === "requestPermissions")).toHaveLength(1);
+    const notification = calls.filter((c: any) => c.method === "schedule").at(-1).options.notifications[0];
+    expect(new Date(notification.schedule.at).toISOString()).toBe("2026-10-13T20:45:00.000Z");
+    expect(notification.isExact).toBe(false);
+    await page.getByRole("button", { name: "Minhas finanças", exact: true }).click();
+    const id = (await saved(page)).tasks[0].id;
+    await page.evaluate(id => { for (const callback of (window as any).dailyappNativeTest.notificationCallbacks.values()) callback({ notification: { extra: { dailyapp: true, kind: "task", itemId: id } } }); }, id);
+    await expect(page.getByRole("button", { name: "Minhas tarefas", exact: true })).toHaveAttribute("aria-current", "page");
+    await page.clock.setFixedTime(new Date("2026-10-13T22:00:00Z"));
+    await page.getByRole("button", { name: "Nova tarefa", exact: true }).click();
+    await page.getByLabel("O que você precisa fazer?").fill("Outro compromisso");
+    await page.getByRole("button", { name: "Criar tarefa", exact: true }).click();
+    await page.getByRole("button", { name: "Configurações", exact: true }).click();
+    await expect(page.getByText("1 lembrete programado neste aparelho.", { exact: true })).toBeVisible();
+    expect(await page.evaluate(() => (window as any).dailyappNativeTest.pendingNotifications.filter((n: any) => n.extra?.dailyapp).length)).toBe(1);
+    await page.getByRole("button", { name: "Minhas tarefas", exact: true }).click();
+    await page.getByRole("checkbox", { name: "Concluir tarefa: Consulta com lembrete", exact: true }).click();
+    await expect.poll(() => page.evaluate(() => (window as any).dailyappNativeTest.pendingNotifications.map((n: any) => n.id))).toEqual([42]);
+    expect((await saved(page)).tasks[0].completed).toBe(true);
+  });
+}
+
+test("permissão negada e falha nativa de lembretes não apagam dados; usuário pode tentar novamente", async ({ page }) => {
+  await start(page);
+  await page.evaluate(() => { (window as any).dailyappNativeTest.notificationPermission = "denied"; });
+  await page.getByRole("button", { name: "Nova tarefa", exact: true }).click();
+  await page.getByLabel("O que você precisa fazer?").fill("Não perder esta tarefa");
+  await page.getByLabel("Horário").fill("18:00");
+  await page.getByLabel("Lembrete da tarefa").selectOption("0");
+  await page.getByRole("button", { name: "Criar tarefa", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Permita notificações");
+  const before = await page.evaluate(() => localStorage.getItem("dailyapp.v1"));
+  await page.evaluate(() => { const s = (window as any).dailyappNativeTest; s.notificationPermission = "granted"; s.failSchedule = true; });
+  await page.getByRole("button", { name: "Configurações", exact: true }).click();
+  await page.getByRole("button", { name: "Ativar lembretes", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("não foi possível atualizar os lembretes");
+  expect(await page.evaluate(() => localStorage.getItem("dailyapp.v1"))).toBe(before);
+  await page.evaluate(() => { (window as any).dailyappNativeTest.failSchedule = false; });
+  await page.getByRole("button", { name: "Ativar lembretes", exact: true }).click();
+  await expect.poll(() => page.evaluate(() => (window as any).dailyappNativeTest.pendingNotifications.filter((n: any) => n.extra?.dailyapp).length)).toBe(1);
+  expect(await page.evaluate(() => localStorage.getItem("dailyapp.v1"))).toBe(before);
+});
+
+test("cartão e parcelas conservam centavos, pagam sem duplicar, restauram backup e arquivam sem apagar histórico", async ({ page }) => {
+  await start(page, "ios");
+  await page.getByRole("button", { name: "Minhas finanças", exact: true }).click();
+  await page.getByRole("button", { name: "Cartões e parcelas", exact: true }).click();
+  await page.getByRole("button", { name: "Novo cartão", exact: true }).click();
+  await page.getByLabel("Nome do cartão").fill("Principal");
+  await page.getByLabel("Limite do cartão (R$)").fill("5.000,00");
+  await page.getByRole("dialog").getByRole("button", { name: "Cadastrar cartão", exact: true }).click();
+  const card = page.getByRole("article", { name: "Cartão Principal" });
+  await card.getByRole("button", { name: "Registrar compra", exact: true }).click();
+  await page.getByLabel("Descrição da compra").fill("Compra parcelada");
+  await page.getByLabel("Valor total da compra (R$)").fill("100,00");
+  await page.getByLabel("Número de parcelas").fill("3");
+  await page.getByRole("dialog").getByRole("button", { name: "Registrar compra", exact: true }).click();
+  await expect(card.locator(".invoice-summary")).toContainText("33,34");
+  await expect(card.locator(".card-limit")).toContainText("4.900,00");
+  await card.getByRole("button", { name: "Marcar fatura como paga", exact: true }).click();
+  await page.getByRole("button", { name: "Confirmar", exact: true }).click();
+  expect((await saved(page)).transactions).toHaveLength(3);
+  expect((await saved(page)).transactions.map((t: any) => t.amountCents)).toEqual([3334, 3333, 3333]);
+  await page.getByRole("button", { name: "Resumo", exact: true }).click();
+  await expect(page.locator(".stat-card").filter({ hasText: "Saldo do mês" })).toContainText("-R$ 33,34");
+  await page.getByRole("button", { name: "Configurações", exact: true }).click();
+  await page.getByRole("button", { name: "Exportar backup", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Backup preparado");
+  const calls = await page.evaluate(() => (window as any).dailyappNativeTest.calls);
+  const json = calls.find((c: any) => c.method === "writeFile").options.data;
+  expect(JSON.parse(json).cards).toHaveLength(1);
+  await page.getByRole("button", { name: "Apagar meus dados", exact: true }).click();
+  await page.getByRole("button", { name: "Confirmar", exact: true }).click();
+  await page.getByLabel("Arquivo de backup").setInputFiles({ name: "backup.json", mimeType: "application/json", buffer: Buffer.from(json) });
+  await page.getByRole("button", { name: "Confirmar", exact: true }).click();
+  await page.getByRole("button", { name: "Minhas finanças", exact: true }).click();
+  await page.getByRole("button", { name: "Cartões e parcelas", exact: true }).click();
+  await expect(card.locator(".card-limit")).toContainText("4.933,34");
+  const transactions = (await saved(page)).transactions;
+  await card.getByRole("button", { name: "Arquivar cartão", exact: true }).click();
+  await page.getByRole("button", { name: "Confirmar", exact: true }).click();
+  await expect(card.getByRole("button", { name: "Registrar compra", exact: true })).not.toBeVisible();
+  expect((await saved(page)).transactions).toEqual(transactions);
+  await card.getByRole("button", { name: "Reativar cartão", exact: true }).click();
+  await page.getByRole("button", { name: "Confirmar", exact: true }).click();
+  await expect(card.getByRole("button", { name: "Registrar compra", exact: true })).toBeVisible();
+  await page.setViewportSize({ width: 320, height: 740 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});

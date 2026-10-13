@@ -3,50 +3,7 @@ import type { Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { freshData, validateData } from "../src/domain";
 
-async function nativeBridge(page: Page, platform: "android" | "ios") {
-  await page.addInitScript((platform) => {
-    const win = window as unknown as Record<string, any>;
-    const state = {
-      calls: [] as { plugin: string; method: string; options: any }[],
-      callbacks: new Map<string, () => void>(),
-      sequence: 0,
-      failWrite: false,
-    };
-    win.dailyappNativeTest = state;
-    if (platform === "android") win.androidBridge = {};
-    else win.webkit = { messageHandlers: { bridge: {} } };
-    win.Capacitor = {
-      PluginHeaders: [
-        { name: "App", methods: [
-          { name: "addListener", rtype: "callback" },
-          { name: "removeListener", rtype: "promise" },
-          { name: "minimizeApp", rtype: "promise" },
-        ] },
-        { name: "Filesystem", methods: [{ name: "writeFile", rtype: "promise" }] },
-        { name: "Share", methods: [{ name: "canShare", rtype: "promise" }, { name: "share", rtype: "promise" }] },
-        { name: "StatusBar", methods: [{ name: "setStyle", rtype: "promise" }] },
-      ],
-      nativeCallback: async (plugin: string, method: string, options: any, callback: () => void) => {
-        const id = String(++state.sequence);
-        if (plugin === "App" && method === "addListener") state.callbacks.set(id, callback);
-        return id;
-      },
-      nativePromise: async (plugin: string, method: string, options: any) => {
-        state.calls.push({ plugin, method, options });
-        if (method === "removeListener") state.callbacks.delete(options.callbackId);
-        if (method === "canShare") return { value: true };
-        if (method === "writeFile") {
-          if (state.failWrite) throw new Error("Dispositivo sem espaço");
-          return { uri: "file:///cache/" + options.path };
-        }
-        return {};
-      },
-    };
-    window.addEventListener("dailyapp-test-back", () => {
-      for (const callback of state.callbacks.values()) callback();
-    });
-  }, platform);
-}
+import { nativeBridge } from "./helpers/native";
 
 async function start(page: Page, platform: "android" | "ios", skipIntro = true) {
   await nativeBridge(page, platform);

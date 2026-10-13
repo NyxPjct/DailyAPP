@@ -32,6 +32,9 @@ export const INCOME_CATEGORIES = [
   "Outros",
 ] as const;
 export const PRIORITIES = ["Baixa", "Média", "Alta"] as const;
+export const FREQUENCIES = { daily: "Todos os dias", weekly: "Toda semana", monthly: "Todo mês", yearly: "Todo ano" } as const;
+export type Frequency = keyof typeof FREQUENCIES;
+export const REMINDER_MINUTES = [0, 5, 15, 30, 60, 1440, 4320] as const;
 
 export interface Task {
   id: string;
@@ -42,6 +45,8 @@ export interface Task {
   category: (typeof TASK_CATEGORIES)[number];
   priority: (typeof PRIORITIES)[number];
   completed: boolean;
+  reminderMinutes?: number;
+  recurrenceId?: string;
 }
 export interface Transaction {
   id: string;
@@ -52,7 +57,29 @@ export interface Transaction {
   category: string;
   paid: boolean;
   notes: string;
+  reminderMinutes?: number;
+  recurrenceId?: string;
+  installment?: { cardId: string; purchaseId: string; index: number; count: number; purchasedOn: string };
 }
+export interface CreditCard {
+  id: string;
+  name: string;
+  limitCents: number;
+  closingDay: number;
+  dueDay: number;
+  reminderDays?: number;
+  archived?: boolean;
+}
+export type Recurrence = {
+  id: string;
+  frequency: Frequency;
+  anchorDate: string;
+  nextIndex: number;
+  active: boolean;
+} & (
+  | { kind: "task"; template: Omit<Task, "id" | "date" | "completed" | "recurrenceId"> }
+  | { kind: "transaction"; template: Omit<Transaction, "id" | "date" | "paid" | "recurrenceId" | "installment"> }
+);
 export interface AppData {
   schemaVersion: 1;
   name: string;
@@ -61,6 +88,8 @@ export interface AppData {
   budgets: Record<string, number>;
   demo: boolean;
   demoBudgetMonth: string | null;
+  cards?: CreditCard[];
+  recurrences?: Recurrence[];
 }
 
 export const freshData = (): AppData => ({
@@ -149,6 +178,65 @@ const validCents = (value: unknown): value is number =>
 const object = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
+function planningFields(value: Record<string, unknown>, ids: Set<string>) {
+  const result: Pick<AppData, "cards" | "recurrences"> = {};
+  if (value.cards !== undefined) {
+    if (!Array.isArray(value.cards) || value.cards.length > 100) throw new Error("O backup contém cartões inválidos.");
+    result.cards = value.cards.map(card => {
+      if (!object(card) || !validText(card.id, 60) || ids.has(card.id) || !validText(card.name, 60) || !validCents(card.limitCents) ||
+        !Number.isInteger(card.closingDay) || Number(card.closingDay) < 1 || Number(card.closingDay) > 31 ||
+        !Number.isInteger(card.dueDay) || Number(card.dueDay) < 1 || Number(card.dueDay) > 31 ||
+        (card.reminderDays !== undefined && ![0, 1, 3].includes(Number(card.reminderDays))) ||
+        (card.reminderDays !== undefined && typeof card.reminderDays !== "number") ||
+        (card.archived !== undefined && typeof card.archived !== "boolean")) throw new Error("O backup contém um cartão inválido.");
+      ids.add(card.id);
+      return { id: card.id, name: card.name, limitCents: card.limitCents, closingDay: Number(card.closingDay), dueDay: Number(card.dueDay),
+        ...(card.reminderDays !== undefined ? { reminderDays: Number(card.reminderDays) } : {}),
+        ...(card.archived !== undefined ? { archived: card.archived } : {}) };
+    });
+  }
+  if (value.recurrences !== undefined) {
+    if (!Array.isArray(value.recurrences) || value.recurrences.length > 1000) throw new Error("O backup contém repetições inválidas.");
+    result.recurrences = value.recurrences.map(series => {
+      if (!object(series) || !validText(series.id, 60) || ids.has(series.id) || !Object.hasOwn(FREQUENCIES, String(series.frequency)) ||
+        !validDate(series.anchorDate) || typeof series.active !== "boolean" || !Number.isInteger(series.nextIndex) ||
+        Number(series.nextIndex) < 1 || Number(series.nextIndex) > 120000 || !object(series.template) || !["task", "transaction"].includes(String(series.kind)))
+        throw new Error("O backup contém uma repetição inválida.");
+      ids.add(series.id);
+      const base = { id: series.id, frequency: series.frequency as Frequency, anchorDate: series.anchorDate, active: series.active, nextIndex: Number(series.nextIndex) };
+      if (series.kind === "task") {
+        const valid = validateData({ ...freshData(), tasks: [{ ...series.template, id: "template", date: series.anchorDate, completed: false, recurrenceId: undefined }] }).tasks[0];
+        const { id: _id, date: _date, completed: _completed, recurrenceId: _recurrence, ...template } = valid;
+        return { ...base, kind: "task" as const, template };
+      }
+      const valid = validateData({ ...freshData(), transactions: [{ ...series.template, id: "template", date: series.anchorDate, paid: false, recurrenceId: undefined, installment: undefined }] }).transactions[0];
+      const { id: _id, date: _date, paid: _paid, recurrenceId: _recurrence, installment: _installment, ...template } = valid;
+      return { ...base, kind: "transaction" as const, template };
+    });
+  }
+  const seriesMap = new Map(result.recurrences?.map(s => [s.id, s]));
+  const cardIds = new Set(result.cards?.map(c => c.id));
+  const purchaseParts = new Set<string>(), purchases = new Map<string, string>();
+  for (const item of value.tasks as Record<string, unknown>[]) {
+    if (item.reminderMinutes !== undefined && (typeof item.reminderMinutes !== "number" || !REMINDER_MINUTES.includes(item.reminderMinutes as never) || !item.time)) throw new Error("O backup contém um lembrete de tarefa inválido.");
+    if (item.recurrenceId !== undefined && (typeof item.recurrenceId !== "string" || seriesMap.get(item.recurrenceId)?.kind !== "task")) throw new Error("O backup contém uma referência de repetição inválida.");
+  }
+  for (const item of value.transactions as Record<string, unknown>[]) {
+    if (item.reminderMinutes !== undefined && (typeof item.reminderMinutes !== "number" || !REMINDER_MINUTES.includes(item.reminderMinutes as never))) throw new Error("O backup contém um lembrete de conta inválido.");
+    if (item.recurrenceId !== undefined && (typeof item.recurrenceId !== "string" || seriesMap.get(item.recurrenceId)?.kind !== "transaction")) throw new Error("O backup contém uma referência de repetição inválida.");
+    if (item.installment !== undefined) {
+      const part = item.installment;
+      if (!object(part) || typeof part.cardId !== "string" || !cardIds.has(part.cardId) || item.type !== "expense" || item.recurrenceId !== undefined || !validText(part.purchaseId, 60) ||
+        !Number.isInteger(part.count) || Number(part.count) < 1 || Number(part.count) > 48 || !Number.isInteger(part.index) || Number(part.index) < 1 || Number(part.index) > Number(part.count) || !validDate(part.purchasedOn))
+        throw new Error("O backup contém uma parcela inválida.");
+      const key = `${part.purchaseId}:${part.index}`, purchase = `${part.cardId}:${part.count}:${part.purchasedOn}`;
+      if (purchaseParts.has(key) || (purchases.has(part.purchaseId) && purchases.get(part.purchaseId) !== purchase)) throw new Error("O backup contém parcelas duplicadas ou inconsistentes.");
+      purchaseParts.add(key); purchases.set(part.purchaseId, purchase);
+    }
+  }
+  return result;
+}
+
 export function validateData(value: unknown): AppData {
   if (
     !object(value) ||
@@ -210,12 +298,14 @@ export function validateData(value: unknown): AppData {
     budgets[month] = amount;
   }
   // Copy only known fields; imported files cannot inject unexpected state.
+  const planning = planningFields(value, ids);
   return {
     schemaVersion: 1,
     name: value.name,
     demo: value.demo,
     demoBudgetMonth: (value.demoBudgetMonth as string | null) ?? null,
     budgets,
+    ...planning,
     tasks: value.tasks.map((t) => ({
       id: t.id,
       title: t.title,
@@ -225,6 +315,8 @@ export function validateData(value: unknown): AppData {
       category: t.category,
       priority: t.priority,
       completed: t.completed,
+      ...(t.reminderMinutes !== undefined ? { reminderMinutes: t.reminderMinutes } : {}),
+      ...(t.recurrenceId !== undefined ? { recurrenceId: t.recurrenceId } : {}),
     })),
     transactions: value.transactions.map((t) => ({
       id: t.id,
@@ -235,6 +327,9 @@ export function validateData(value: unknown): AppData {
       type: t.type,
       category: t.category,
       paid: t.paid,
+      ...(t.reminderMinutes !== undefined ? { reminderMinutes: t.reminderMinutes } : {}),
+      ...(t.recurrenceId !== undefined ? { recurrenceId: t.recurrenceId } : {}),
+      ...(t.installment !== undefined ? { installment: { cardId: t.installment.cardId, purchaseId: t.installment.purchaseId, index: t.installment.index, count: t.installment.count, purchasedOn: t.installment.purchasedOn } } : {}),
     })),
   };
 }

@@ -33,6 +33,8 @@ import {
   Upload,
   Wallet,
   X,
+  Bell,
+  Repeat2,
 } from "lucide-react";
 import {
   STORAGE_KEY,
@@ -57,12 +59,19 @@ import {
   summary,
   validateData,
   createDemo,
+  FREQUENCIES,
 } from "./domain";
-import type { AppData, Task, Transaction } from "./domain";
+import type { AppData, Task, Transaction, Frequency, CreditCard } from "./domain";
+import { materializeRecurrences, repeatingTask, repeatingTransaction, stopRecurrence, purchaseInstallments, cardSummary } from "./planning";
+import { CardsPanel, CardForm, PurchaseForm, RecurrencePanel } from "./features/PlanningPanels";
+import type { PurchaseInput } from "./features/PlanningPanels";
+import { initialReminderState, syncReminders, requestReminderPermission, attachReminderTap } from "./mobile/reminders";
+import type { ReminderState } from "./mobile/reminders";
 import type { WorkspaceStore } from "./cloud/workspace";
 import type { AccountControls } from "./cloud/AccountApp";
 import {
   attachAndroidBackButton,
+  attachMobileResume,
   minimizeMobile,
   saveBackup,
 } from "./mobile/platform";
@@ -85,6 +94,8 @@ type Editor =
   | { kind: "task"; item?: Task; date?: string }
   | { kind: "transaction"; item?: Transaction; type?: Transaction["type"] }
   | { kind: "budget" }
+  | { kind: "card"; item?: CreditCard }
+  | { kind: "purchase"; cardId: string }
   | null;
 const navItems = [
   { id: "overview" as const, label: "Visão geral", icon: LayoutDashboard },
@@ -247,9 +258,11 @@ function MobileHelp({ onClose }: { onClose: () => void }) {
   return (
     <Modal title="Guia rápido" subtitle="Um registro de cada vez. Mais clareza no seu dia." onClose={onClose} focusFirstInput={false}>
       <div className="mobile-help">
-        <div><ListTodo size={22} /><section><h3>Organize o dia</h3><p>Em Hoje ou Tarefas, crie uma tarefa com data e horário. Use a Agenda para ver seus compromissos e marque o círculo quando concluir.</p></section></div>
+        <div><ListTodo size={22} /><section><h3>Organize o dia</h3><p>Em Hoje ou Tarefas, crie uma tarefa com data e horário. Escolha Repetir para uma rotina diária, semanal, mensal ou anual. Marque o círculo quando concluir e gerencie as rotinas em Tarefas.</p></section></div>
         <div><Wallet size={22} /><section><h3>Acompanhe seu dinheiro</h3><p>Registre receitas e despesas. Marque como recebida ou paga para incluir no saldo; os valores previstos continuam visíveis para seu planejamento.</p></section></div>
         <div><Target size={22} /><section><h3>Defina seu orçamento</h3><p>Em Finanças, escolha o mês e defina um limite de gastos. O orçamento considera despesas pagas e previstas.</p></section></div>
+        <div><Wallet size={22} /><section><h3>Controle cartões e parcelas</h3><p>Em Finanças → Cartões e parcelas, cadastre o cartão e registre o valor total de cada compra. As parcelas entram nas faturas. Marcar uma fatura como paga atualiza os gastos sem duplicá-los.</p></section></div>
+        <div><Bell size={22} /><section><h3>Receba lembretes</h3><p>Escolha um lembrete na tarefa, conta ou cartão e permita notificações no celular. Ao concluir ou pagar, os próximos avisos são retirados. Em Ajustes, confira os lembretes programados.</p></section></div>
         <div><Download size={22} /><section><h3>Guarde uma cópia</h3><p>Em Ajustes, exporte um backup e escolha onde guardar o arquivo. Para transferir os dados a outro aparelho, importe esse JSON e confirme a restauração.</p></section></div>
       </div>
       <p className="intro-note">Os registros ficam neste aparelho. Desinstalar o aplicativo ou limpar seus dados pode removê-los. Guarde um backup antes de trocar de celular.</p>
@@ -347,6 +360,8 @@ function TaskRow({
           <span className={`tag category-${task.category.toLowerCase()}`}>
             {task.category}
           </span>
+          {task.recurrenceId && <span className="planning-badge"><Repeat2 size={12} />Recorrente</span>}
+          {task.reminderMinutes !== undefined && <span className="planning-badge"><Bell size={12} />Lembrete</span>}
         </span>
       </button>
       <span
@@ -533,11 +548,13 @@ function TaskForm({
   date,
   onSave,
   onClose,
+  recurrenceFrequency,
 }: {
   item?: Task;
   date?: string;
-  onSave: (task: Task) => boolean;
+  onSave: (task: Task, frequency?: Frequency) => boolean;
   onClose: () => void;
+  recurrenceFrequency?: Frequency;
 }) {
   const [title, setTitle] = useState(item?.title ?? "");
   const [day, setDay] = useState(item?.date ?? date ?? dateKey());
@@ -549,6 +566,8 @@ function TaskForm({
     item?.priority ?? "Média",
   );
   const [notes, setNotes] = useState(item?.notes ?? "");
+  const [frequency, setFrequency] = useState<Frequency | "">(recurrenceFrequency ?? "");
+  const [reminder, setReminder] = useState(item?.reminderMinutes ?? -1);
   const [error, setError] = useState("");
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -556,8 +575,10 @@ function TaskForm({
       setError("Informe um título e uma data válida entre 1900 e 2200.");
       return;
     }
+    if (reminder >= 0 && !time) { setError("Defina um horário para o lembrete da tarefa."); return; }
     if (
       onSave({
+        ...item,
         id: item?.id ?? randomId(),
         title: title.trim(),
         date: day,
@@ -566,7 +587,8 @@ function TaskForm({
         priority,
         notes: notes.trim(),
         completed: item?.completed ?? false,
-      })
+        reminderMinutes: reminder >= 0 ? reminder : undefined,
+      }, !item?.recurrenceId && frequency ? frequency : undefined)
     )
       onClose();
   }
@@ -605,7 +627,7 @@ function TaskForm({
             <input
               type="time"
               value={time}
-              onChange={(e) => setTime(e.target.value)}
+              onChange={(e) => { setTime(e.target.value); if (!e.target.value) setReminder(-1); }}
             />
           </label>
         </div>
@@ -643,6 +665,11 @@ function TaskForm({
             onChange={(e) => setNotes(e.target.value)}
           />
         </label>
+        <div className="form-grid">
+          <label>Repetir tarefa<select aria-label="Repetir tarefa" value={frequency} disabled={!!item?.recurrenceId} onChange={e => setFrequency(e.target.value as Frequency | "")}><option value="">Não repetir</option>{Object.entries(FREQUENCIES).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
+          <label>Lembrete da tarefa<select aria-label="Lembrete da tarefa" value={reminder} disabled={!time} onChange={e => setReminder(Number(e.target.value))}><option value={-1}>Sem lembrete</option><option value={0}>No horário</option><option value={5}>5 minutos antes</option><option value={15}>15 minutos antes</option><option value={30}>30 minutos antes</option><option value={60}>1 hora antes</option><option value={1440}>1 dia antes</option></select></label>
+        </div>
+        <p className="form-hint">{item?.recurrenceId ? "Esta edição altera só esta ocorrência. Para encerrar a rotina, use Parar repetição em Tarefas." : "Repetições criam as próximas tarefas sem marcá-las como concluídas."} {!time ? "Defina um horário para ativar um lembrete." : "Lembretes aparecem no aplicativo instalado, com sua permissão."}</p>
         {error && (
           <p role="alert" className="form-error">
             {error}
@@ -667,11 +694,13 @@ function TransactionForm({
   type,
   onSave,
   onClose,
+  recurrenceFrequency,
 }: {
   item?: Transaction;
   type?: Transaction["type"];
-  onSave: (transaction: Transaction) => boolean;
+  onSave: (transaction: Transaction, frequency?: Frequency) => boolean;
   onClose: () => void;
+  recurrenceFrequency?: Frequency;
 }) {
   const [kind, setKind] = useState<Transaction["type"]>(
     item?.type ?? type ?? "expense",
@@ -686,6 +715,8 @@ function TransactionForm({
   );
   const [paid, setPaid] = useState(item?.paid ?? true);
   const [notes, setNotes] = useState(item?.notes ?? "");
+  const [frequency, setFrequency] = useState<Frequency | "">(recurrenceFrequency ?? "");
+  const [reminder, setReminder] = useState(item?.reminderMinutes ?? -1);
   const [error, setError] = useState("");
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -702,6 +733,7 @@ function TransactionForm({
     }
     if (
       onSave({
+        ...item,
         id: item?.id ?? randomId(),
         description: description.trim(),
         amountCents: cents,
@@ -710,7 +742,8 @@ function TransactionForm({
         type: kind,
         paid,
         notes: notes.trim(),
-      })
+        reminderMinutes: reminder >= 0 ? reminder : undefined,
+      }, !item?.recurrenceId && frequency ? frequency : undefined)
     )
       onClose();
   }
@@ -725,6 +758,7 @@ function TransactionForm({
           <button
             type="button"
             className={kind === "expense" ? "selected expense-selected" : ""}
+            disabled={!!item?.installment}
             onClick={() => {
               setKind("expense");
               setCategory("Alimentação");
@@ -736,6 +770,7 @@ function TransactionForm({
           <button
             type="button"
             className={kind === "income" ? "selected" : ""}
+            disabled={!!item?.installment}
             onClick={() => {
               setKind("income");
               setCategory("Salário");
@@ -828,6 +863,12 @@ function TransactionForm({
             {error}
           </p>
         )}
+        {!item?.installment && <div className="form-grid">
+          <label>Repetir movimentação<select aria-label="Repetir movimentação" value={frequency} disabled={!!item?.recurrenceId} onChange={e => { const value = e.target.value as Frequency | ""; setFrequency(value); if (value && !item) setPaid(false); }}><option value="">Não repetir</option>{Object.entries(FREQUENCIES).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
+          <label>Lembrete da conta<select aria-label="Lembrete da conta" value={reminder} onChange={e => setReminder(Number(e.target.value))}><option value={-1}>Sem lembrete</option><option value={0}>Na data, às 9h</option><option value={1440}>1 dia antes, às 9h</option><option value={4320}>3 dias antes, às 9h</option></select></label>
+        </div>}
+        {(frequency || item?.recurrenceId) && <p className="form-hint">{item?.recurrenceId ? "Esta edição altera só esta ocorrência. Gerencie a rotina em Finanças." : "As próximas movimentações ficam previstas até você marcar o pagamento ou recebimento."}</p>}
+        {item?.installment && <p className="form-hint">Parcela {item.installment.index}/{item.installment.count}. Esta edição altera só esta parcela. O lembrete da fatura é configurado no cartão.</p>}
         <div className="modal-footer">
           <button type="button" className="button secondary" onClick={onClose}>
             Cancelar
@@ -942,6 +983,17 @@ export default function App({
   const [financeFilter, setFinanceFilter] = useState("Todas");
   const [financeStatus, setFinanceStatus] = useState("Todos os status");
   const [financeSearch, setFinanceSearch] = useState("");
+  const [financeTab, setFinanceTab] = useState<"summary" | "cards">("summary");
+  const [today, setToday] = useState(dateKey);
+  const [refreshTick, setRefreshTick] = useState(0);
+  const [reminders, setReminders] = useState<ReminderState>(initialReminderState);
+  const dataRef = useRef(data); dataRef.current = data;
+  const reminderTap = useRef<(kind: string, id: string, month?: string) => void>(() => {});
+  reminderTap.current = (kind, id, reminderMonth) => {
+    if (kind === "task" && data.tasks.some(t => t.id === id)) go("tasks");
+    else if (kind === "transaction" && data.transactions.some(t => t.id === id)) { setMonth(data.transactions.find(t => t.id === id)!.date.slice(0, 7)); setFinanceTab("summary"); go("finance"); }
+    else if (kind === "card" && data.cards?.some(c => c.id === id)) { if (reminderMonth) changeMonth(reminderMonth); setFinanceTab("cards"); go("finance"); }
+  };
   const [name, setName] = useState(data.name);
   const importRef = useRef<HTMLInputElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -963,7 +1015,23 @@ export default function App({
   useEffect(() => {
     setName(data.name);
   }, [data.name]);
-  const today = dateKey();
+  useEffect(() => {
+    const refresh = () => { setToday(dateKey()); setRefreshTick(t => t + 1); };
+    const visible = () => { if (document.visibilityState === "visible") refresh(); };
+    const interval = window.setInterval(() => setToday(dateKey()), 60000);
+    document.addEventListener("visibilitychange", visible);
+    const detachResume = attachMobileResume(refresh);
+    const detachTap = attachReminderTap((kind, id, month) => reminderTap.current(kind, id, month));
+    return () => { window.clearInterval(interval); document.removeEventListener("visibilitychange", visible); detachResume(); detachTap(); };
+  }, []);
+  useEffect(() => {
+    if (storageError) return;
+    const expanded = materializeRecurrences(data, today);
+    if (expanded !== data) { save(expanded); return; }
+    let active = true;
+    void syncReminders(data).then(result => { if (active && result.state !== "superseded") setReminders(result); });
+    return () => { active = false; };
+  }, [data, today, refreshTick, storageError]);
   const totals = summary(data.transactions, month);
   const todaysTasks = sortTasks(data.tasks.filter((t) => t.date === today));
   const completedToday = todaysTasks.filter((t) => t.completed).length;
@@ -976,7 +1044,7 @@ export default function App({
   const categoryCount = new Set(
     totals.entries.filter((t) => t.type === "expense").map((t) => t.category),
   ).size;
-  const hasData = data.tasks.length > 0 || data.transactions.length > 0;
+  const hasData = data.tasks.length > 0 || data.transactions.length > 0 || !!data.cards?.length || !!data.recurrences?.length;
   const selectedTasks = sortTasks(
     data.tasks.filter((t) => t.date === selectedDate),
   );
@@ -1042,6 +1110,8 @@ export default function App({
   }, [mobileMenu, isMobile]);
 
   function save(next: AppData, recovery = false) {
+    try { next = validateData(next); }
+    catch (error) { setToast(error instanceof Error ? error.message : "Não foi possível validar os registros."); return false; }
     if (workspace) {
       const ok = workspace.save(next, recovery);
       if (!ok) setToast(workspace.getSnapshot().message);
@@ -1061,6 +1131,7 @@ export default function App({
     }
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      dataRef.current = next;
       setData(next);
       if (recovery) setStorageError("");
       return true;
@@ -1092,14 +1163,27 @@ export default function App({
     setMonth(next);
     setSelectedDate(next === monthKey() ? today : `${next}-01`);
   }
-  function saveTask(task: Task) {
+  async function activateReminders() {
+    try {
+      const allowed = await requestReminderPermission();
+      const result = await syncReminders(dataRef.current);
+      if (result.state !== "superseded") setReminders(result);
+      if (!allowed && result.state !== "web") setToast("Permita notificações nas configurações do celular para receber lembretes.");
+      else if (result.state === "error") setToast("Os dados foram salvos, mas não foi possível atualizar os lembretes. Tente novamente em Ajustes.");
+    } catch { setReminders({ state: "error", count: 0 }); setToast("Os dados foram salvos. Não foi possível ativar os lembretes neste momento."); }
+  }
+  function saveTask(task: Task, frequency?: Frequency) {
     const exists = data.tasks.some((t) => t.id === task.id);
-    const ok = save({
+    let next: AppData = {
       ...data,
       tasks: exists
         ? data.tasks.map((t) => (t.id === task.id ? task : t))
         : [...data.tasks, task],
-    });
+    };
+    try { if (frequency && !task.recurrenceId) next = repeatingTask({ ...data, tasks: data.tasks.filter(t => t.id !== task.id) }, task, frequency); }
+    catch (error) { setToast((error as Error).message); return false; }
+    const ok = save(next);
+    if (ok && task.reminderMinutes !== undefined) void activateReminders();
     if (ok)
       setToast(
         exists ? "Tarefa atualizada." : "Tarefa criada. Um passo de cada vez!",
@@ -1142,18 +1226,23 @@ export default function App({
       />
     );
   }
-  function saveTransaction(transaction: Transaction) {
+  function saveTransaction(transaction: Transaction, frequency?: Frequency) {
     const exists = data.transactions.some((t) => t.id === transaction.id);
-    const ok = save({
+    let next: AppData = {
       ...data,
       transactions: exists
         ? data.transactions.map((t) =>
             t.id === transaction.id ? transaction : t,
           )
         : [...data.transactions, transaction],
-    });
+    };
+    try { if (frequency && !transaction.recurrenceId) next = repeatingTransaction({ ...data, transactions: data.transactions.filter(t => t.id !== transaction.id) }, transaction, frequency); }
+    catch (error) { setToast((error as Error).message); return false; }
+    const ok = save(next);
+    if (ok && transaction.reminderMinutes !== undefined) void activateReminders();
     if (ok) {
       setMonth(transaction.date.slice(0, 7));
+      setFinanceTab("summary");
       setToast(
         exists ? "Movimentação atualizada." : "Movimentação registrada.",
       );
@@ -1162,21 +1251,51 @@ export default function App({
   }
   function deleteTransaction(transaction: Transaction) {
     setConfirm({
-      title: "Excluir movimentação?",
-      text: `O registro “${transaction.description}” de ${money(transaction.amountCents)} será removido. Seu saldo será recalculado.`,
+      title: transaction.installment ? "Excluir compra e parcelas?" : "Excluir movimentação?",
+      text: transaction.installment ? `Todas as parcelas da compra “${transaction.description}”, inclusive as pagas, serão removidas. Os saldos e faturas serão recalculados.` : `O registro “${transaction.description}” de ${money(transaction.amountCents)} será removido. Seu saldo será recalculado.`,
       destructive: true,
       action: () => {
         if (
           save({
             ...data,
             transactions: data.transactions.filter(
-              (t) => t.id !== transaction.id,
+              (t) => transaction.installment ? t.installment?.purchaseId !== transaction.installment.purchaseId : t.id !== transaction.id,
             ),
           })
         )
           setToast("Movimentação excluída.");
       },
     });
+  }
+  function stopRepeating(id: string) {
+    setConfirm({ title: "Parar repetição?", text: "As próximas ocorrências ainda não concluídas ou pagas serão removidas. O histórico e os registros de hoje serão mantidos.", action: () => { if (save(stopRecurrence(data, id, today))) setToast("Repetição encerrada. Seu histórico foi mantido."); } });
+  }
+  function saveCard(card: CreditCard) {
+    const cards = data.cards ?? [];
+    const ok = save({ ...data, cards: cards.some(c => c.id === card.id) ? cards.map(c => c.id === card.id ? card : c) : [...cards, card] });
+    if (ok) { setToast("Cartão salvo."); if (card.reminderDays !== undefined) void activateReminders(); }
+    return ok;
+  }
+  function savePurchase(input: PurchaseInput) {
+    const card = data.cards?.find(c => c.id === input.cardId && !c.archived);
+    if (!card) return false;
+    try {
+      const parts = purchaseInstallments(card, input);
+      if (!save({ ...data, transactions: [...data.transactions, ...parts] })) return false;
+      setMonth(parts[0].date.slice(0, 7)); setFinanceTab("cards");
+      setToast(`${parts.length} ${parts.length === 1 ? "parcela registrada" : "parcelas registradas"}.`);
+      if (card.reminderDays !== undefined) void activateReminders();
+      return true;
+    } catch (error) { setToast((error as Error).message); return false; }
+  }
+  function payInvoice(card: CreditCard) {
+    const totals = cardSummary(data, card.id, month);
+    setConfirm({ title: "Marcar fatura como paga?", text: `${money(totals.pending)} das parcelas de ${card.name} neste mês serão marcados como pagos. Nenhum gasto adicional será criado.`, action: () => {
+      if (save({ ...data, transactions: data.transactions.map(t => t.installment?.cardId === card.id && t.date.startsWith(month) ? { ...t, paid: true } : t) })) setToast("Fatura marcada como paga.");
+    } });
+  }
+  function archiveCard(card: CreditCard) {
+    setConfirm({ title: card.archived ? "Reativar cartão?" : "Arquivar cartão?", text: card.archived ? "O cartão voltará a aceitar novas compras. Seu histórico será mantido." : "O cartão não aceitará novas compras. As parcelas, faturas e o histórico continuarão disponíveis.", action: () => { if (save({ ...data, cards: data.cards?.map(c => c.id === card.id ? { ...c, archived: !card.archived } : c) })) setToast(card.archived ? "Cartão reativado." : "Cartão arquivado. Suas parcelas foram mantidas."); } });
   }
   function startDemo() {
     const action = () => {
@@ -1826,6 +1945,8 @@ export default function App({
           )}
 
           {view === "tasks" && (
+            <>
+            <RecurrencePanel data={data} kind="task" onStop={stopRepeating} />
             <section className="panel tasks-panel">
               <div className="section-toolbar task-toolbar">
                 <div className="filter-tabs" aria-label="Filtrar tarefas">
@@ -1895,6 +2016,7 @@ export default function App({
                 />
               )}
             </section>
+            </>
           )}
 
           {view === "calendar" && (
@@ -2020,8 +2142,9 @@ export default function App({
 
           {view === "finance" && (
             <>
+              <div className="finance-subnav" role="group" aria-label="Visão financeira"><button aria-pressed={financeTab === "summary"} className={financeTab === "summary" ? "selected" : ""} onClick={() => setFinanceTab("summary")}>Resumo</button><button aria-pressed={financeTab === "cards"} className={financeTab === "cards" ? "selected" : ""} onClick={() => setFinanceTab("cards")}>Cartões e parcelas</button></div>
               <div className="section-toolbar">
-                <h2>Seu resumo financeiro</h2>
+                <h2>{financeTab === "cards" ? "Suas faturas" : "Seu resumo financeiro"}</h2>
                 <div className="month-tools">
                   {month !== monthKey() && (
                     <button className="text-button" onClick={resetMonth}>
@@ -2031,6 +2154,8 @@ export default function App({
                   <MonthControl month={month} onChange={changeMonth} />
                 </div>
               </div>
+              {financeTab === "cards" ? <CardsPanel data={data} month={month} onNew={() => setEditor({ kind: "card" })} onEdit={item => setEditor({ kind: "card", item })} onArchive={archiveCard} onPurchase={card => setEditor({ kind: "purchase", cardId: card.id })} onPay={payInvoice} /> : <>
+              <RecurrencePanel data={data} kind="transaction" onStop={stopRepeating} />
               <div className="stats-grid">
                 {financialCards}
                 <div className="stat-card">
@@ -2149,11 +2274,13 @@ export default function App({
                                       })
                                     }
                                   >
-                                    {t.description}
+                                    {t.description}{t.installment && <span className="installment-label"> · {t.installment.index}/{t.installment.count}</span>}
                                     <small>
                                       {t.type === "income"
                                         ? "Receita"
                                         : "Despesa"}
+                                      {t.recurrenceId && " · Recorrente"}
+                                      {t.installment && ` · ${data.cards?.find(c => c.id === t.installment?.cardId)?.name ?? "Cartão"}`}
                                       <span className="mobile-transaction-meta">
                                         {" "}
                                         · {prettyDate(t.date)}
@@ -2256,6 +2383,7 @@ export default function App({
                   />
                 )}
               </section>
+              </>}
             </>
           )}
 
@@ -2515,12 +2643,18 @@ export default function App({
                   <button className="button secondary" onClick={() => setHelpOpen(true)}><CircleHelp size={16} />Como usar o DailyAPP</button>
                 </section>
               )}
+              <section className="panel settings-panel reminders-panel">
+                <div className="panel-heading"><div className="section-icon sage"><Bell size={19} /></div><div><h2>Lembretes no celular</h2><p>Tarefas, contas e faturas sem depender de internet.</p></div></div>
+                <p>{reminders.state === "web" ? "Lembretes são enviados pelo aplicativo instalado no Android ou iPhone. Esta prévia salva as configurações, mas não envia notificações." : reminders.state === "ready" ? `${reminders.count} ${reminders.count === 1 ? "lembrete programado" : "lembretes programados"} neste aparelho.` : reminders.state === "error" ? "Não foi possível atualizar os lembretes. Tente novamente." : "Permita notificações nas configurações do celular para receber seus lembretes."}</p>
+                {reminders.state !== "web" && <button className="button secondary" onClick={() => void activateReminders()}><Bell size={16} />{reminders.state === "ready" ? "Atualizar lembretes" : "Ativar lembretes"}</button>}
+                <p className="form-hint">Escolha um lembrete ao criar uma tarefa, conta ou cartão. Contas e faturas avisam às 9h. Os próximos 60 avisos são atualizados ao abrir o app. O sistema pode ajustar o horário para economizar bateria.</p>
+              </section>
               <div className="about-app">
                 <span className="brand-mark small">
                   <CheckCheck size={20} />
                 </span>
                 <strong>DailyAPP</strong>
-                <span>{mobileApp ? "Versão 1.0 · Uso pessoal" : "Versão 1.0 · Feito para uma vida mais leve."}</span>
+                <span>{mobileApp ? "Versão 1.1 · Uso pessoal" : "Versão 1.1 · Feito para uma vida mais leve."}</span>
               </div>
             </div>
           )}
@@ -2552,6 +2686,7 @@ export default function App({
         <TaskForm
           item={editor.item}
           date={editor.date}
+          recurrenceFrequency={data.recurrences?.find(s => s.id === editor.item?.recurrenceId)?.frequency}
           onSave={saveTask}
           onClose={() => setEditor(null)}
         />
@@ -2560,6 +2695,7 @@ export default function App({
         <TransactionForm
           item={editor.item}
           type={editor.type}
+          recurrenceFrequency={data.recurrences?.find(s => s.id === editor.item?.recurrenceId)?.frequency}
           onSave={saveTransaction}
           onClose={() => setEditor(null)}
         />
@@ -2581,6 +2717,8 @@ export default function App({
           onClose={() => setEditor(null)}
         />
       )}
+      {editor?.kind === "card" && <Modal title={editor.item ? "Editar cartão" : "Novo cartão"} subtitle="Cadastre somente o nome e os dias da fatura." onClose={() => setEditor(null)}><CardForm item={editor.item} onSave={saveCard} onClose={() => setEditor(null)} /></Modal>}
+      {editor?.kind === "purchase" && <Modal title="Compra no cartão" subtitle="O valor total será dividido nas próximas faturas." onClose={() => setEditor(null)}><PurchaseForm cards={data.cards ?? []} selectedId={editor.cardId} onSave={savePurchase} onClose={() => setEditor(null)} /></Modal>}
       {confirm && (
         <Modal title={confirm.title} onClose={() => setConfirm(null)} small>
           <p className="confirm-text">{confirm.text}</p>

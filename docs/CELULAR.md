@@ -1,4 +1,4 @@
-# DailyAPP 1.0 para uso pessoal
+# DailyAPP 1.1 para uso pessoal
 
 ## O que esta versão entrega
 
@@ -10,11 +10,11 @@ As pastas `android/` e `ios/` são projetos nativos completos do Capacitor. A in
 
 O APK pessoal está disponível para [download direto no GitHub](https://github.com/NyxPjct/DailyAPP/raw/refs/heads/main/downloads/DailyAPP-1.0-pessoal.apk). As [Releases](https://github.com/NyxPjct/DailyAPP/releases) reúnem os instaladores publicados.
 
-Obtenha `artifacts/DailyAPP-1.0-pessoal.apk`, transfira-o para o celular Android e abra o arquivo. O sistema pode pedir autorização para instalar arquivos recebidos pelo aplicativo que está abrindo o APK. Depois da instalação, abra **DailyAPP** pela lista de aplicativos.
+Obtenha `artifacts/DailyAPP-1.1-pessoal.apk`, transfira-o para o celular Android e abra o arquivo. O sistema pode pedir autorização para instalar arquivos recebidos pelo aplicativo que está abrindo o APK. Depois da instalação, abra **DailyAPP** pela lista de aplicativos.
 
 Requer Android 7 ou superior e uma WebView atualizada. O pacote pessoal usa o build **Release**, com depuração da aplicação e da WebView desativadas, mas conserva o certificado de desenvolvimento da instalação anterior. É uma distribuição pessoal; a publicação na Play Store terá uma configuração própria de assinatura.
 
-Se instalou o APK de teste anterior desta sessão, exporte um backup em Ajustes e abra o novo APK **sem desinstalar o DailyAPP**. O identificador `com.nyxpjct.dailyapp` e o certificado foram mantidos; o código da versão passa de 1 para 2, mantendo o nome 1.0.0. Isso permite atualizar preservando os dados. O formato local também foi mantido. A instalação sobre a versão anterior ainda deve ser confirmada em um aparelho real.
+Se instalou o APK de teste anterior desta sessão, exporte um backup em Ajustes e abra o novo APK **sem desinstalar o DailyAPP**. O identificador `com.nyxpjct.dailyapp` e o certificado foram mantidos; o código da versão passa para 3, com nome 1.1.0. Isso permite atualizar preservando os dados. O formato local também foi mantido. A instalação sobre a versão anterior ainda deve ser confirmada em um aparelho real.
 
 Para gerar futuras atualizações compatíveis, preserve a chave local de desenvolvimento em `.cache/android-user/debug.keystore`. Ela fica fora do Git e do ZIP de código. Compilar em uma máquina com uma chave diferente cria uma assinatura diferente; nesse caso, a atualização pode ser recusada pelo Android. Desinstalar ou limpar os dados pode apagar os registros; restaure um backup se precisar fazer isso.
 
@@ -84,6 +84,16 @@ Não é preciso uma conta Apple Developer paga para usar o simulador. Uma equipe
 Esta máquina cloud é Linux: não possui Xcode e não gera um IPA assinado. O IPA desta versão foi compilado no runner macOS do GitHub. Para assinar e executar diretamente pelo Xcode, use o Mac e sua equipe pessoal. Confira teclado, importação e compartilhamento no aparelho.
 
 O manifesto `ios/App/App/PrivacyInfo.xcprivacy` está registrado no target e declara o acesso a timestamps de arquivos exigido pelo plugin Filesystem. O backup usa o cache privado e o seletor de compartilhamento do sistema. O app não solicita acesso amplo à pasta de documentos, câmera ou localização.
+
+## Usar os novos recursos da versão 1.1
+
+Em **Nova tarefa**, escolha uma frequência em **Repetir tarefa**. Em **Nova movimentação**, use **Repetir movimentação** para receitas ou contas fixas. As novas ocorrências começam pendentes, e uma edição muda apenas o registro escolhido. Abra **Rotinas recorrentes** em Tarefas ou Finanças para encerrar uma rotina: registros anteriores, os de hoje e ocorrências já concluídas/pagas são mantidos. Excluir só uma ocorrência não a recria ao abrir novamente.
+
+O app prepara até 90 dias de tarefas e 12 meses de movimentações e amplia esse período ao abrir ou retomar o aplicativo. Não marca pagamentos ou conclusões automaticamente. O formato de backup `dailyapp.v1` continua aceitando os arquivos da versão anterior e acrescenta os novos campos opcionais.
+
+Em **Finanças → Cartões e parcelas**, cadastre nome, limite e dias de fechamento/vencimento. Registre o valor total da compra e de 1 a 48 parcelas. Compras no dia de fechamento ou depois entram no próximo ciclo. Dias 29, 30 ou 31 são ajustados em meses menores; valores são divididos em centavos sem perder o total. Mudanças nos dias do cartão valem para compras novas, preservando registros existentes. Marcar uma fatura como paga atualiza suas parcelas; não cria outra despesa. Arquivar um cartão impede novas compras e preserva o histórico, e é possível reativá-lo.
+
+Para **lembretes**, escolha uma antecedência na tarefa, movimentação ou cartão e permita notificações no celular. Tarefas precisam de horário; contas e faturas avisam às 9h locais. Confira o status em **Ajustes → Lembretes no celular**. Os próximos avisos são programados pelo sistema, sem servidor, e renovados ao abrir o app. Até 60 avisos são mantidos, incluindo eventuais avisos que o sistema ainda não entregou. No Android, o horário pode ser ajustado para economizar bateria. A prévia no computador salva a preferência e não envia notificações.
 
 ## Dados entre aparelhos
 

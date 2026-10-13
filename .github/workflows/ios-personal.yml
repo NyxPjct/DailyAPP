@@ -40,11 +40,11 @@ jobs:
           ditto "$RUNNER_TEMP/DailyAPP.xcarchive/Products/Applications/App.app" \
             "$RUNNER_TEMP/dailyapp-ipa/Payload/App.app"
           ditto -c -k --keepParent "$RUNNER_TEMP/dailyapp-ipa/Payload" \
-            "$GITHUB_WORKSPACE/artifacts/DailyAPP-1.0-sem-assinatura.ipa"
+            "$GITHUB_WORKSPACE/artifacts/DailyAPP-1.1-sem-assinatura.ipa"
       - name: Disponibilizar pacote para assinatura pessoal
         uses: actions/upload-artifact@v4
         with:
           name: DailyAPP-iPhone-sem-assinatura
-          path: artifacts/DailyAPP-1.0-sem-assinatura.ipa
+          path: artifacts/DailyAPP-1.1-sem-assinatura.ipa
           if-no-files-found: error
           retention-days: 7

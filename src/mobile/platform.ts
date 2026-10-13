@@ -35,6 +35,15 @@ export function minimizeMobile() {
     void NativeApp.minimizeApp().catch(() => {});
 }
 
+export function attachMobileResume(onResume: () => void) {
+  if (!Capacitor.isNativePlatform()) return () => {};
+  let stopped = false;
+  let listener: PluginListenerHandle | undefined;
+  void NativeApp.addListener("appStateChange", state => { if (state.isActive) onResume(); })
+    .then(handle => { if (stopped) void handle.remove(); else listener = handle; }).catch(() => {});
+  return () => { stopped = true; void listener?.remove(); };
+}
+
 export async function saveBackup(content: string, filename: string) {
   if (Capacitor.isNativePlatform()) {
     const { value } = await Share.canShare();

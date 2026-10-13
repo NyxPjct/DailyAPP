@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import argparse
+import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--personal", action="store_true", help="Build the signed personal-use release")
@@ -14,6 +15,7 @@ args = parser.parse_args()
 variant = "release" if args.personal else "debug"
 
 root = Path(__file__).resolve().parent.parent
+version = ".".join(json.loads((root / "package.json").read_text())["version"].split(".")[:2])
 env = os.environ.copy()
 toolchains = Path("/workspace/.toolchains")
 
@@ -58,7 +60,7 @@ if result.returncode:
 apk = root / f"android/app/build/outputs/apk/{variant}/app-{variant}.apk"
 if not apk.is_file():
     sys.exit("O Gradle terminou, mas o instalador Android não foi encontrado.")
-output = root / ("artifacts/DailyAPP-1.0-pessoal.apk" if args.personal else "artifacts/DailyAPP-android-teste.apk")
+output = root / (f"artifacts/DailyAPP-{version}-pessoal.apk" if args.personal else "artifacts/DailyAPP-android-teste.apk")
 if args.personal and sdk:
     verifier = Path(sdk) / "build-tools/36.0.0" / ("apksigner.bat" if os.name == "nt" else "apksigner")
     if verifier.is_file():

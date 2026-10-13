@@ -3424,3 +3424,74 @@ td:last-child {
   font-size: 14px;
   margin-bottom: 5px;
 }
+.finance-subnav {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  margin-bottom: 22px;
+  width: fit-content;
+  max-width: 100%;
+  background: #edf1e8;
+  border-radius: 12px;
+}
+.finance-subnav button {
+  min-height: 44px;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  color: #586453;
+}
+.finance-subnav button.selected { background: white; color: #23664b; box-shadow: 0 2px 5px #203d1810; }
+.planning-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 20px; }
+.planning-heading h2 { font-size: 19px; margin: 0 0 6px; }
+.planning-heading p { font-size: 14px; color: #687264; }
+.planning-empty { padding: 35px 24px; text-align: center; color: #5a6c53; }
+.planning-empty h3 { margin: 14px 0 10px; }
+.planning-empty p { max-width: 420px; margin: 0 auto 20px; line-height: 1.7; }
+.cards-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.credit-card { padding: 24px; min-width: 0; }
+.credit-card-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.credit-card-heading > div { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-width: 0; }
+.credit-card-heading h3 { font-size: 17px; overflow-wrap: anywhere; }
+.card-limit { display: flex; justify-content: space-between; align-items: end; margin: 25px 0 14px; gap: 12px; flex-wrap: wrap; }
+.card-limit span { display: block; font-size: 13px; margin-bottom: 6px; color: #687264; }
+.card-limit strong { font-size: 27px; font-family: Manrope, sans-serif; }
+.card-limit small { color: #687264; }
+.credit-card .progress-track { height: 7px; border-radius: 8px; overflow: hidden; background: #e9eee3; }
+.credit-card .progress-track > div { height: 100%; background: #7e9e63; }
+.card-dates { display: flex; gap: 15px; flex-wrap: wrap; font-size: 12px; margin: 18px 0; }
+.card-dates > span { display: flex; gap: 4px; align-items: center; }
+.invoice-summary { background: #f4f7ef; border: 1px solid #e6ecdf; padding: 18px; border-radius: 12px; }
+.invoice-summary span, .invoice-summary small { display: block; color: #5b6b53; font-size: 12px; }
+.invoice-summary strong { display: block; font-family: Manrope, sans-serif; font-size: 26px; margin: 7px 0; }
+.invoice-list { padding: 0; margin: 20px 0 0; list-style: none; }
+.invoice-list li { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid #eaf0e4; font-size: 13px; }
+.invoice-list li > div { min-width: 0; }
+.invoice-list strong { overflow-wrap: anywhere; font-weight: 500; }
+.invoice-list small { display: block; color: #687264; margin-top: 5px; }
+.invoice-list li > span { white-space: nowrap; font-weight: 600; }
+.card-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+.card-actions button { min-height: 44px; }
+.recurrence-panel { padding: 18px 22px; margin-bottom: 22px; }
+.recurrence-panel summary { cursor: pointer; display: flex; align-items: center; gap: 10px; min-height: 30px; font-size: 14px; font-weight: 600; }
+.recurrence-panel summary::after { content: "+"; margin-left: auto; font-size: 20px; }
+.recurrence-panel[open] summary::after { content: "−"; }
+.recurrence-row { display: flex; justify-content: space-between; gap: 15px; align-items: center; padding: 15px 0; border-top: 1px solid #e7ecdf; }
+.recurrence-row > div { min-width: 0; }
+.recurrence-row strong { display: block; font-size: 14px; overflow-wrap: anywhere; }
+.recurrence-row small { display: block; font-size: 12px; color: #687264; margin-top: 5px; }
+.recurrence-row button { min-height: 44px; flex-shrink: 0; font-size: 12px; }
+.planning-badge { display: inline-flex; gap: 4px; align-items: center; font-size: 10px; color: #59734c; }
+.installment-label { font-weight: 600; color: #477d64; }
+@media (max-width: 720px) {
+  .cards-grid { grid-template-columns: minmax(0, 1fr); }
+  .planning-heading { align-items: stretch; flex-direction: column; gap: 14px; }
+  .planning-heading .button { justify-content: center; }
+  .credit-card { padding: 20px; }
+  .card-actions { flex-direction: column; }
+  .card-actions .button { justify-content: center; }
+  .finance-subnav { width: 100%; }
+  .finance-subnav button { flex: 1; font-size: 13px; padding: 10px; }
+  .recurrence-row { align-items: stretch; flex-direction: column; gap: 6px; }
+  .recurrence-row button { align-self: flex-start; }
+}

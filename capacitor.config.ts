@@ -12,6 +12,7 @@ const config: CapacitorConfig = {
     StatusBar: { style: "LIGHT", backgroundColor: "#f7f8f5" },
     SystemBars: { style: "LIGHT", insetsHandling: "css" },
     Keyboard: { resize: "native" },
+    LocalNotifications: { smallIcon: "ic_stat_dailyapp", iconColor: "#23664b", presentationOptions: ["banner", "sound", "list"] },
   },
 };
 

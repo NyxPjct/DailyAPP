@@ -1,4 +1,4 @@
-# DailyAPP 1.0 — uso pessoal
+# DailyAPP 1.1 — uso pessoal
 
 ## Downloads
 
@@ -30,6 +30,10 @@ Capturas da interface móvel em viewport de 390 × 900, com dados fictícios de 
 - Cadastro, edição, conclusão e exclusão de tarefas com data, horário, categoria e prioridade.
 - Calendário mensal e tarefas do dia selecionado.
 - Receitas, despesas, valores pagos ou previstos, histórico, categorias e orçamento mensal.
+- Tarefas e movimentações recorrentes, com repetição diária, semanal, mensal ou anual e histórico preservado ao encerrar a rotina.
+- Cartões, limite disponível, fechamento, vencimento e compras em até 48 parcelas com centavos exatos.
+- Faturas mensais que atualizam as parcelas ao marcar o pagamento, sem duplicar despesas.
+- Lembretes locais de tarefas, contas e faturas, com permissão do celular; avisos são atualizados ao concluir, pagar ou editar.
 - Dados salvos no próprio dispositivo, sem exigir conta ou conexão com a internet.
 - Exportação de backup JSON pelo compartilhamento do Android/iPhone e importação pelo seletor de arquivos.
 - Botão voltar do Android fecha formulários e retorna ao início antes de minimizar o aplicativo.
@@ -70,7 +74,7 @@ No Android Studio, escolha um celular/emulador e execute o projeto. Para gerar o
 npm run mobile:personal
 ```
 
-O instalador será salvo em `artifacts/DailyAPP-1.0-pessoal.apk`. Usa o build Release, com depuração da aplicação e da WebView desativadas. Mantém o certificado de desenvolvimento do APK anterior para permitir a atualização da instalação pessoal, com `versionCode` 2. Preserve essa chave local ao gerar outras atualizações. A publicação na Play Store requer uma chave de distribuição própria. `npm run mobile:apk` continua disponível para gerar o APK debug.
+O instalador será salvo em `artifacts/DailyAPP-1.1-pessoal.apk`. Usa o build Release, com depuração da aplicação e da WebView desativadas. Mantém o certificado de desenvolvimento do APK anterior para permitir a atualização da instalação pessoal, com `versionCode` 3. Preserve essa chave local ao gerar outras atualizações. A publicação na Play Store requer uma chave de distribuição própria. `npm run mobile:apk` continua disponível para gerar o APK debug.
 
 ## iPhone
 
@@ -82,7 +86,7 @@ npm run mobile:ios
 
 No Xcode, selecione o projeto **App**, configure sua equipe em **Signing & Capabilities** e execute no simulador ou no iPhone conectado. O projeto usa Swift Package Manager e inclui o manifesto de privacidade exigido pelo plugin de arquivos. O aplicativo requer iOS 15.4 ou superior.
 
-O IPA 1.0 foi compilado e publicado pelo workflow [.github/workflows/personal-release.yml](.github/workflows/personal-release.yml), que usa Xcode 26.3 no runner `macos-15`. Os arquivos da interface incluídos nele foram comparados com o pacote Android e os hashes dos downloads foram conferidos. O resultado é um IPA **sem assinatura pessoal**. As instruções para assinar e instalar estão no [guia de celular](docs/CELULAR.md#iphone-sem-mac-pessoal); a instalação e o funcionamento em um iPhone real ainda precisam ser confirmados. O workflow [ios-personal.yml](.github/workflows/ios-personal.yml) também permite gerar somente um artefato de compilação manual, sem criar uma Release.
+O IPA 1.1 é compilado e publicado pelo workflow [.github/workflows/personal-release.yml](.github/workflows/personal-release.yml), que usa Xcode 26.3 no runner `macos-15`. Os arquivos da interface incluídos nele foram comparados com o pacote Android e os hashes dos downloads foram conferidos. O resultado é um IPA **sem assinatura pessoal**. As instruções para assinar e instalar estão no [guia de celular](docs/CELULAR.md#iphone-sem-mac-pessoal); a instalação e o funcionamento em um iPhone real ainda precisam ser confirmados. O workflow [ios-personal.yml](.github/workflows/ios-personal.yml) também permite gerar somente um artefato de compilação manual, sem criar uma Release.
 
 ## Verificar
 
@@ -91,7 +95,7 @@ npm run build:mobile
 npm test
 ```
 
-Os 38 testes usam Playwright e Chromium. Verificam tarefas, finanças, dados locais, backups, falhas de armazenamento, datas, navegação, primeiro uso, atualização de dados existentes, acessibilidade e uso da interface móvel sem rede. Os contratos dos plugins nativos são simulados: testes no navegador não substituem a validação no celular, especialmente do teclado, seletor de arquivos e compartilhamento.
+Os 52 testes usam Playwright e Chromium. Verificam tarefas, finanças, dados locais, backups, falhas de armazenamento, datas, navegação, primeiro uso, atualização de dados existentes, acessibilidade e uso da interface móvel sem rede. Os contratos dos plugins nativos são simulados: testes no navegador não substituem a validação no celular, especialmente do teclado, seletor de arquivos e compartilhamento.
 
 Os servidores de teste usam 5174 (base local), 5175 (contas simuladas da base anterior) e 5176 (interface do aplicativo móvel). No ambiente cloud, o navegador disponível é `/usr/bin/chromium`; em outras máquinas, execute `npx playwright install chromium` uma vez.
 
