@@ -8,7 +8,7 @@ As pastas `android/` e `ios/` são projetos nativos completos do Capacitor. A in
 
 ## Instalar no Android
 
-O APK pessoal está disponível para [download direto no GitHub](https://github.com/NyxPjct/DailyAPP/raw/refs/heads/main/downloads/DailyAPP-1.0-pessoal.apk). As [Releases](https://github.com/NyxPjct/DailyAPP/releases) reúnem os instaladores publicados.
+O APK pessoal está disponível para [download direto no GitHub](https://github.com/NyxPjct/DailyAPP/raw/refs/heads/main/downloads/DailyAPP-1.1-pessoal.apk). As [Releases](https://github.com/NyxPjct/DailyAPP/releases) reúnem os instaladores publicados.
 
 Obtenha `artifacts/DailyAPP-1.1-pessoal.apk`, transfira-o para o celular Android e abra o arquivo. O sistema pode pedir autorização para instalar arquivos recebidos pelo aplicativo que está abrindo o APK. Depois da instalação, abra **DailyAPP** pela lista de aplicativos.
 
@@ -49,7 +49,7 @@ Esse comando preserva o build nativo em `dist/mobile`. Os dados ficam no navegad
 
 ## iPhone sem Mac pessoal
 
-Baixe [DailyAPP-1.0-sem-assinatura.ipa](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.0.0-r1/DailyAPP-1.0-sem-assinatura.ipa) da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.0.0-r1). O pacote foi compilado com Xcode 26.3 no GitHub Actions para arm64, iOS 15.4 ou superior, versão 1.0.0 (código 2). Seu SHA-256, integridade do ZIP, manifesto de privacidade e os 21 arquivos da interface foram conferidos após o download. Ele ainda precisa de assinatura pessoal; não instala sozinho.
+Baixe [DailyAPP-1.1-sem-assinatura.ipa](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0/DailyAPP-1.1-sem-assinatura.ipa) da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0). O pacote foi compilado com Xcode 26.3 no GitHub Actions para arm64, iOS 15.4 ou superior, versão 1.1.0 (código 3). Seu SHA-256, integridade do ZIP, manifesto de privacidade e os 22 arquivos da interface foram conferidos após o download. Ele ainda precisa de assinatura pessoal; não instala sozinho.
 
 No Windows, instale o **AltServer** pelo site oficial [altstore.io](https://altstore.io), siga as instruções oficiais para instalar o AltStore no seu próprio iPhone e importe o IPA nele. Forneça sua conta Apple apenas nas ferramentas oficiais do seu computador/aparelho.
 
@@ -59,7 +59,7 @@ Para compilar novamente usando o Mac do GitHub Actions:
 
 1. Salve suas alterações no repositório do GitHub. O código desta versão já está enviado.
 2. No GitHub, abra **Actions → iPhone - pacote pessoal sem assinatura → Run workflow**. Escolha a branch com o código atualizado.
-3. Aguarde a compilação e baixe o artefato **DailyAPP-iPhone-sem-assinatura** no final da execução. Extraia `DailyAPP-1.0-sem-assinatura.ipa` do ZIP.
+3. Aguarde a compilação e baixe o artefato **DailyAPP-iPhone-sem-assinatura** no final da execução. Extraia `DailyAPP-1.1-sem-assinatura.ipa` do ZIP.
 4. Assine o novo IPA para seu iPhone usando as instruções acima.
 
 O workflow `ios-personal.yml` é manual e usa permissões de leitura do repositório. O workflow `personal-release.yml` também é disparado por tags `personal-v*` e usa permissão de escrita para publicar os arquivos em uma Release. Ambos usam Xcode 26.3 no runner `macos-15`, dispensam certificados Apple no GitHub e não enviam o aplicativo às lojas. A disponibilidade de minutos macOS depende da sua conta GitHub. A compilação de lançamento iOS foi concluída no workflow de publicação; a assinatura e a instalação pessoal ainda precisam ser confirmadas no aparelho.
