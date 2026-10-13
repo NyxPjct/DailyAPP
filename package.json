@@ -1,0 +1,55 @@
+{
+  "name": "dailyapp",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "build:mobile": "tsc -b && vite build --mode mobile --outDir dist/mobile",
+    "mobile:sync": "npm run build:mobile && cap sync",
+    "mobile:apk": "npm run mobile:sync && python3 scripts/build-android.py",
+    "mobile:personal": "npm run mobile:sync && python3 scripts/build-android.py --personal",
+    "mobile:android": "npm run mobile:sync && cap open android",
+    "mobile:ios": "npm run mobile:sync && cap open ios",
+    "mobile:icons": "capacitor-assets generate --android --ios --assetPath resources --iconBackgroundColor '#23664b' --iconBackgroundColorDark '#23664b' --splashBackgroundColor '#f7f8f5' --splashBackgroundColorDark '#f7f8f5'",
+    "preview": "vite preview --host 0.0.0.0",
+    "preview:file": "tsc -b && vite build --mode standalone && node scripts/export-preview.mjs",
+    "preview:computer": "tsc -b && vite build --mode mobile-standalone --outDir dist/mobile-standalone && node scripts/export-preview.mjs dist/mobile-standalone artifacts/index.html",
+    "screenshots": "npm run preview:computer && node scripts/screenshots.mjs",
+    "preview:deploy": "tsc -b && vite build --mode standalone --outDir dist/netlify-previa",
+    "test:db": "bash scripts/test-database.sh",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/filesystem": "8.1.4",
+    "@capacitor/ios": "8.5.3",
+    "@capacitor/keyboard": "8.0.6",
+    "@capacitor/share": "8.0.3",
+    "@capacitor/status-bar": "8.0.4",
+    "@fontsource/dm-sans": "5.3.0",
+    "@fontsource/manrope": "5.3.0",
+    "@supabase/supabase-js": "2.117.3",
+    "lucide-react": "1.56.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@capacitor/assets": "3.0.5",
+    "@capacitor/cli": "8.5.3",
+    "@playwright/test": "1.64.0",
+    "@types/node": "24.19.2",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "typescript": "7.0.2",
+    "vite": "8.3.4"
+  }
+}
