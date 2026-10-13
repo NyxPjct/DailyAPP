@@ -2,14 +2,16 @@
 
 ## Downloads
 
-- **Android:** [Baixar APK 1.0](https://github.com/NyxPjct/DailyAPP/raw/refs/heads/main/downloads/DailyAPP-1.0-pessoal.apk) — abra o arquivo no celular para instalar. Requer Android 7 ou superior.
-- **iPhone:** IPA em compilação. [Acompanhar a compilação e publicação](https://github.com/NyxPjct/DailyAPP/actions/workflows/personal-release.yml). O arquivo iOS precisa de assinatura pessoal para instalar; veja [as instruções para Windows](docs/CELULAR.md#iphone-sem-mac-pessoal).
+- **Android:** [Baixar APK 1.0](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.0.0-r1/DailyAPP-1.0-pessoal.apk) — abra o arquivo no celular para instalar. Requer Android 7 ou superior.
+- **iPhone:** [Baixar IPA 1.0 sem assinatura](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.0.0-r1/DailyAPP-1.0-sem-assinatura.ipa) — requer iOS 15.4 ou superior e assinatura pessoal antes de instalar. No Windows, siga [as instruções com AltServer/AltStore](docs/CELULAR.md#iphone-sem-mac-pessoal). O IPA não instala sozinho ao ser aberto.
+
+[Abrir a Release com os arquivos e hashes SHA-256](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.0.0-r1). Os dois downloads foram baixados e conferidos após a publicação.
 
 Se já instalou o DailyAPP no Android, exporte um backup em Ajustes e instale o novo APK sem desinstalar o aplicativo. [Conferir SHA-256 do APK](downloads/DailyAPP-1.0-pessoal.apk.sha256).
 
 Aplicativo de tarefas, agenda e finanças pessoais em português. A interface React é empacotada com Capacitor em aplicativos instalados no celular. As telas, fontes e ícones fazem parte da instalação; o funcionamento local dispensa hospedagem, Netlify e Supabase.
 
-O Android gera `artifacts/DailyAPP-1.0-pessoal.apk`, pronto para instalação manual. O projeto iOS inclui uma compilação manual pelo GitHub Actions em um Mac na nuvem, para quem usa Windows ou Linux; o IPA resultante ainda precisa de assinatura pessoal. Consulte [Instalar e compilar no celular](docs/CELULAR.md).
+Os pacotes Android e iPhone estão na Release acima. O IPA foi compilado com Xcode 26.3 no Mac do GitHub Actions e não inclui assinatura pessoal da Apple. Consulte [Instalar e compilar no celular](docs/CELULAR.md).
 
 Para abrir a interface de celular diretamente no computador, gere `artifacts/index.html` com `npm run preview:computer`. Esse arquivo inclui scripts, estilos, ícones e fontes: baixe-o e abra no Chrome ou Edge. Não é necessário iniciar servidor ou instalar ferramentas no computador que abre o arquivo. Os registros dessa demonstração ficam no navegador; use backups para transferi-los ao aplicativo.
 
@@ -80,7 +82,7 @@ npm run mobile:ios
 
 No Xcode, selecione o projeto **App**, configure sua equipe em **Signing & Capabilities** e execute no simulador ou no iPhone conectado. O projeto usa Swift Package Manager e inclui o manifesto de privacidade exigido pelo plugin de arquivos. O aplicativo requer iOS 15.4 ou superior.
 
-A compilação iOS precisa do Xcode. Quem usa Windows ou Linux pode usar o workflow manual [.github/workflows/ios-personal.yml](.github/workflows/ios-personal.yml), que compila no runner macOS do GitHub com Xcode 26.3. Ele gera um IPA **sem assinatura**, sem publicar nas lojas. As instruções de assinatura pessoal e instalação estão no [guia de celular](docs/CELULAR.md#iphone-sem-mac-pessoal). Esse workflow está preparado, mas sua execução e a instalação em iPhone ainda precisam ser verificadas no macOS e no aparelho.
+O IPA 1.0 foi compilado e publicado pelo workflow [.github/workflows/personal-release.yml](.github/workflows/personal-release.yml), que usa Xcode 26.3 no runner `macos-15`. Os arquivos da interface incluídos nele foram comparados com o pacote Android e os hashes dos downloads foram conferidos. O resultado é um IPA **sem assinatura pessoal**. As instruções para assinar e instalar estão no [guia de celular](docs/CELULAR.md#iphone-sem-mac-pessoal); a instalação e o funcionamento em um iPhone real ainda precisam ser confirmados. O workflow [ios-personal.yml](.github/workflows/ios-personal.yml) também permite gerar somente um artefato de compilação manual, sem criar uma Release.
 
 ## Verificar
 

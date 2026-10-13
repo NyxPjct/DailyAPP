@@ -49,18 +49,20 @@ Esse comando preserva o build nativo em `dist/mobile`. Os dados ficam no navegad
 
 ## iPhone sem Mac pessoal
 
-Confira primeiro os arquivos da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.0.0). O workflow de publicação adiciona `DailyAPP-1.0-sem-assinatura.ipa` quando a compilação macOS termina com sucesso. Se o arquivo estiver disponível, baixe-o e siga a etapa de assinatura abaixo; ele não instala sozinho.
+Baixe [DailyAPP-1.0-sem-assinatura.ipa](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.0.0-r1/DailyAPP-1.0-sem-assinatura.ipa) da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.0.0-r1). O pacote foi compilado com Xcode 26.3 no GitHub Actions para arm64, iOS 15.4 ou superior, versão 1.0.0 (código 2). Seu SHA-256, integridade do ZIP, manifesto de privacidade e os 21 arquivos da interface foram conferidos após o download. Ele ainda precisa de assinatura pessoal; não instala sozinho.
 
-Windows e Linux não executam o Xcode. O repositório inclui uma alternativa com um Mac do GitHub Actions. Ela não depende de hospedagem do aplicativo:
+No Windows, instale o **AltServer** pelo site oficial [altstore.io](https://altstore.io), siga as instruções oficiais para instalar o AltStore no seu próprio iPhone e importe o IPA nele. Forneça sua conta Apple apenas nas ferramentas oficiais do seu computador/aparelho.
 
-1. Envie o código atual, incluindo `.github/workflows/ios-personal.yml`, para o seu repositório no GitHub. As alterações desta sessão precisam estar salvas no GitHub antes de executar o workflow.
+Assinaturas com conta Apple gratuita normalmente expiram após sete dias e precisam ser renovadas, conforme as regras atuais da Apple e da ferramenta utilizada. No Linux, essa opção de assinatura exige acesso a um Windows ou Mac compatível com o AltServer; este projeto não inclui um instalador de assinatura para Linux.
+
+Para compilar novamente usando o Mac do GitHub Actions:
+
+1. Salve suas alterações no repositório do GitHub. O código desta versão já está enviado.
 2. No GitHub, abra **Actions → iPhone - pacote pessoal sem assinatura → Run workflow**. Escolha a branch com o código atualizado.
 3. Aguarde a compilação e baixe o artefato **DailyAPP-iPhone-sem-assinatura** no final da execução. Extraia `DailyAPP-1.0-sem-assinatura.ipa` do ZIP.
-4. O IPA precisa ser assinado para seu iPhone. No Windows, uma opção é instalar o **AltServer** pelo site oficial [altstore.io](https://altstore.io), seguir as instruções oficiais para instalar o AltStore no seu próprio iPhone e importar o IPA nele. Forneça sua conta Apple apenas nas ferramentas oficiais do seu computador/aparelho.
+4. Assine o novo IPA para seu iPhone usando as instruções acima.
 
-Assinaturas com conta Apple gratuita normalmente expiram após sete dias e precisam ser renovadas, conforme as regras atuais da Apple e da ferramenta utilizada. O IPA sem assinatura não instala sozinho. No Linux, essa opção de assinatura exige acesso a um Windows ou Mac compatível com o AltServer; este projeto não inclui um instalador de assinatura para Linux.
-
-O workflow é manual, usa permissões de leitura do repositório e Xcode 26.3 no runner `macos-15`, não pede certificados no GitHub e não envia o aplicativo às lojas. A disponibilidade de minutos macOS depende da sua conta GitHub. Sua sintaxe e o projeto foram revisados neste ambiente, mas a compilação iOS ainda não foi executada: esta máquina é Linux. A assinatura e a instalação pessoal também precisam ser confirmadas no aparelho.
+O workflow `ios-personal.yml` é manual e usa permissões de leitura do repositório. O workflow `personal-release.yml` também é disparado por tags `personal-v*` e usa permissão de escrita para publicar os arquivos em uma Release. Ambos usam Xcode 26.3 no runner `macos-15`, dispensam certificados Apple no GitHub e não enviam o aplicativo às lojas. A disponibilidade de minutos macOS depende da sua conta GitHub. A compilação de lançamento iOS foi concluída no workflow de publicação; a assinatura e a instalação pessoal ainda precisam ser confirmadas no aparelho.
 
 ## iPhone com acesso a um Mac
 
@@ -79,7 +81,7 @@ No Xcode:
 
 Não é preciso uma conta Apple Developer paga para usar o simulador. Uma equipe pessoal pode servir para testes no próprio iPhone, sujeita aos limites de assinatura da Apple. TestFlight e App Store exigem Apple Developer e configuração de distribuição.
 
-Esta máquina cloud é Linux: não possui Xcode e não gera um IPA assinado. O projeto iOS e seus arquivos estão preparados, mas a compilação e os testes nativos precisam ser concluídos em um Mac local ou no runner macOS. Confira teclado, importação e compartilhamento no aparelho.
+Esta máquina cloud é Linux: não possui Xcode e não gera um IPA assinado. O IPA desta versão foi compilado no runner macOS do GitHub. Para assinar e executar diretamente pelo Xcode, use o Mac e sua equipe pessoal. Confira teclado, importação e compartilhamento no aparelho.
 
 O manifesto `ios/App/App/PrivacyInfo.xcprivacy` está registrado no target e declara o acesso a timestamps de arquivos exigido pelo plugin Filesystem. O backup usa o cache privado e o seletor de compartilhamento do sistema. O app não solicita acesso amplo à pasta de documentos, câmera ou localização.
 
@@ -111,6 +113,6 @@ Para trabalhar na interface, execute `npm run dev -- --mode mobile --port 5173 -
 
 Para atualizar a identidade visual, altere `resources/logo.svg` e execute `npm run mobile:icons`. Os recursos gerados ficam nos projetos nativos.
 
-Os testes de plugins no Playwright usam uma ponte nativa simulada. O build Android verifica a compilação real do projeto. Eles não comprovam funcionamento físico no Android ou no iPhone. A compilação e a instalação de teste também não publicam o aplicativo nas lojas.
+Os testes de plugins no Playwright usam uma ponte nativa simulada. O build Android e o archive iOS no GitHub Actions verificam a compilação real dos projetos. Eles não comprovam funcionamento físico no Android ou no iPhone. A publicação dos arquivos no GitHub também não publica o aplicativo nas lojas.
 
 O identificador atual é `com.nyxpjct.dailyapp`. Antes da primeira publicação nas lojas, confirme o identificador, a conta do responsável, a política de privacidade e a assinatura da versão de lançamento. Não versione chaves de assinatura ou certificados pessoais.
