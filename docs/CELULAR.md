@@ -8,6 +8,8 @@ As pastas `android/` e `ios/` são projetos nativos completos do Capacitor. A in
 
 ## Instalar no Android
 
+O APK pessoal está disponível para [download direto no GitHub](https://github.com/NyxPjct/DailyAPP/raw/refs/heads/main/downloads/DailyAPP-1.0-pessoal.apk). As [Releases](https://github.com/NyxPjct/DailyAPP/releases) reúnem os instaladores publicados.
+
 Obtenha `artifacts/DailyAPP-1.0-pessoal.apk`, transfira-o para o celular Android e abra o arquivo. O sistema pode pedir autorização para instalar arquivos recebidos pelo aplicativo que está abrindo o APK. Depois da instalação, abra **DailyAPP** pela lista de aplicativos.
 
 Requer Android 7 ou superior e uma WebView atualizada. O pacote pessoal usa o build **Release**, com depuração da aplicação e da WebView desativadas, mas conserva o certificado de desenvolvimento da instalação anterior. É uma distribuição pessoal; a publicação na Play Store terá uma configuração própria de assinatura.
@@ -46,6 +48,8 @@ npm run preview:computer
 Esse comando preserva o build nativo em `dist/mobile`. Os dados ficam no navegador do computador. Para transferi-los, exporte um backup e importe-o no aplicativo. O navegador administrado deste ambiente bloqueia navegação `file://`; a validação aqui usa HTTP interno, sem alterar essa política. A abertura direta deve ser confirmada no seu computador.
 
 ## iPhone sem Mac pessoal
+
+Confira primeiro os arquivos da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.0.0). O workflow de publicação adiciona `DailyAPP-1.0-sem-assinatura.ipa` quando a compilação macOS termina com sucesso. Se o arquivo estiver disponível, baixe-o e siga a etapa de assinatura abaixo; ele não instala sozinho.
 
 Windows e Linux não executam o Xcode. O repositório inclui uma alternativa com um Mac do GitHub Actions. Ela não depende de hospedagem do aplicativo:
 

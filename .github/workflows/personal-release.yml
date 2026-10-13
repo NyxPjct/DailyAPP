@@ -1,0 +1,114 @@
+name: Publicar downloads pessoais Android e iPhone
+
+on:
+  push:
+    tags:
+      - 'personal-v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Tag da versão pessoal já enviada ao GitHub
+        required: true
+        default: personal-v1.0.0
+
+permissions:
+  contents: read
+
+concurrency:
+  group: personal-release-${{ inputs.release_tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+
+jobs:
+  android:
+    name: Publicar APK Android verificado
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag || github.ref }}
+      - name: Conferir a integridade do APK
+        working-directory: downloads
+        run: sha256sum --check DailyAPP-1.0-pessoal.apk.sha256
+      - name: Publicar release pessoal com APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" \
+              downloads/DailyAPP-1.0-pessoal.apk \
+              downloads/DailyAPP-1.0-pessoal.apk.sha256 --clobber
+          else
+            gh release create "$RELEASE_TAG" \
+              downloads/DailyAPP-1.0-pessoal.apk \
+              downloads/DailyAPP-1.0-pessoal.apk.sha256 \
+              --verify-tag --title 'DailyAPP 1.0 — uso pessoal' \
+              --notes-file docs/RELEASE-1.0.md
+          fi
+
+  iphone:
+    name: Compilar e publicar IPA para assinatura pessoal
+    needs: android
+    runs-on: macos-15
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Selecionar Xcode 26.3
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_26.3.app/Contents/Developer
+          xcodebuild -version
+      - name: Preparar o aplicativo
+        run: |
+          npm ci
+          npm run mobile:sync
+      - name: Compilar para iPhone
+        run: |
+          mkdir -p artifacts
+          set -o pipefail
+          xcodebuild archive \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/DailyAPP.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO 2>&1 | tee artifacts/ios-build.log
+      - name: Verificar e empacotar IPA
+        run: |
+          app="$RUNNER_TEMP/DailyAPP.xcarchive/Products/Applications/App.app"
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$app/Info.plist")" = 'com.nyxpjct.dailyapp'
+          lipo -verify_arch arm64 "$app/App"
+          mkdir -p "$RUNNER_TEMP/dailyapp-ipa/Payload"
+          ditto "$app" "$RUNNER_TEMP/dailyapp-ipa/Payload/App.app"
+          ditto -c -k --keepParent "$RUNNER_TEMP/dailyapp-ipa/Payload" \
+            "$GITHUB_WORKSPACE/artifacts/DailyAPP-1.0-sem-assinatura.ipa"
+          cd artifacts
+          shasum -a 256 DailyAPP-1.0-sem-assinatura.ipa > DailyAPP-1.0-sem-assinatura.ipa.sha256
+      - name: Guardar resultado e log de compilação
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DailyAPP-iPhone-compilacao
+          path: artifacts/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Publicar IPA para assinatura pessoal
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$RELEASE_TAG" \
+            artifacts/DailyAPP-1.0-sem-assinatura.ipa \
+            artifacts/DailyAPP-1.0-sem-assinatura.ipa.sha256 --clobber

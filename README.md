@@ -1,5 +1,12 @@
 # DailyAPP 1.0 — uso pessoal
 
+## Downloads
+
+- **Android:** [Baixar APK 1.0](https://github.com/NyxPjct/DailyAPP/raw/refs/heads/main/downloads/DailyAPP-1.0-pessoal.apk) — abra o arquivo no celular para instalar. Requer Android 7 ou superior.
+- **iPhone:** IPA em compilação. [Acompanhar a compilação e publicação](https://github.com/NyxPjct/DailyAPP/actions/workflows/personal-release.yml). O arquivo iOS precisa de assinatura pessoal para instalar; veja [as instruções para Windows](docs/CELULAR.md#iphone-sem-mac-pessoal).
+
+Se já instalou o DailyAPP no Android, exporte um backup em Ajustes e instale o novo APK sem desinstalar o aplicativo. [Conferir SHA-256 do APK](downloads/DailyAPP-1.0-pessoal.apk.sha256).
+
 Aplicativo de tarefas, agenda e finanças pessoais em português. A interface React é empacotada com Capacitor em aplicativos instalados no celular. As telas, fontes e ícones fazem parte da instalação; o funcionamento local dispensa hospedagem, Netlify e Supabase.
 
 O Android gera `artifacts/DailyAPP-1.0-pessoal.apk`, pronto para instalação manual. O projeto iOS inclui uma compilação manual pelo GitHub Actions em um Mac na nuvem, para quem usa Windows ou Linux; o IPA resultante ainda precisa de assinatura pessoal. Consulte [Instalar e compilar no celular](docs/CELULAR.md).
