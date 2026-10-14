@@ -2,15 +2,15 @@
 
 ## Downloads
 
-- **Android:** [Download APK 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r2/DailyAPP-1.1-pessoal.apk) — open the file on your phone to install it. Requires Android 7 or later.
-- **iPhone:** [Download unsigned IPA 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r2/DailyAPP-1.1-sem-assinatura.ipa) — requires iOS 15.4 or later and personal signing before installation. On Windows, follow the [AltServer/AltStore instructions (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal). Opening the IPA alone will not install it.
-- **Computer:** [Download the index.html preview](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r2/DailyAPP-index.zip) — extract the ZIP and open `index.html` in Chrome or Edge.
+- **Android:** [Download APK 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r3/DailyAPP-1.1-pessoal.apk) — open the file on your phone to install it. Requires Android 7 or later.
+- **iPhone:** [Download unsigned IPA 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r3/DailyAPP-1.1-sem-assinatura.ipa) — requires iOS 15.4 or later and personal signing before installation. On Windows, follow the [AltServer/AltStore instructions (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal). Opening the IPA alone will not install it.
+- **Computer:** [Download the index.html preview](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r3/DailyAPP-index.zip) — extract the ZIP and open `index.html` in Chrome or Edge.
 
-[Open the Release with the files and SHA-256 hashes](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0-r2). All three files were downloaded and checked after publication.
+[Open the Release with the files and SHA-256 hashes](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0-r3). All three files were downloaded and checked after publication.
 
 If DailyAPP is already installed on your Android phone, export a backup from Settings and install the new APK without uninstalling the app. [Check the APK's SHA-256 hash](downloads/DailyAPP-1.1-pessoal.apk.sha256).
 
-**1.1 update:** this revision keeps version 1.1.0, now with build 6, and adds real currency conversion across transactions, budgets, cards, goals, forecasts, and charts. The updated downloads are being built; the links above still point to the previous five-language build until the new files are verified. The [guide to each feature](#what-each-feature-does) and [language settings](#languages) are below.
+**1.1 update:** this revision keeps version 1.1.0, now with build 6, and adds real currency conversion across transactions, budgets, cards, goals, forecasts, and charts. The [guide to each feature](#what-each-feature-does) and [language settings](#languages) are below.
 
 A multilingual app for tasks, scheduling, and personal finances. English is the default, with Portuguese, Spanish, French, and German available in Settings. Its React interface is packaged with Capacitor into apps installed on your phone. Screens, fonts, and icons are included in the installation; local operation does not require hosting, Netlify, or Supabase.
 
@@ -114,7 +114,7 @@ No download or network connection is required: all translations are bundled with
 
 Open **Settings → App currency**, choose **BRL, USD, EUR, GBP, CAD, or AUD**, and tap **Save currency**. BRL remains the default in every language. For another currency, the app uses its saved quote or fetches one if none is available. You can use English with reais or Portuguese with dollars.
 
-**Refresh exchange rate** retrieves the latest available daily quote from [Currency API](https://github.com/fawazahmed0/exchange-api), served by jsDelivr without an API key. The source date is shown; rates older than seven days are marked. Tap **Save currency** to apply a refreshed quote. If the source is unavailable, the previous saved rate remains usable. **Enter a manual rate → Save manual rate** lets you enter the value of **1 BRL in the selected currency**, with up to eight decimal places. For example, 0.20 USD per BRL displays R$100.00 as $20.00. Manual rates are labeled and dated separately from online quotes.
+**Refresh exchange rate** retrieves the latest available daily quote from [Currency API](https://github.com/fawazahmed0/exchange-api), served by jsDelivr without an API key. Quote requests contain no personal records. The source date is shown; rates older than seven days are marked. Tap **Save currency** to apply a refreshed quote. If the source is unavailable, the previous saved rate remains usable. **Enter a manual rate → Save manual rate** lets you enter the value of **1 BRL in the selected currency**, with up to eight decimal places. For example, 0.20 USD per BRL displays R$100.00 as $20.00. Manual rates are labeled and dated separately from online quotes.
 
 The selected currency is used for transactions, totals, budgets, card limits and bills, goals, opening balances, forecasts, and chart labels. New and edited amount fields accept that currency and convert back to BRL when saved. Original records always remain in **integer BRL cents**; changing currency never rewrites their amounts. Saving an unchanged converted field preserves its original cents. Conversion and installment displays round to the nearest cent, so rounded displayed parts may differ by a cent from a converted total.
 
@@ -146,7 +146,7 @@ The guide uses the default English interface. Change the language in **Settings 
 | Complete | The circle marks a task as completed; tapping again makes it pending. Today's progress updates accordingly. |
 | Search and filters | Search titles, categories, or notes. Use All, Today, Pending, Completed, and Overdue to find what you need. |
 | Repeat task | Creates a daily, weekly, monthly, or yearly routine. Future tasks start as pending. In shorter months, the day is adjusted while preserving the original reference for later months. |
-| Recurring routines | Shows active routines. **Stop repeating (Parar repetição)** removes only future pending occurrences; earlier records, today's records, and completed tasks remain. Editing changes only the selected occurrence. Deleting an occurrence does not recreate it when the app opens again. |
+| Recurring routines | Shows active routines. **Stop repeating** removes only future pending occurrences; earlier records, today's records, and completed tasks remain. Editing changes only the selected occurrence. Deleting an occurrence does not recreate it when the app opens again. |
 
 ### Finances → Overview
 

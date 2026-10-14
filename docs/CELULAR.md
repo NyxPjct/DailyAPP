@@ -41,7 +41,7 @@ No Windows, você pode compilar no Android Studio ou, depois de `npm run mobile:
 
 ## Experimentar no computador
 
-Baixe a [prévia para computador](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r2/DailyAPP-index.zip) ou use `artifacts/index.html` / `artifacts/DailyAPP-index.zip` e abra `index.html` no Chrome ou Edge. O arquivo já contém a interface e seus recursos. Para atualizá-lo no projeto:
+Baixe a [prévia para computador](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r3/DailyAPP-index.zip) ou use `artifacts/index.html` / `artifacts/DailyAPP-index.zip` e abra `index.html` no Chrome ou Edge. O arquivo já contém a interface e seus recursos. Para atualizá-lo no projeto:
 
 ```bash
 npm run preview:computer
@@ -51,7 +51,7 @@ Esse comando preserva o build nativo em `dist/mobile`. Os dados ficam no navegad
 
 ## iPhone sem Mac pessoal
 
-Baixe [DailyAPP-1.1-sem-assinatura.ipa](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r2/DailyAPP-1.1-sem-assinatura.ipa) da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0-r2). O pacote foi compilado com Xcode 26.3 no GitHub Actions para arm64, iOS 15.4 ou superior, versão 1.1.0 (código 5). Seu SHA-256, integridade do ZIP, manifesto de privacidade, plugin de notificações e os 22 arquivos da interface foram conferidos após o download. Ele ainda precisa de assinatura pessoal; não instala sozinho.
+Baixe [DailyAPP-1.1-sem-assinatura.ipa](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r3/DailyAPP-1.1-sem-assinatura.ipa) da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0-r3). O pacote foi compilado com Xcode 26.3 no GitHub Actions para arm64, iOS 15.4 ou superior, versão 1.1.0 (código 6). Seu SHA-256, integridade do ZIP, manifesto de privacidade, plugin de notificações e os 22 arquivos da interface foram conferidos após o download. Ele ainda precisa de assinatura pessoal; não instala sozinho.
 
 No Windows, instale o **AltServer** pelo site oficial [altstore.io](https://altstore.io), siga as instruções oficiais para instalar o AltStore no seu próprio iPhone e importe o IPA nele. Forneça sua conta Apple apenas nas ferramentas oficiais do seu computador/aparelho.
 
