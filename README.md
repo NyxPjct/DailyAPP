@@ -2,15 +2,15 @@
 
 ## Downloads
 
-- **Android:** [Download APK 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r3/DailyAPP-1.1-pessoal.apk) — open the file on your phone to install it. Requires Android 7 or later.
-- **iPhone:** [Download unsigned IPA 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r3/DailyAPP-1.1-sem-assinatura.ipa) — requires iOS 15.4 or later and personal signing before installation. On Windows, follow the [AltServer/AltStore instructions (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal). Opening the IPA alone will not install it.
-- **Computer:** [Download the index.html preview](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r3/DailyAPP-index.zip) — extract the ZIP and open `index.html` in Chrome or Edge.
+- **Android:** [Download APK 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r4/DailyAPP-1.1-pessoal.apk) — open the file on your phone to install it. Requires Android 7 or later.
+- **iPhone:** [Download unsigned IPA 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r4/DailyAPP-1.1-sem-assinatura.ipa) — requires iOS 15.4 or later and personal signing before installation. On Windows, follow the [AltServer/AltStore instructions (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal). Opening the IPA alone will not install it.
+- **Computer:** [Download the index.html preview](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r4/DailyAPP-index.zip) — extract the ZIP and open `index.html` in Chrome or Edge.
 
-[Open the Release with the files and SHA-256 hashes](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0-r3). All three files were downloaded and checked after publication.
+[Open the Release with the files and SHA-256 hashes](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0-r4). All three files were downloaded and checked after publication.
 
 If DailyAPP is already installed on your Android phone, export a backup from Settings and install the new APK without uninstalling the app. [Check the APK's SHA-256 hash](downloads/DailyAPP-1.1-pessoal.apk.sha256).
 
-**1.1 update:** this revision keeps version 1.1.0, now with build 7, and makes currency switch automatically with the selected language, using saved or fetched rates while preserving recorded values. The new downloads are being prepared; the links above still point to the previous verified build. The [guide to each feature](#what-each-feature-does) and [language settings](#languages) are below.
+**1.1 update:** this revision keeps version 1.1.0, now with build 7, and makes currency switch automatically with the selected language, using saved or fetched rates while preserving recorded values. The [guide to each feature](#what-each-feature-does) and [language settings](#languages) are below.
 
 A multilingual app for tasks, scheduling, and personal finances. English is the default, with Portuguese, Spanish, French, and German available in Settings. Its React interface is packaged with Capacitor into apps installed on your phone. Screens, fonts, and icons are included in the installation; local operation does not require hosting, Netlify, or Supabase.
 
