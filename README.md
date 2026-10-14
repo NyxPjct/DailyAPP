@@ -1,215 +1,216 @@
-# DailyAPP 1.1 — uso pessoal
+# DailyAPP 1.1 — personal use
 
 ## Downloads
 
-- **Android:** [Baixar APK 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r1/DailyAPP-1.1-pessoal.apk) — abra o arquivo no celular para instalar. Requer Android 7 ou superior.
-- **iPhone:** [Baixar IPA 1.1 sem assinatura](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r1/DailyAPP-1.1-sem-assinatura.ipa) — requer iOS 15.4 ou superior e assinatura pessoal antes de instalar. No Windows, siga [as instruções com AltServer/AltStore](docs/CELULAR.md#iphone-sem-mac-pessoal). O IPA não instala sozinho ao ser aberto.
+- **Android:** [Download APK 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r1/DailyAPP-1.1-pessoal.apk) — open the file on your phone to install it. Requires Android 7 or later.
+- **iPhone:** [Download unsigned IPA 1.1](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r1/DailyAPP-1.1-sem-assinatura.ipa) — requires iOS 15.4 or later and personal signing before installation. On Windows, follow the [AltServer/AltStore instructions (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal). Opening the IPA alone will not install it.
+- **Computer:** [Download the index.html preview](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r1/DailyAPP-index.zip) — extract the ZIP and open `index.html` in Chrome or Edge.
 
-- **Computador:** [Baixar prévia com index.html](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r1/DailyAPP-index.zip) — extraia o ZIP e abra `index.html` no Chrome ou Edge.
+[Open the Release with the files and SHA-256 hashes](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0-r1). All three files were downloaded and checked after publication.
 
-[Abrir a Release com os arquivos e hashes SHA-256](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0-r1). Os três downloads foram baixados e conferidos após a publicação.
+If DailyAPP is already installed on your Android phone, export a backup from Settings and install the new APK without uninstalling the app. [Check the APK's SHA-256 hash](downloads/DailyAPP-1.1-pessoal.apk.sha256).
 
-Se já instalou o DailyAPP no Android, exporte um backup em Ajustes e instale o novo APK sem desinstalar o aplicativo. [Conferir SHA-256 do APK](downloads/DailyAPP-1.1-pessoal.apk.sha256).
+**1.1 update:** this revision keeps version 1.1.0, now with build 4, and adds bills to the Today screen, financial goals, and balance forecasting. The [guide to each feature](#what-each-feature-does) is below.
 
-**Atualização da 1.1:** esta revisão mantém a versão 1.1.0, agora com compilação 4, e acrescenta contas na tela Hoje, metas financeiras e previsão de saldo. O [guia de cada função](#o-que-cada-função-faz) está abaixo.
+A Portuguese-language app for tasks, scheduling, and personal finances. Its React interface is packaged with Capacitor into apps installed on your phone. Screens, fonts, and icons are included in the installation; local operation does not require hosting, Netlify, or Supabase.
 
-Aplicativo de tarefas, agenda e finanças pessoais em português. A interface React é empacotada com Capacitor em aplicativos instalados no celular. As telas, fontes e ícones fazem parte da instalação; o funcionamento local dispensa hospedagem, Netlify e Supabase.
+The Android and iPhone packages are available in the Release above. The IPA was built with Xcode 26.3 on a GitHub Actions Mac runner and does not include personal Apple signing. See the [mobile installation and build guide (Portuguese)](docs/CELULAR.md).
 
-Os pacotes Android e iPhone estão na Release acima. O IPA foi compilado com Xcode 26.3 no Mac do GitHub Actions e não inclui assinatura pessoal da Apple. Consulte [Instalar e compilar no celular](docs/CELULAR.md).
+To open the mobile interface directly on a computer, generate `artifacts/index.html` with `npm run preview:computer`. This file includes scripts, styles, icons, and fonts: download it and open it in Chrome or Edge. The computer opening the file does not need a server or development tools. Preview records stay in the browser; use backups to transfer them to the app.
 
-Para abrir a interface de celular diretamente no computador, gere `artifacts/index.html` com `npm run preview:computer`. Esse arquivo inclui scripts, estilos, ícones e fontes: baixe-o e abra no Chrome ou Edge. Não é necessário iniciar servidor ou instalar ferramentas no computador que abre o arquivo. Os registros dessa demonstração ficam no navegador; use backups para transferi-los ao aplicativo.
+## App screenshots
 
-## Capturas do aplicativo
-
-| Hoje | Tarefas | Finanças |
+| Today | Tasks | Finances |
 | --- | --- | --- |
-| <img src="docs/screenshots/hoje.png" alt="DailyAPP: resumo do dia, tarefas e saldo do mês" width="250"> | <img src="docs/screenshots/tarefas.png" alt="DailyAPP: lista de tarefas com horários e categorias" width="250"> | <img src="docs/screenshots/financas.png" alt="DailyAPP: receitas, despesas, saldo e gráfico de gastos por categoria" width="250"> |
+| <img src="docs/screenshots/hoje.png" alt="DailyAPP: daily overview, tasks, and monthly balance" width="250"> | <img src="docs/screenshots/tarefas.png" alt="DailyAPP: task list with times and categories" width="250"> | <img src="docs/screenshots/financas.png" alt="DailyAPP: income, expenses, balance, and spending by category" width="250"> |
 
-Capturas da interface móvel em viewport de 390 × 900, com dados fictícios de **Explorar exemplo**, renderizadas no Chromium. Para atualizar as três imagens, execute `npm run screenshots` após instalar as dependências e o navegador Playwright.
+Mobile interface screenshots rendered in Chromium at a 390 × 900 viewport, using fictional data from **Explore example (Explorar exemplo)**. To update all three images, run `npm run screenshots` after installing the dependencies and the Playwright browser.
 
-## Funcionalidades
+## Features
 
-- Barra inferior com Hoje, Agenda, Tarefas, Finanças e Ajustes.
-- Primeiro uso com nome e orçamento opcionais, e guia rápido em Ajustes.
-- Cadastro, edição, conclusão e exclusão de tarefas com data, horário, categoria e prioridade.
-- Calendário mensal e tarefas do dia selecionado.
-- Tela Hoje com contas, recebimentos e parcelas pendentes, incluindo atrasos e os próximos sete dias.
-- Receitas, despesas, valores pagos ou previstos, histórico, categorias e orçamento mensal.
-- Tarefas e movimentações recorrentes, com repetição diária, semanal, mensal ou anual e histórico preservado ao encerrar a rotina.
-- Cartões, limite disponível, fechamento, vencimento e compras em até 48 parcelas com centavos exatos.
-- Faturas mensais que atualizam as parcelas ao marcar o pagamento, sem duplicar despesas.
-- Metas com valor desejado, prazo, progresso e sugestão mensal para alcançar o objetivo.
-- Previsão do saldo ao fim do mês e por dia, com saldo inicial manual e aviso de saldo negativo.
-- Lembretes locais de tarefas, contas e faturas, com permissão do celular; avisos são atualizados ao concluir, pagar ou editar.
-- Dados salvos no próprio dispositivo, sem exigir conta ou conexão com a internet.
-- Exportação de backup JSON pelo compartilhamento do Android/iPhone e importação pelo seletor de arquivos.
-- Botão voltar do Android fecha formulários e retorna ao início antes de minimizar o aplicativo.
-- Layout adaptado às áreas seguras da tela e ícones próprios para as duas plataformas.
+- Bottom navigation with Today, Calendar, Tasks, Finances, and Settings.
+- First-use setup with an optional name and budget, plus a quick guide in Settings.
+- Create, edit, complete, and delete tasks with dates, times, categories, and priorities.
+- Monthly calendar with tasks for the selected day.
+- Today screen with pending bills, income, and installments, including overdue items and the next seven days.
+- Income, expenses, confirmed or planned amounts, history, categories, and monthly budgets.
+- Recurring tasks and transactions with daily, weekly, monthly, or yearly repetition; ending a routine preserves its history.
+- Credit cards, estimated available limits, statement closing dates, payment due dates, and purchases split into up to 48 installments with exact cent allocation.
+- Monthly card bills that update their installments when marked as paid, without duplicating expenses.
+- Financial goals with target amounts, deadlines, progress, and suggested monthly savings.
+- End-of-month and daily balance forecasts with a manually entered opening balance and negative-balance warnings.
+- Local reminders for tasks, bills, and card payments, with notification permission; reminders update when records are completed, paid, or edited.
+- Data stored on the device, without requiring an account or an internet connection.
+- JSON backup export through Android/iPhone sharing and import through the file picker.
+- Android's back button closes forms and returns to the home screen before minimizing the app.
+- Layout adapted to screen safe areas, with app icons for both platforms.
 
-O saldo considera receitas recebidas e despesas pagas no mês. O orçamento inclui despesas pagas e previstas. Os cálculos usam centavos inteiros. Há dados fictícios opcionais em **Explorar exemplo**.
+The monthly balance includes income received and expenses paid during the month. Budgets include paid and planned expenses. Calculations use integer cents. Optional fictional data is available through **Explore example (Explorar exemplo)**.
 
-## O que cada função faz
+## What each feature does
 
-### Hoje
+The app interface currently uses Portuguese. This guide uses English names, with original screen and button labels in parentheses where useful. Amounts are displayed in Brazilian reais (BRL).
 
-| Função | Para que serve e como usar |
+### Today (Hoje)
+
+| Feature | Purpose and how to use it |
 | --- | --- |
-| Resumo do mês | Mostra receitas recebidas, despesas pagas e a diferença entre elas no mês escolhido. Esse **saldo do mês** não inclui dinheiro que você já tinha antes do mês. Use as setas para mudar o período. |
-| Tarefas de hoje | Lista as tarefas do dia, horários e progresso. Toque no círculo para concluir ou desfazer a conclusão; **Ver todas** abre o filtro Hoje em Tarefas. |
-| Tarefas anteriores | Avisa sobre tarefas pendentes de dias anteriores e abre o filtro Atrasadas. |
-| Contas e recebimentos | Reúne movimentações pendentes de dias anteriores, de hoje e dos próximos sete dias, incluindo parcelas e registros recorrentes. Esse período acompanha a data atual, independentemente do mês escolhido no resumo. Toque na descrição para editar; **Pagar** ou **Receber** confirma o registro existente, sem criar outro. Para desfazer, abra a movimentação em Finanças e volte o status para Prevista. |
-| Dinheiro em movimento | Gráfico das receitas recebidas e despesas pagas acumuladas no mês. **Ver detalhes** abre Finanças. |
-| Gastos por categoria | Mostra como as despesas pagas e previstas se distribuem entre alimentação, moradia, transporte e outras categorias. |
-| Metas e previsão do mês | Abre **Finanças → Planejamento** no mês atual. |
+| Monthly overview | Shows income received, expenses paid, and the difference between them in the selected month. This **monthly balance** does not include money you had before the month started. Use the arrows to change the period. |
+| Today's tasks | Lists today's tasks, times, and progress. Tap the circle to complete a task or undo completion; **View all (Ver todas)** opens the Today filter in Tasks. |
+| Earlier tasks | Highlights unfinished tasks from previous days and opens the Overdue filter. |
+| Bills and income | Collects pending transactions from previous days, today, and the next seven days, including installments and recurring records. This period follows the current date, regardless of the month selected in the overview. Tap a description to edit; **Pay (Pagar)** or **Receive (Receber)** confirms the existing record without creating another one. To undo this, open the transaction in Finances and change its status back to Planned (Prevista). |
+| Money in motion | Charts cumulative income received and expenses paid during the month. **View details (Ver detalhes)** opens Finances. |
+| Spending by category | Shows how paid and planned expenses are distributed across food, housing, transportation, and other categories. |
+| Goals and monthly forecast | Opens **Finances → Planning (Finanças → Planejamento)** for the current month. |
 
-### Agenda e Tarefas
+### Calendar and Tasks (Agenda and Tarefas)
 
-| Função | Para que serve e como usar |
+| Feature | Purpose and how to use it |
 | --- | --- |
-| Calendário | Navegue entre meses e toque em uma data para ver suas tarefas. **Hoje** volta ao dia atual. O calendário lista tarefas; contas e parcelas aparecem na tela Hoje e em Finanças. |
-| Nova tarefa | Registre título, data, horário opcional, categoria, prioridade e observações. Ao criar pela Agenda, a data selecionada já vem preenchida. |
-| Editar e excluir | Toque na tarefa ou no lápis para editar. A lixeira solicita confirmação antes de remover. |
-| Concluir | O círculo marca a tarefa como concluída; tocar novamente a deixa pendente. O progresso de Hoje acompanha essa mudança. |
-| Busca e filtros | Busque por título, categoria ou observações. Use Todas, Hoje, Pendentes, Concluídas e Atrasadas para encontrar o que precisa. |
-| Repetir tarefa | Gera uma rotina diária, semanal, mensal ou anual. As próximas tarefas começam pendentes. Em meses curtos, ajusta o dia e preserva a referência original para os meses seguintes. |
-| Rotinas recorrentes | Mostra as rotinas ativas. **Parar repetição** remove somente ocorrências futuras ainda pendentes; mantém registros anteriores, de hoje e já concluídos. Editar muda apenas a ocorrência escolhida. Excluir uma ocorrência não a recria ao abrir o app. |
+| Calendar | Browse months and tap a date to see its tasks. **Today (Hoje)** returns to the current day. The calendar lists tasks; bills and installments appear on Today and in Finances. |
+| New task | Enter a title, date, optional time, category, priority, and notes. When creating a task from Calendar, the selected date is filled in automatically. |
+| Edit and delete | Tap the task or pencil icon to edit. The trash icon asks for confirmation before deleting. |
+| Complete | The circle marks a task as completed; tapping again makes it pending. Today's progress updates accordingly. |
+| Search and filters | Search titles, categories, or notes. Use All (Todas), Today (Hoje), Pending (Pendentes), Completed (Concluídas), and Overdue (Atrasadas) to find what you need. |
+| Repeat task | Creates a daily, weekly, monthly, or yearly routine. Future tasks start as pending. In shorter months, the day is adjusted while preserving the original reference for later months. |
+| Recurring routines | Shows active routines. **Stop repeating (Parar repetição)** removes only future pending occurrences; earlier records, today's records, and completed tasks remain. Editing changes only the selected occurrence. Deleting an occurrence does not recreate it when the app opens again. |
 
-### Finanças → Resumo
+### Finances → Overview (Finanças → Resumo)
 
-| Função | Para que serve e como usar |
+| Feature | Purpose and how to use it |
 | --- | --- |
-| Nova movimentação | Registre uma receita ou despesa com descrição, valor, data, categoria e observações. Selecione se já foi recebida/paga ou se continua prevista. |
-| Receitas, despesas e saldo | Receitas e despesas confirmadas compõem o resultado do mês. **A pagar** soma as despesas previstas do período, incluindo parcelas. |
-| Status Paga, Recebida ou Prevista | Toque no status para confirmar ou desfazer o pagamento/recebimento. O registro é atualizado; nenhum lançamento adicional é criado. |
-| Histórico, busca e filtros | Consulte movimentações do mês selecionado. Filtre por receita/despesa e por Efetivadas/Previstas; busque por descrição, categoria ou observações. |
-| Orçamento mensal | Defina um limite de gastos para o mês. A barra considera despesas pagas **e previstas**, incluindo parcelas. Cada mês tem seu próprio orçamento; o saldo inicial da previsão é uma configuração separada. |
-| Despesas por categoria | Compara o total de gastos pagos e previstos de cada categoria. |
-| Repetir movimentação | Prepara receitas e contas fixas com frequência diária, semanal, mensal ou anual. Futuras ocorrências começam previstas e precisam de confirmação manual. |
-| Editar e excluir | O lápis altera a movimentação e a lixeira solicita confirmação. Em compras parceladas, excluir uma parcela remove **toda a compra e suas parcelas, inclusive as pagas**; a confirmação explica isso. |
+| New transaction | Record income or an expense with a description, amount, date, category, and notes. Choose whether it has already been received/paid or is still planned. |
+| Income, expenses, and balance | Confirmed income and expenses make up the month's net result. **To pay (A pagar)** adds up planned expenses for the period, including installments. |
+| Paid, Received, or Planned status | Tap the status to confirm or undo a payment or receipt. The record is updated; no additional transaction is created. The app labels are Paga, Recebida, and Prevista. |
+| History, search, and filters | Browse transactions for the selected month. Filter by income/expense and Confirmed/Planned (Efetivadas/Previstas); search descriptions, categories, or notes. |
+| Monthly budget | Set a spending limit for the month. The progress bar includes paid **and planned** expenses, including installments. Each month has its own budget; the forecast's opening balance is a separate setting. |
+| Expenses by category | Compares paid and planned spending across categories. |
+| Repeat transaction | Schedules recurring income and bills daily, weekly, monthly, or yearly. Future occurrences start as planned and require manual confirmation. |
+| Edit and delete | The pencil edits a transaction and the trash icon asks for confirmation. For installment purchases, deleting an installment removes **the entire purchase and all its installments, including paid ones**; the confirmation explains this. |
 
-### Finanças → Cartões e parcelas
+### Finances → Cards and installments (Finanças → Cartões e parcelas)
 
-| Função | Para que serve e como usar |
+| Feature | Purpose and how to use it |
 | --- | --- |
-| Novo cartão | Informe um nome, limite e dias de fechamento/vencimento. O app não pede número, senha ou código de segurança do cartão. |
-| Registrar compra | Informe o valor **total** e de 1 a 48 parcelas. O app divide os centavos sem perder o total e cria cada parcela como despesa prevista na sua data de vencimento. Não registre a mesma compra novamente em Nova movimentação. |
-| Fechamento e vencimento | Compras no dia de fechamento ou depois entram no ciclo seguinte. Dias 29, 30 e 31 são ajustados nos meses menores. Alterar os dias do cartão afeta somente compras novas. |
-| Fatura mensal | Mostra as parcelas do cartão no mês escolhido e quanto falta pagar. **Marcar fatura como paga** confirma essas parcelas; não cria outra despesa. |
-| Limite disponível | Estima o limite menos todas as parcelas ainda não pagas, inclusive futuras. Não consulta o banco e não representa um limite aprovado por ele. |
-| Arquivar e reativar | Arquivar impede compras novas, preservando parcelas, faturas e registros anteriores. Reativar permite novas compras. |
+| New card | Enter a name, limit, statement closing day, and payment due day. The app does not ask for a card number, password, or security code. |
+| Record purchase | Enter the **total** amount and between 1 and 48 installments. The app allocates cents without changing the total and creates each installment as a planned expense on its due date. Do not enter the same purchase again under New transaction. |
+| Closing and due dates | Purchases on or after the closing day enter the next billing cycle. Days 29, 30, and 31 are adjusted in shorter months. Changing a card's dates affects only new purchases. |
+| Monthly card bill | Shows the card's installments for the selected month and the amount still due. **Mark bill as paid (Marcar fatura como paga)** confirms those installments without creating another expense. |
+| Available limit | Estimates the limit minus all unpaid installments, including future ones. It does not query the bank and does not represent a limit approved by the bank. |
+| Archive and reactivate | Archiving prevents new purchases while preserving installments, bills, and earlier records. Reactivating allows new purchases. |
 
-### Finanças → Planejamento
+### Finances → Planning (Finanças → Planejamento)
 
-| Função | Para que serve e como usar |
+| Feature | Purpose and how to use it |
 | --- | --- |
-| Saldo inicial do mês | Informe o dinheiro disponível **antes da primeira movimentação daquele mês**. Aceita zero ou valor negativo. Não use o saldo atual que já inclui movimentações cadastradas. Cada mês é informado separadamente; não há transferência automática do saldo entre meses. |
-| Previsão de saldo | Calcula **saldo inicial + receitas − despesas do mês**, confirmadas e previstas. Cada parcela entra uma vez no mês do seu vencimento. Marcar o pagamento troca o status, mantendo o mesmo valor projetado. A previsão só é exibida depois de informar o saldo inicial. |
-| Evolução por dia | Mostra o saldo previsto ao fim de cada data com movimentações e o menor saldo diário. Um aviso destaca quando a estimativa fica negativa. A ordem dos pagamentos dentro de um mesmo dia não é simulada. |
-| Contas de meses anteriores | Aparecem como aviso e na tela Hoje; não são descontadas novamente em outro mês. Se forem pagas no mês atual, ajuste a data do registro para esse mês. |
-| Nova meta | Defina nome, valor desejado, prazo, observações e quanto já guardou. Serve para reserva de emergência, viagem, compra ou outro objetivo. |
-| Atualizar meta | Informe o **total já guardado**, em vez de apenas o último depósito. O app mostra percentual, valor que falta e sugestão mensal até o prazo, contando o mês atual. A meta fica Concluída ao alcançar o valor; se o prazo passar antes disso, indica Prazo vencido. |
-| Arquivar, reativar e excluir meta | Arquivar esconde a meta e preserva seus dados; **Mostrar arquivadas** permite reativá-la. Excluir exige confirmação e remove a meta e seu progresso. |
+| Monthly opening balance | Enter the money available **before the first transaction of that month**. Zero and negative values are allowed. Do not use a current balance that already includes recorded transactions. Enter each month separately; balances do not carry over automatically. |
+| Balance forecast | Calculates **opening balance + income − expenses for the month**, both confirmed and planned. Each installment is included once, in its due month. Marking a payment changes its status while keeping the projected amount the same. The forecast appears only after an opening balance is entered. |
+| Daily evolution | Shows the projected closing balance for each date with transactions and the lowest daily balance. A warning highlights negative estimates. The order of payments within the same day is not simulated. |
+| Bills from earlier months | Appear as a warning and on Today; they are not deducted again in another month. If paid in the current month, update the transaction's date to that month. |
+| New goal | Set a name, target amount, deadline, notes, and how much you have already saved. Use it for an emergency fund, trip, purchase, or another objective. |
+| Update goal | Enter the **total already saved**, rather than just the latest deposit. The app shows the percentage, remaining amount, and a suggested monthly amount through the deadline, counting the current month. A goal becomes Completed (Concluída) when its target is reached; if the deadline passes first, it shows Deadline passed (Prazo vencido). |
+| Archive, reactivate, and delete goals | Archiving hides a goal and preserves its data; **Show archived (Mostrar arquivadas)** lets you reactivate it. Deleting requires confirmation and removes the goal and its progress. |
 
-A previsão depende das datas e valores cadastrados e não consulta bancos. Metas são acompanhamento manual: não transferem dinheiro, não reservam saldo e não criam receitas/despesas automaticamente. Se houver um gasto ou recebimento real, registre-o em Finanças.
+Forecasts depend on the dates and amounts entered and do not connect to banks. Goals are tracked manually: they do not transfer money, reserve a balance, or create income/expenses automatically. Record actual spending or income in Finances.
 
-### Lembretes
+### Reminders
 
-Escolha a antecedência ao criar/editar uma tarefa, movimentação ou cartão e permita notificações no celular. Tarefas precisam de horário; contas e faturas avisam às **9h locais**. Ao concluir, pagar, alterar ou excluir um registro, os avisos futuros são atualizados. O sistema pode atrasar avisos para economizar bateria; avisos atrasados ainda válidos são preservados.
+Choose how far in advance to be notified when creating/editing a task, transaction, or card, and allow notifications on your phone. Tasks require a time; bills and card payments notify at **9 a.m. local time**. Completing, paying, changing, or deleting a record updates its future reminders. The operating system may delay notifications to save battery; delayed reminders that are still valid are preserved.
 
-O app prepara até **60 avisos próximos** e os renova ao abrir ou retomar. As rotinas preparam até **90 dias de tarefas e 12 meses de movimentações**, ampliando esse período ao voltar ao app. Não há confirmação automática de tarefas ou pagamentos. Na prévia do computador, as preferências são salvas, mas notificações nativas não são enviadas.
+The app schedules up to **60 upcoming notifications** and refreshes them when opened or resumed. Routines prepare up to **90 days of tasks and 12 months of transactions**, extending that period when you return to the app. Tasks and payments are not confirmed automatically. The computer preview saves preferences but does not send native notifications.
 
-### Ajustes e recursos do celular
+### Settings and mobile features (Ajustes)
 
-| Função | Para que serve e como usar |
+| Feature | Purpose and how to use it |
 | --- | --- |
-| Seu nome | Personaliza a saudação. Nome e orçamento são opcionais na apresentação do primeiro uso. |
-| Exportar backup | Prepara um JSON com tarefas, movimentações, cartões, rotinas, metas, saldos iniciais, orçamentos e configurações de lembretes. No celular, escolha onde guardar pelo compartilhamento; no computador, baixe o arquivo. |
-| Importar backup | Selecione um JSON do DailyAPP e confirme a restauração. **Substitui os dados atuais**, não mescla. Backups anteriores continuam aceitos; exporte os dados atuais antes se quiser preservá-los. |
-| Carregar/Explorar exemplo | Carrega uma rotina fictícia para conhecer as telas. Se já houver dados, solicita confirmação para substituí-los. **Começar com seus dados** remove tarefas, movimentações e orçamento do exemplo, preservando os registros pessoais adicionados. |
-| Como usar o DailyAPP | Abre o guia rápido dentro do aplicativo. |
-| Lembretes no celular | Mostra quantos avisos estão programados e permite ativar/atualizar notificações. Se a permissão foi negada, permita-a nas configurações do aparelho. |
-| Apagar meus dados | Após confirmação, remove todos os registros e configurações financeiras locais. Só um backup exportado permite recuperá-los. |
-| Navegação inferior | Abre Hoje, Agenda, Tarefas, Finanças e Ajustes. |
-| Botão voltar no Android | Fecha formulários, confirmações e o guia; depois retorna a Hoje e, ao voltar novamente, minimiza o app. |
-| Uso sem internet | Tarefas, finanças, metas, previsão e lembretes locais funcionam no aparelho. Cada instalação tem seus próprios dados; use backup para transferir entre aparelhos. |
+| Your name | Personalizes the greeting. Name and budget are optional during first-use setup. |
+| Export backup | Creates a JSON file with tasks, transactions, cards, routines, goals, opening balances, budgets, and reminder settings. On a phone, choose where to save it through the share menu; on a computer, download the file. |
+| Import backup | Select a DailyAPP JSON file and confirm restoration. This **replaces the current data**, rather than merging it. Earlier backups are still accepted; export your current data first if you want to preserve it. |
+| Load/Explore example | Loads fictional data to explore the screens. If data already exists, asks for confirmation before replacing it. **Start with your own data (Começar com seus dados)** removes example tasks, transactions, and budget while preserving personal records you added. |
+| How to use DailyAPP | Opens the in-app quick guide through **Como usar o DailyAPP**. |
+| Phone reminders | Shows the number of scheduled notifications and lets you enable/refresh them. If permission was denied, allow notifications in your phone's settings. |
+| Delete my data | After confirmation, removes all local records and financial settings. Only an exported backup can restore them. |
+| Bottom navigation | Opens Today (Hoje), Calendar (Agenda), Tasks (Tarefas), Finances (Finanças), and Settings (Ajustes). |
+| Android back button | Closes forms, confirmations, and the guide; then returns to Today and, on another back press, minimizes the app. |
+| Offline use | Tasks, finances, goals, forecasts, and local reminders work on the device. Each installation has its own data; use backups to transfer between devices. |
 
-## Preparar os projetos
+## Prepare the projects
 
-Requer Node.js 22.12 ou superior e npm.
+Requires Node.js 22.12 or later and npm.
 
 ```bash
 npm ci
 npm run mobile:sync
 ```
 
-Esse comando compila a interface móvel em `dist/mobile/` e copia os arquivos para `android/` e `ios/`. O build móvel abre diretamente o espaço local, sem importar a tela de contas e sem incorporar variáveis Supabase.
+This command builds the mobile interface in `dist/mobile/` and copies the files into `android/` and `ios/`. The mobile build opens the local workspace directly, without importing the account screen or embedding Supabase variables.
 
-Para trabalhar na interface, execute:
+To develop the interface, run:
 
 ```bash
 npm run dev -- --mode mobile
 ```
 
-Esse servidor é uma ferramenta de desenvolvimento; o aplicativo instalado carrega os arquivos que estão dentro do pacote. Não usa um endereço de site remoto.
+This server is a development tool; the installed app loads files included in its package. It does not use a remote website address.
 
 ## Android
 
-Com Android Studio, JDK 21 e Android SDK 36 instalados:
+With Android Studio, JDK 21, and Android SDK 36 installed:
 
 ```bash
 npm run mobile:android
 ```
 
-No Android Studio, escolha um celular/emulador e execute o projeto. Para gerar o instalador de uso pessoal pela linha de comando, também com Python 3 instalado:
+In Android Studio, select a phone/emulator and run the project. To generate the personal-use installer from the command line, with Python 3 also installed:
 
 ```bash
 npm run mobile:personal
 ```
 
-O instalador será salvo em `artifacts/DailyAPP-1.1-pessoal.apk`. Usa o build Release, com depuração da aplicação e da WebView desativadas. Mantém o certificado de desenvolvimento do APK anterior para permitir a atualização da instalação pessoal, com `versionCode` 4. Preserve essa chave local ao gerar outras atualizações. A publicação na Play Store requer uma chave de distribuição própria. `npm run mobile:apk` continua disponível para gerar o APK debug.
+The installer is saved to `artifacts/DailyAPP-1.1-pessoal.apk`. It uses a Release build with application and WebView debugging disabled. It preserves the previous APK's development certificate to support updates to the personal installation, with `versionCode` 4. Keep that local key when building future updates. Play Store publication requires a dedicated distribution key. `npm run mobile:apk` remains available to generate a debug APK.
 
 ## iPhone
 
-Em um Mac com Xcode 26 ou superior:
+On a Mac with Xcode 26 or later:
 
 ```bash
 npm run mobile:ios
 ```
 
-No Xcode, selecione o projeto **App**, configure sua equipe em **Signing & Capabilities** e execute no simulador ou no iPhone conectado. O projeto usa Swift Package Manager e inclui o manifesto de privacidade exigido pelo plugin de arquivos. O aplicativo requer iOS 15.4 ou superior.
+In Xcode, select the **App** project, configure your team under **Signing & Capabilities**, and run it in the simulator or on a connected iPhone. The project uses Swift Package Manager and includes the privacy manifest required by the filesystem plugin. The app requires iOS 15.4 or later.
 
-O IPA 1.1 foi compilado e publicado pelo workflow [.github/workflows/personal-release.yml](.github/workflows/personal-release.yml), que usa Xcode 26.3 no runner `macos-15`. Os arquivos da interface incluídos nele foram comparados com o pacote Android e os hashes dos downloads foram conferidos. O resultado é um IPA **sem assinatura pessoal**. As instruções para assinar e instalar estão no [guia de celular](docs/CELULAR.md#iphone-sem-mac-pessoal); a instalação e o funcionamento em um iPhone real ainda precisam ser confirmados. O workflow [ios-personal.yml](.github/workflows/ios-personal.yml) também permite gerar somente um artefato de compilação manual, sem criar uma Release.
+IPA 1.1 was built and published through [.github/workflows/personal-release.yml](.github/workflows/personal-release.yml), using Xcode 26.3 on the `macos-15` runner. Its bundled interface files were compared with the Android package, and download hashes were checked. The result is an IPA **without personal signing**. Signing and installation instructions are in the [mobile guide (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal); installation and operation on a real iPhone still need to be confirmed. The [ios-personal.yml](.github/workflows/ios-personal.yml) workflow also supports generating a build artifact manually, without creating a Release.
 
-## Verificar
+## Verification
 
 ```bash
 npm run build:mobile
 npm test
 ```
 
-Os 60 testes usam Playwright e Chromium. Verificam previsão de saldo, metas, contas na tela Hoje, tarefas, finanças, dados locais, backups, falhas de armazenamento, datas, navegação, primeiro uso, atualização de dados existentes, acessibilidade e uso da interface móvel sem rede. Os contratos dos plugins nativos são simulados: testes no navegador não substituem a validação no celular, especialmente do teclado, seletor de arquivos e compartilhamento.
+The 60 tests use Playwright and Chromium. They cover balance forecasts, goals, bills on Today, tasks, finances, local data, backups, storage failures, dates, navigation, first use, existing-data upgrades, accessibility, and offline use of the mobile interface. Native plugin contracts are simulated: browser tests do not replace testing on a phone, especially for the keyboard, file picker, and sharing.
 
-Os servidores de teste usam 5174 (base local), 5175 (contas simuladas da base anterior) e 5176 (interface do aplicativo móvel). No ambiente cloud, o navegador disponível é `/usr/bin/chromium`; em outras máquinas, execute `npx playwright install chromium` uma vez.
+Test servers use ports 5174 (local workspace), 5175 (mocked accounts from the earlier implementation), and 5176 (mobile app interface). In the cloud environment, the available browser is `/usr/bin/chromium`; on other machines, run `npx playwright install chromium` once.
 
-## Dados e backups
+## Data and backups
 
-Os registros ficam no armazenamento privado da WebView do aplicativo. Sair e abrir novamente mantém os registros. O formato `dailyapp.v1` foi preservado: usuários com registros existentes entram diretamente no aplicativo. Desinstalar o aplicativo ou limpar seus dados pode removê-los. Em **Ajustes**, exporte um backup para guardar uma cópia ou transferir registros entre aparelhos; a restauração exige confirmação.
+Records are stored in the app WebView's private storage. Closing and reopening the app keeps them. The `dailyapp.v1` format is preserved: users with existing records enter the app directly. Uninstalling the app or clearing its data may remove those records. In **Settings (Ajustes)**, export a backup to keep a copy or transfer records between devices; restoring requires confirmation.
 
-O armazenamento local não é um cofre criptografado. A versão móvel atual não conecta bancos, não exige login e não sincroniza aparelhos automaticamente. A base de contas da implementação anterior foi preservada em `src/cloud/` para uma futura etapa, caso seja solicitada; ela não entra no pacote móvel.
+Local storage is not an encrypted vault. The current mobile version does not connect to banks, require login, or synchronize devices automatically. The earlier account implementation is preserved in `src/cloud/` for a future stage if requested; it is not included in the mobile package.
 
-## Estrutura
+## Project structure
 
 ```text
-capacitor.config.ts   Nome, identificador e configuração dos aplicativos
-android/              Projeto Android e Gradle Wrapper
-ios/                  Projeto Xcode e dependências Swift
-src/mobile-main.tsx   Entrada do aplicativo instalado
-src/mobile/           Compartilhamento, arquivos e botão voltar
-src/App.tsx           Tarefas, agenda, finanças e ajustes
-src/domain.ts         Tipos, validação e cálculos
-resources/            Logo para gerar ícones e abertura
-scripts/              Compilação e ferramentas auxiliares
-tests/                Verificações da interface e dos contratos
+capacitor.config.ts   App name, identifier, and configuration
+android/              Android project and Gradle Wrapper
+ios/                  Xcode project and Swift dependencies
+src/mobile-main.tsx   Installed app entry point
+src/mobile/           Sharing, files, and back button
+src/App.tsx           Tasks, calendar, finances, and settings
+src/domain.ts         Types, validation, and calculations
+resources/            Logo for icons and splash screen generation
+scripts/              Builds and helper tools
+tests/                Interface and contract checks
 ```
 
-No ambiente cloud, use o checkout existente em `/workspace/DailyAPP`. Cada tarefa já é isolada; não crie worktrees sem solicitação. Dependências e ferramentas podem permanecer no snapshot, mas servidores de desenvolvimento precisam ser iniciados novamente. Leia [o guia de celular](docs/CELULAR.md) para os comandos e limites desse ambiente.
+In the cloud environment, use the existing checkout at `/workspace/DailyAPP`. Each task is already isolated; do not create worktrees unless requested. Dependencies and tools may remain in the snapshot, but development servers must be started again. Read the [mobile guide (Portuguese)](docs/CELULAR.md) for this environment's commands and limitations.
