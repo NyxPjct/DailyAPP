@@ -20,11 +20,21 @@ To open the mobile interface directly on a computer, generate `artifacts/index.h
 
 ## App screenshots
 
+Updated screenshots of **version 1.1, build 6**, showing the English interface and the new currency conversion settings.
+
+| Today in USD | Finances in USD | Currency settings |
+| --- | --- | --- |
+| <img src="docs/screenshots/hoje-usd.png" alt="DailyAPP 1.1 build 6: Today with monthly totals converted to USD" width="250"> | <img src="docs/screenshots/financas-usd.png" alt="DailyAPP 1.1 build 6: income, expenses, and balance converted to USD" width="250"> | <img src="docs/screenshots/moeda.png" alt="DailyAPP 1.1 build 6: currency selector and saved manual exchange rate" width="250"> |
+
+These examples use fictional data and an explicitly labeled manual rate of **0.20 USD per BRL**. The app defaults to BRL; the language and currency can be chosen separately.
+
+English interface with the default BRL currency:
+
 | Today | Tasks | Finances |
 | --- | --- | --- |
 | <img src="docs/screenshots/hoje.png" alt="DailyAPP: daily overview, tasks, and monthly balance" width="250"> | <img src="docs/screenshots/tarefas.png" alt="DailyAPP: task list with times and categories" width="250"> | <img src="docs/screenshots/financas.png" alt="DailyAPP: income, expenses, balance, and spending by category" width="250"> |
 
-Mobile interface screenshots rendered in Chromium at a 390 × 900 viewport, using fictional data from **Explore example**. The three main screenshots use the English default. Expand a language below to see the same screens in that language. Run `npm run screenshots` to regenerate the fifteen language captures and two currency examples after installing the dependencies and the Playwright browser. To generate only one language, set `DAILYAPP_SCREENSHOT_LANGUAGES` to `en`, `pt-BR`, `es`, `fr`, or `de`.
+Mobile screenshots captured from the current app in Chromium at a 390 × 900 viewport, using **Explore example**. Expand a language below to see the same screens in that language. Run `npm run screenshots` to regenerate the fifteen language captures and three currency examples after installing the dependencies and the Playwright browser. To generate only one language, set `DAILYAPP_SCREENSHOT_LANGUAGES` to `en`, `pt-BR`, `es`, `fr`, or `de`.
 
 <details>
 <summary>Português</summary>
@@ -59,17 +69,6 @@ Mobile interface screenshots rendered in Chromium at a 390 × 900 viewport, usin
 | Today | Tasks | Finances |
 | --- | --- | --- |
 | <img src="docs/screenshots/de/hoje.png" alt="DailyAPP Today screen in Deutsch" width="250"> | <img src="docs/screenshots/de/tarefas.png" alt="DailyAPP Tasks screen in Deutsch" width="250"> | <img src="docs/screenshots/de/financas.png" alt="DailyAPP Finances screen in Deutsch" width="250"> |
-
-</details>
-
-<details>
-<summary>Currency settings and converted finances</summary>
-
-| Currency settings | Finances in USD |
-| --- | --- |
-| <img src="docs/screenshots/moeda.png" alt="DailyAPP currency settings with a saved manual USD rate" width="250"> | <img src="docs/screenshots/financas-usd.png" alt="DailyAPP finances converted to USD" width="250"> |
-
-These fictional examples use an explicitly labeled manual rate of 0.20 USD per BRL, not a live quote. The default currency remains BRL.
 
 </details>
 

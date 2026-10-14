@@ -58,7 +58,7 @@ try {
   if (language !== "en") {
     await page.getByRole("button", { name: "Settings", exact: true }).click();
     await page.getByLabel("App language", { exact: true }).selectOption(language);
-    await page.getByRole("button", { name: message("Visão geral"), exact: true }).click();
+    await page.getByRole("navigation", { name: message("Navegação do aplicativo"), exact: true }).getByRole("button", { name: message("Visão geral"), exact: true }).click();
     await page.getByRole("button", { name: message("Fechar notificação"), exact: true }).click();
   }
   await page.evaluate(() => document.fonts.ready);
@@ -90,6 +90,11 @@ try {
     await expect(page.locator(".stat-card").filter({ has: page.getByText("Income received", { exact: true }) })).toContainText("$1,330.00");
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
     await page.screenshot({ path: new URL("financas-usd.png", target).pathname });
+    await page.getByRole("navigation", { name: message("Navegação do aplicativo"), exact: true }).getByRole("button", { name: message("Visão geral"), exact: true }).click();
+    await expect(page.getByRole("heading", { name: message("Seu dia, em equilíbrio."), exact: true })).toBeVisible();
+    await expect(page.locator(".stat-card").filter({ has: page.getByText("Monthly balance", { exact: true }) })).toContainText("$926.70");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+    await page.screenshot({ path: new URL("hoje-usd.png", target).pathname });
   }
   expect(errors).toEqual([]);
   await context.close();
