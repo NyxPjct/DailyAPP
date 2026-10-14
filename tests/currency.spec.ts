@@ -3,7 +3,7 @@ import type { Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { freshData, validateData, money, amountInput } from "../src/domain";
 import type { AppData } from "../src/domain";
-import { CURRENCIES, RATE_URL, parseCurrencyAmount, parseCurrencyBalance, parseRateInput, ratesFromResponse, setCurrentCurrency } from "../src/currency";
+import { CURRENCIES, RATE_URL, parseCurrencyAmount, parseCurrencyBalance, parseRateInput, ratesFromResponse, setCurrentCurrency, currencyForLanguage } from "../src/currency";
 import { getLocale, LANGUAGES, setCurrentLanguage, translate } from "../src/i18n/core";
 import { nativeBridge } from "./helpers/native";
 
@@ -102,7 +102,7 @@ test("online rate changes all financial views; unchanged edits preserve original
   expect((await saved(page)).exchangeRates).toEqual(rates);
 });
 
-for (const language of LANGUAGES) test(`${language.name}: currency choice works offline and remains independent from language`, async ({ page }) => {
+for (const language of LANGUAGES) test(`${language.name}: manual currency choice works offline until the next language change`, async ({ page }) => {
   const tr = (key: string, ...values: unknown[]) => translate(language.id, key, ...values);
   await start(page, { ...original, language: language.id, exchangeRates: rates });
   await page.context().setOffline(true);
@@ -118,7 +118,7 @@ for (const language of LANGUAGES) test(`${language.name}: currency choice works 
   }
   expect((await saved(page)).transactions).toEqual(original.transactions);
   await page.getByLabel(tr("Idioma do aplicativo"), { exact: true }).selectOption("en");
-  expect((await saved(page)).currency).toBe("AUD");
+  expect((await saved(page)).currency).toBe("USD");
   await page.setViewportSize({ width: 320, height: 740 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
@@ -184,4 +184,112 @@ test("stale quotes are dated and refresh changes estimates only after saving", a
   expect((await saved(page)).transactions).toEqual(original.transactions);
   await finances(page);
   await expect(page.locator(".stat-card").filter({ has: page.getByText("Expenses paid", { exact: true }) })).toContainText("$25.01");
+});
+
+for (const language of LANGUAGES) test(`${language.name}: changing language selects its currency offline without rewriting records`, async ({ page }) => {
+  await start(page, { ...original, exchangeRates: rates });
+  await settings(page); await page.context().setOffline(true);
+  await page.getByLabel("App language", { exact: true }).selectOption(language.id);
+  const target = currencyForLanguage(language.id);
+  await expect(page.getByLabel(translate(language.id, "Moeda do aplicativo"), { exact: true })).toHaveValue(target);
+  expect((await saved(page)).currency).toBe(target);
+  expect((await saved(page)).transactions).toEqual(original.transactions);
+  expect((await saved(page)).cards).toEqual(original.cards);
+  expect((await saved(page)).goals).toEqual(original.goals);
+  expect((await saved(page)).budgets).toEqual(original.budgets);
+  expect((await saved(page)).openingBalances).toEqual(original.openingBalances);
+  await page.getByRole("button", { name: translate(language.id, "Exportar backup"), exact: true }).click();
+  const json = await page.evaluate(() => (window as any).dailyappNativeTest.calls.find((c: any) => c.method === "writeFile").options.data);
+  expect(validateData(JSON.parse(json))).toMatchObject({ language: language.id, currency: target });
+  await page.context().setOffline(false); await page.reload();
+  expect((await saved(page)).currency).toBe(target);
+});
+
+test("missing rates keep the new language and original currency; selecting it again fetches and converts", async ({ page }) => {
+  await page.route(RATE_URL, route => route.abort("internetdisconnected"));
+  await start(page); await settings(page);
+  await page.getByLabel("App language", { exact: true }).selectOption("de");
+  await expect(page.locator(".currency-language-banner")).toContainText("Ohne Kurs für EUR");
+  expect((await saved(page)).language).toBe("de");
+  expect((await saved(page)).currency).toBeUndefined();
+  expect((await saved(page)).transactions).toEqual(original.transactions);
+  await page.unroute(RATE_URL); await page.route(RATE_URL, route => route.fulfill({ json: response }));
+  await page.getByLabel(translate("de", "Idioma do aplicativo"), { exact: true }).selectOption("de");
+  await expect(page.getByLabel(translate("de", "Moeda do aplicativo"), { exact: true })).toHaveValue("EUR");
+  expect((await saved(page)).transactions).toEqual(original.transactions);
+  await expect(page.locator(".currency-language-banner")).toHaveCount(0);
+});
+
+test("a late quote waits for an open amount form, preserves concurrent edits, and then applies the currency", async ({ page }) => {
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => release = resolve);
+  let requested = false;
+  await page.route(RATE_URL, async route => { requested = true; await pending; await route.fulfill({ json: response }).catch(() => {}); });
+  await start(page); await settings(page);
+  await page.getByLabel("App language", { exact: true }).selectOption("en");
+  await expect.poll(() => requested).toBe(true);
+  await finances(page);
+  await page.getByRole("button", { name: "Edit transaction: My purchase", exact: true }).click();
+  await expect(page.getByLabel("Amount (R$)", { exact: true })).toHaveValue("100.03");
+  release();
+  await expect(page.locator(".currency-language-banner")).toContainText("Close the form");
+  await expect(page.getByLabel("Amount (R$)", { exact: true })).toHaveValue("100.03");
+  await page.getByLabel("Description", { exact: true }).fill("Edited while fetching");
+  await page.getByRole("dialog").getByRole("button", { name: "Save changes", exact: true }).click();
+  await expect.poll(async () => (await saved(page)).currency).toBe("USD");
+  expect((await saved(page)).transactions[0]).toMatchObject({ amountCents: 10003, description: "Edited while fetching" });
+});
+
+test("superseded language requests and manual currency choices cannot be overwritten by a late quote", async ({ page }) => {
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => release = resolve);
+  let requested = false;
+  await page.route(RATE_URL, async route => { requested = true; await pending; await route.fulfill({ json: response }).catch(() => {}); });
+  await start(page); await settings(page);
+  await page.getByLabel("App language", { exact: true }).selectOption("en");
+  await expect.poll(() => requested).toBe(true);
+  await page.getByLabel("App language", { exact: true }).selectOption("pt-BR");
+  release();
+  await expect(page.getByLabel("Moeda do aplicativo", { exact: true })).toHaveValue("BRL");
+  expect((await saved(page)).currency).toBe("BRL");
+  expect((await saved(page)).language).toBe("pt-BR");
+  await page.getByLabel("Idioma do aplicativo", { exact: true }).selectOption("en");
+  await expect.poll(async () => (await saved(page)).currency).toBe("USD");
+  await page.getByLabel("App currency", { exact: true }).selectOption("CAD");
+  await page.getByRole("button", { name: "Save currency", exact: true }).click();
+  expect((await saved(page)).currency).toBe("CAD");
+  await page.getByLabel("App language", { exact: true }).selectOption("fr");
+  expect((await saved(page)).currency).toBe("EUR");
+  expect((await saved(page)).transactions).toEqual(original.transactions);
+});
+
+test("manual saves and backup restore cancel pending currency requests, including a restore to the same language", async ({ page }) => {
+  const releases: (() => void)[] = [], finishes: (() => void)[] = [];
+  const gates = [0, 1].map(() => new Promise<void>(resolve => releases.push(resolve)));
+  const done = [0, 1].map(() => new Promise<void>(resolve => finishes.push(resolve)));
+  let requested = 0;
+  await page.route(RATE_URL, async route => {
+    const index = requested++; await gates[index];
+    await route.fulfill({ json: response }).catch(() => {}); finishes[index]();
+  });
+  await start(page); await settings(page);
+  await page.getByLabel("App language", { exact: true }).selectOption("en");
+  await expect.poll(() => requested).toBe(1);
+  await page.getByLabel("App currency", { exact: true }).selectOption("CAD");
+  await page.getByText("Enter a manual rate", { exact: true }).click();
+  await page.getByLabel("Value of 1 BRL in CAD").fill("0.28");
+  await page.getByRole("button", { name: "Save manual rate", exact: true }).click();
+  releases[0](); await done[0];
+  expect((await saved(page)).currency).toBe("CAD");
+  expect((await saved(page)).exchangeRates?.USD).toBeUndefined();
+  await expect(page.locator(".currency-language-banner")).toHaveCount(0);
+  await page.getByLabel("App language", { exact: true }).selectOption("de");
+  await expect.poll(() => requested).toBe(2);
+  const backup = { ...original, language: "de", currency: "GBP", exchangeRates: rates };
+  await page.getByLabel(translate("de", "Arquivo de backup")).setInputFiles({ name: "restore.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(backup)) });
+  await page.getByRole("button", { name: translate("de", "Confirmar"), exact: true }).click();
+  releases[1](); await done[1];
+  expect((await saved(page)).currency).toBe("GBP");
+  expect((await saved(page)).transactions).toEqual(original.transactions);
+  await expect(page.locator(".currency-language-banner")).toHaveCount(0);
 });

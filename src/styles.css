@@ -3571,3 +3571,5 @@ td:last-child {
 .manual-rate summary { cursor: pointer; padding: 12px 0; font-weight: 600; }
 .manual-rate label { margin: 10px 0; }
 .manual-rate .button { margin-top: 12px; }
+.currency-language-banner { background: #eef3eb; border-color: #cddcc7; color: #355844; }
+.currency-settings > form { padding-bottom: 20px; }

@@ -4055,5 +4055,41 @@ export const messages: Record<string, Record<ForeignLanguage, string>> = {
     "es": "({0})",
     "fr": "({0})",
     "de": "({0})"
+  },
+  "Buscando cotação para {0}. Os valores continuam em {1} até a conversão estar pronta.": {
+    "en": "Fetching a rate for {0}. Amounts stay in {1} until conversion is ready.",
+    "es": "Buscando el tipo de cambio para {0}. Los importes siguen en {1} hasta que la conversión esté lista.",
+    "fr": "Recherche du taux pour {0}. Les montants restent en {1} jusqu’à ce que la conversion soit prête.",
+    "de": "Kurs für {0} wird abgerufen. Beträge bleiben in {1}, bis die Umrechnung bereit ist."
+  },
+  "Cotação pronta para {0}. Feche o formulário para aplicar a moeda.": {
+    "en": "The rate for {0} is ready. Close the form to apply the currency.",
+    "es": "El tipo de cambio para {0} está listo. Cierra el formulario para aplicar la moneda.",
+    "fr": "Le taux pour {0} est prêt. Fermez le formulaire pour appliquer la devise.",
+    "de": "Der Kurs für {0} ist bereit. Schließe das Formular, um die Währung anzuwenden."
+  },
+  "Sem cotação para {0}, os valores continuam em {1}. Atualize a cotação ou informe uma taxa manual em Ajustes.": {
+    "en": "Without a rate for {0}, amounts stay in {1}. Refresh the rate or enter a manual rate in Settings.",
+    "es": "Sin tipo de cambio para {0}, los importes siguen en {1}. Actualiza el tipo o introduce uno manual en Ajustes.",
+    "fr": "Sans taux pour {0}, les montants restent en {1}. Actualisez le taux ou saisissez un taux manuel dans Réglages.",
+    "de": "Ohne Kurs für {0} bleiben Beträge in {1}. Aktualisiere den Kurs oder gib in Einstellungen einen manuellen Kurs ein."
+  },
+  "Ao trocar o idioma, a moeda muda automaticamente: inglês usa USD; português usa BRL; espanhol, francês e alemão usam EUR. É necessária uma cotação salva ou online para converter.": {
+    "en": "Changing the language automatically changes the currency: English uses USD; Portuguese uses BRL; Spanish, French, and German use EUR. Conversion needs a saved or online rate.",
+    "es": "Al cambiar el idioma, la moneda cambia automáticamente: inglés usa USD; portugués usa BRL; español, francés y alemán usan EUR. La conversión necesita un tipo guardado o en línea.",
+    "fr": "Changer de langue change automatiquement la devise : l’anglais utilise USD ; le portugais BRL ; l’espagnol, le français et l’allemand EUR. La conversion nécessite un taux enregistré ou en ligne.",
+    "de": "Beim Sprachwechsel ändert sich die Währung automatisch: Englisch verwendet USD, Portugiesisch BRL und Spanisch, Französisch sowie Deutsch EUR. Die Umrechnung benötigt einen gespeicherten oder online abgerufenen Kurs."
+  },
+  "A moeda acompanha a troca de idioma. Você também pode escolher outra moeda manualmente.": {
+    "en": "Currency follows language changes. You can also choose another currency manually.",
+    "es": "La moneda sigue los cambios de idioma. También puedes elegir otra moneda manualmente.",
+    "fr": "La devise suit les changements de langue. Vous pouvez aussi choisir une autre devise manuellement.",
+    "de": "Die Währung folgt Sprachwechseln. Du kannst auch eine andere Währung manuell wählen."
+  },
+  "Uma escolha manual vale até a próxima troca de idioma, que aplica novamente a moeda desse idioma.": {
+    "en": "A manual choice lasts until the next language change, which reapplies that language’s currency.",
+    "es": "La elección manual dura hasta el siguiente cambio de idioma, que vuelve a aplicar la moneda de ese idioma.",
+    "fr": "Un choix manuel reste valable jusqu’au prochain changement de langue, qui réapplique la devise de cette langue.",
+    "de": "Eine manuelle Auswahl gilt bis zum nächsten Sprachwechsel, der wieder die Währung dieser Sprache anwendet."
   }
 };

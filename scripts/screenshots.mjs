@@ -55,12 +55,25 @@ try {
   await page.getByRole("button", { name: "Explore example", exact: true }).click();
   await expect(page.getByText("You are exploring example data.")).toBeVisible();
   await page.getByRole("button", { name: "Close notification", exact: true }).click();
-  if (language !== "en") {
-    await page.getByRole("button", { name: "Settings", exact: true }).click();
-    await page.getByLabel("App language", { exact: true }).selectOption(language);
-    await page.getByRole("navigation", { name: message("Navegação do aplicativo"), exact: true }).getByRole("button", { name: message("Visão geral"), exact: true }).click();
-    await page.getByRole("button", { name: message("Fechar notificação"), exact: true }).click();
+  // Explicit manual sample rates make the language/currency galleries
+  // deterministic and demonstrate the actual language-switch behavior.
+  await page.getByRole("button", { name: "Settings", exact: true }).click();
+  for (const [code, rate] of [["USD", "0.20"], ["EUR", "0.18"]]) {
+    await page.getByLabel("App currency", { exact: true }).selectOption(code);
+    if (await page.locator(".manual-rate").getAttribute("open") === null) await page.getByText("Enter a manual rate", { exact: true }).click();
+    await page.getByLabel(`Value of 1 BRL in ${code}`).fill(rate);
+    await page.getByRole("button", { name: "Save manual rate", exact: true }).click();
   }
+  await page.getByLabel("App language", { exact: true }).selectOption(language);
+  const profile = language === "en" ? "USD" : language === "pt-BR" ? "BRL" : "EUR";
+  await expect(page.getByLabel(message("Moeda do aplicativo"), { exact: true })).toHaveValue(profile);
+  if (language === "en") {
+    // Keep a separate BRL gallery to show that a manual override is available.
+    await page.getByLabel("App currency", { exact: true }).selectOption("BRL");
+    await page.getByRole("button", { name: "Save currency", exact: true }).click();
+  }
+  await page.getByRole("navigation", { name: message("Navegação do aplicativo"), exact: true }).getByRole("button", { name: message("Visão geral"), exact: true }).click();
+  await page.getByRole("button", { name: message("Fechar notificação"), exact: true }).click();
   await page.evaluate(() => document.fonts.ready);
 
   for (const [filename, navigation, heading] of [
@@ -77,14 +90,16 @@ try {
     // An explicitly labeled manual example keeps screenshots reproducible
     // without presenting an invented rate as a current online quote.
     await page.getByRole("button", { name: "Settings", exact: true }).click();
-    await page.getByLabel("App currency", { exact: true }).selectOption("USD");
-    await page.getByText("Enter a manual rate", { exact: true }).click();
-    await page.getByLabel("Value of 1 BRL in USD").fill("0.20");
-    await page.getByRole("button", { name: "Save manual rate", exact: true }).click();
+    await page.getByLabel("App language", { exact: true }).selectOption("en");
     await expect(page.locator(".exchange-rate-info")).toContainText("Manual rate");
-    await page.getByText("Enter a manual rate", { exact: true }).click();
+    if (await page.locator(".manual-rate").getAttribute("open") !== null) await page.getByText("Enter a manual rate", { exact: true }).click();
     await page.getByRole("button", { name: "Close notification", exact: true }).click();
     await page.locator(".currency-settings").scrollIntoViewIfNeeded();
+    await page.locator(".currency-settings").evaluate(panel => {
+      const topbar = document.querySelector(".topbar");
+      const inset = (topbar?.getBoundingClientRect().bottom ?? 0) + 16;
+      window.scrollBy({ top: panel.getBoundingClientRect().top - inset });
+    });
     await page.screenshot({ path: new URL("moeda.png", target).pathname });
     await page.getByRole("button", { name: "My finances", exact: true }).click();
     await expect(page.locator(".stat-card").filter({ has: page.getByText("Income received", { exact: true }) })).toContainText("$1,330.00");

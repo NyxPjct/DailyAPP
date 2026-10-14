@@ -10,7 +10,7 @@
 
 If DailyAPP is already installed on your Android phone, export a backup from Settings and install the new APK without uninstalling the app. [Check the APK's SHA-256 hash](downloads/DailyAPP-1.1-pessoal.apk.sha256).
 
-**1.1 update:** this revision keeps version 1.1.0, now with build 6, and adds real currency conversion across transactions, budgets, cards, goals, forecasts, and charts. The [guide to each feature](#what-each-feature-does) and [language settings](#languages) are below.
+**1.1 update:** this revision keeps version 1.1.0, now with build 7, and makes currency switch automatically with the selected language, using saved or fetched rates while preserving recorded values. The new downloads are being prepared; the links above still point to the previous verified build. The [guide to each feature](#what-each-feature-does) and [language settings](#languages) are below.
 
 A multilingual app for tasks, scheduling, and personal finances. English is the default, with Portuguese, Spanish, French, and German available in Settings. Its React interface is packaged with Capacitor into apps installed on your phone. Screens, fonts, and icons are included in the installation; local operation does not require hosting, Netlify, or Supabase.
 
@@ -20,15 +20,15 @@ To open the mobile interface directly on a computer, generate `artifacts/index.h
 
 ## App screenshots
 
-Updated screenshots of **version 1.1, build 6**, showing the English interface and the new currency conversion settings.
+Updated screenshots of **version 1.1, build 7**, showing the English interface and the new currency conversion settings.
 
 | Today in USD | Finances in USD | Currency settings |
 | --- | --- | --- |
-| <img src="docs/screenshots/hoje-usd.png" alt="DailyAPP 1.1 build 6: Today with monthly totals converted to USD" width="250"> | <img src="docs/screenshots/financas-usd.png" alt="DailyAPP 1.1 build 6: income, expenses, and balance converted to USD" width="250"> | <img src="docs/screenshots/moeda.png" alt="DailyAPP 1.1 build 6: currency selector and saved manual exchange rate" width="250"> |
+| <img src="docs/screenshots/hoje-usd.png" alt="DailyAPP 1.1 build 7: Today with monthly totals converted to USD" width="250"> | <img src="docs/screenshots/financas-usd.png" alt="DailyAPP 1.1 build 7: income, expenses, and balance converted to USD" width="250"> | <img src="docs/screenshots/moeda.png" alt="DailyAPP 1.1 build 7: currency selector and saved manual exchange rate" width="250"> |
 
-These examples use fictional data and an explicitly labeled manual rate of **0.20 USD per BRL**. The app defaults to BRL; the language and currency can be chosen separately.
+These examples use fictional data and an explicitly labeled manual rate of **0.20 USD per BRL**. Changing the language selects USD for English, BRL for Portuguese, and EUR for Spanish, French, and German. Sample rates are 0.20 USD and 0.18 EUR per BRL.
 
-English interface with the default BRL currency:
+English interface with a manual BRL override:
 
 | Today | Tasks | Finances |
 | --- | --- | --- |
@@ -75,7 +75,7 @@ Mobile screenshots captured from the current app in Chromium at a 390 × 900 vie
 ## Features
 
 - English by default, with complete Portuguese, Spanish, French, and German translations; switch instantly in Settings.
-- Real conversion between BRL, USD, EUR, GBP, CAD, and AUD, with online quotes, manual rates, and the last saved rate offline. Currency and language are independent.
+- Real conversion between BRL, USD, EUR, GBP, CAD, and AUD, with online quotes, manual rates, and the last saved rate offline. Changing language selects USD, BRL, or EUR automatically; all six currencies remain available as manual overrides.
 - Bottom navigation with Today, Calendar, Tasks, Finances, and Settings.
 - First-use setup with an optional name and budget, plus a quick guide in Settings.
 - Create, edit, complete, and delete tasks with dates, times, categories, and priorities.
@@ -107,11 +107,21 @@ Open **Settings → App language** and choose:
 | French | Français |
 | German | Deutsch |
 
-No download or network connection is required: all translations are bundled with the app. The choice is saved on the device and included in backups. Restoring a backup with a language restores that choice; older backups keep your current preference. Number separators and date names follow the selected language, while the display currency is selected separately. System permission and file picker dialogs follow device settings.
+No download or network connection is required: all translations are bundled with the app. The choice is saved on the device and included in backups. Restoring a backup with a language restores that choice; older backups keep your current preference. Number separators and date names follow the selected language, while changing language also selects its corresponding currency: English → USD, Portuguese → BRL, and Spanish/French/German → EUR. With a cached rate, this works offline. If a quote is missing, the language updates immediately and amounts stay in the previous currency until a valid quote is available. System permission and file picker dialogs follow device settings.
 
 ## Currency conversion
 
-Open **Settings → App currency**, choose **BRL, USD, EUR, GBP, CAD, or AUD**, and tap **Save currency**. BRL remains the default in every language. For another currency, the app uses its saved quote or fetches one if none is available. You can use English with reais or Portuguese with dollars.
+Changing **Settings → App language** also changes the display currency:
+
+| Selected language | Currency |
+| --- | --- |
+| English | USD — US dollar |
+| Português | BRL — Brazilian real |
+| Español, Français, Deutsch | EUR — euro |
+
+A saved quote is applied immediately, including offline. If a quote is missing, the language changes immediately and the app fetches a quote. While waiting or if fetching fails, amounts remain in their previous currency and a banner explains the situation. Currency changes wait until any open amount form is closed, so an amount being edited is never reinterpreted mid-entry. Rapid language changes, manual currency saves, and restoring a backup cancel an earlier pending conversion.
+
+To override the currency manually, open **Settings → App currency**, choose **BRL, USD, EUR, GBP, CAD, or AUD**, and tap **Save currency**. That choice lasts until the next language change, which reapplies its currency. For example, you can choose English with reais and switch back to automatic USD by changing the language again. Existing records and backups keep their saved currency on opening or restoring; a fresh installation uses BRL until its first currency choice or language-triggered conversion. No quote is fabricated for an offline first use.
 
 **Refresh exchange rate** retrieves the latest available daily quote from [Currency API](https://github.com/fawazahmed0/exchange-api), served by jsDelivr without an API key. Quote requests contain no personal records. The source date is shown; rates older than seven days are marked. Tap **Save currency** to apply a refreshed quote. If the source is unavailable, the previous saved rate remains usable. **Enter a manual rate → Save manual rate** lets you enter the value of **1 BRL in the selected currency**, with up to eight decimal places. For example, 0.20 USD per BRL displays R$100.00 as $20.00. Manual rates are labeled and dated separately from online quotes.
 
@@ -121,7 +131,7 @@ This is a current-rate estimate: it does not record historical purchase rates, e
 
 ## What each feature does
 
-The guide uses the default English interface. Change the language in **Settings → App language**. All app screens, buttons, categories, filters, dialogs, help, dates, number formatting, and local reminder text update to your selection. Choose the display currency separately in **Settings → App currency**; BRL is the default. Your own names, task titles, transaction descriptions, and notes keep their original content.
+The guide uses the default English interface. Change the language in **Settings → App language**. All app screens, buttons, categories, filters, dialogs, help, dates, number formatting, and local reminder text update to your selection. Changing the language also selects USD, BRL, or EUR; **Settings → App currency** allows a manual override. Your own names, task titles, transaction descriptions, and notes keep their original content.
 
 ### Today
 
@@ -195,8 +205,8 @@ The app schedules up to **60 upcoming notifications** and refreshes them when op
 
 | Feature | Purpose and how to use it |
 | --- | --- |
-| App language | Select English, Português, Español, Français, or Deutsch in Settings. The interface changes immediately and the choice is saved across restarts and included in backups. |
-| App currency | Select a display currency separately from the language. Refresh and save an online quote, use a cached quote offline, or enter a manual rate. All financial screens and fields convert while stored BRL cents remain preserved. |
+| App language | Select English, Português, Español, Français, or Deutsch in Settings. The interface changes immediately and selects USD for English, BRL for Portuguese, and EUR for Spanish/French/German. The choices are saved across restarts and included in backups. |
+| App currency | Override the language’s currency manually until the next language change. Refresh and save an online quote, use a cached quote offline, or enter a manual rate. All financial screens and fields convert while stored BRL cents remain preserved. |
 | Your name | Personalizes the greeting. Name and budget are optional during first-use setup. |
 | Export backup | Creates a JSON file with tasks, transactions, cards, routines, goals, opening balances, budgets, reminder settings, the selected language, currency, and saved exchange rates with dates and sources. On a phone, choose where to save it through the share menu; on a computer, download the file. |
 | Import backup | Select a DailyAPP JSON file and confirm restoration. This **replaces the current data**, rather than merging it. Earlier backups are still accepted; export your current data first if you want to preserve it. |
@@ -262,7 +272,7 @@ npm run build:mobile
 npm test
 ```
 
-The 78 tests use Playwright and Chromium. They cover actual currency conversion, inverse amount inputs, quote failures, cached and manual rates, balance forecasts, goals, bills on Today, tasks, finances, local data, backups, storage failures, dates, navigation, first use, existing-data upgrades, all five languages, accessibility, and offline use of the mobile interface. Native plugin contracts are simulated: browser tests do not replace testing on a phone, especially for the keyboard, file picker, and sharing.
+The 87 tests use Playwright and Chromium. They cover automatic language/currency switching, cancellation of stale requests, safe conversion after closing an amount form, actual currency conversion, inverse amount inputs, quote failures, cached and manual rates, balance forecasts, goals, bills on Today, tasks, finances, local data, backups, storage failures, dates, navigation, first use, existing-data upgrades, all five languages, accessibility, and offline use of the mobile interface. Native plugin contracts are simulated: browser tests do not replace testing on a phone, especially for the keyboard, file picker, and sharing.
 
 Test servers use ports 5174 (local workspace), 5175 (mocked accounts from the earlier implementation), and 5176 (mobile app interface). In the cloud environment, the available browser is `/usr/bin/chromium`; on other machines, run `npx playwright install chromium` once.
 

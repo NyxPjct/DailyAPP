@@ -1,4 +1,5 @@
-import { currencySymbol, getCurrency, parseCurrencyAmount, setCurrentCurrency, toDisplayCents } from "./currency";
+import { currencyForLanguage, currencySymbol, fetchExchangeRates, getCurrency, parseCurrencyAmount, setCurrentCurrency, toDisplayCents } from "./currency";
+import type { Currency, ExchangeRates } from "./currency";
 import { CurrencySettings } from "./features/CurrencySettings";
 import { t as tr, translate, LANGUAGES, isLanguage, LANGUAGE_KEY, readLanguagePreference, setCurrentLanguage, getLocale, recordText } from "./i18n/core";
 import type { Language } from "./i18n/core";
@@ -976,6 +977,19 @@ const navItems = [
   const [refreshTick, setRefreshTick] = useState(0);
   const [reminders, setReminders] = useState<ReminderState>(initialReminderState);
   const dataRef = useRef(data); dataRef.current = data;
+  const languageCurrencyRequest = useRef<AbortController | null>(null);
+  const [languageCurrencyStatus, setLanguageCurrencyStatus] = useState<{ target: Currency; status: "loading" | "ready" | "error" } | null>(null);
+  const [languageCurrencyQuote, setLanguageCurrencyQuote] = useState<{ language: Language; target: Currency; rates: ExchangeRates; request: AbortController } | null>(null);
+  useEffect(() => () => languageCurrencyRequest.current?.abort(), []);
+  useEffect(() => {
+    const quote = languageCurrencyQuote;
+    if (!quote || editor || confirm || welcomeOpen || helpOpen) return;
+    if (quote.request.signal.aborted || languageCurrencyRequest.current !== quote.request || dataRef.current.language !== quote.language) return;
+    const ok = save({ ...dataRef.current, currency: quote.target, exchangeRates: { ...dataRef.current.exchangeRates, ...quote.rates } });
+    setLanguageCurrencyQuote(null);
+    setLanguageCurrencyStatus(ok ? null : { target: quote.target, status: "error" });
+    if (ok) setToast(tr("Moeda atualizada."));
+  }, [languageCurrencyQuote, editor, confirm, welcomeOpen, helpOpen]);
   const reminderTap = useRef<(kind: string, id: string, month?: string) => void>(() => {});
   reminderTap.current = (kind, id, reminderMonth) => {
     if (kind === "task" && data.tasks.some(t => t.id === id)) go("tasks");
@@ -1100,6 +1114,7 @@ const navItems = [
   function save(next: AppData, recovery = false) {
     try { next = validateData(next); }
     catch (error) { setToast(error instanceof Error ? error.message : tr("Não foi possível validar os registros.")); return false; }
+    if (recovery) cancelLanguageCurrency();
     if (workspace) {
       const ok = workspace.save(next, recovery);
       if (!ok) setToast(workspace.getSnapshot().message);
@@ -1130,8 +1145,30 @@ const navItems = [
       return false;
     }
   }
-  function changeLanguage(next: Language) {
-    if (save({ ...data, language: next })) { setCurrentLanguage(next); setPreferredLanguage(next); setToast(tr("Idioma atualizado.")); }
+  function cancelLanguageCurrency() {
+    languageCurrencyRequest.current?.abort();
+    languageCurrencyRequest.current = null;
+    setLanguageCurrencyQuote(null);
+    setLanguageCurrencyStatus(null);
+  }
+  async function changeLanguage(next: Language) {
+    cancelLanguageCurrency();
+    const target = currencyForLanguage(next);
+    const current = dataRef.current;
+    const ready = target === "BRL" || !!current.exchangeRates?.[target];
+    if (!save({ ...current, language: next, ...(ready ? { currency: target } : {}) })) return;
+    setCurrentLanguage(next); setPreferredLanguage(next); setToast(tr("Idioma atualizado."));
+    if (ready) return;
+    const request = new AbortController(); languageCurrencyRequest.current = request;
+    setLanguageCurrencyStatus({ target, status: "loading" });
+    try {
+      const rates = await fetchExchangeRates(request.signal);
+      if (request.signal.aborted || languageCurrencyRequest.current !== request || dataRef.current.language !== next) return;
+      setLanguageCurrencyQuote({ language: next, target, rates, request });
+      setLanguageCurrencyStatus({ target, status: "ready" });
+    } catch {
+      if (!request.signal.aborted && languageCurrencyRequest.current === request) setLanguageCurrencyStatus({ target, status: "error" });
+    }
   }
   function go(next: View) {
     setView(next);
@@ -1652,6 +1689,15 @@ const navItems = [
               <button onClick={() => go("settings")}>{tr("Recuperar dados")}</button>
             </div>
           )}
+          {languageCurrencyStatus && <div className="error-banner currency-language-banner" aria-live="polite">
+            <Wallet size={19} />
+            <span>{languageCurrencyStatus.status === "loading"
+              ? tr("Buscando cotação para {0}. Os valores continuam em {1} até a conversão estar pronta.", languageCurrencyStatus.target, getCurrency())
+              : languageCurrencyStatus.status === "ready"
+                ? tr("Cotação pronta para {0}. Feche o formulário para aplicar a moeda.", languageCurrencyStatus.target)
+                : tr("Sem cotação para {0}, os valores continuam em {1}. Atualize a cotação ou informe uma taxa manual em Ajustes.", languageCurrencyStatus.target, getCurrency())}</span>
+            <button onClick={() => go("settings")}>{tr("Moeda e conversão")}</button>
+          </div>}
           {data.demo && (
             <div className="demo-banner">
               <Sparkles size={15} />
@@ -2352,9 +2398,9 @@ const navItems = [
               <section className="panel settings-panel language-panel">
                 <div className="panel-heading"><div className="section-icon sage"><Settings2 size={19} /></div><div><h2>{tr("Idioma")}</h2><p>{tr("Escolha o idioma do aplicativo.")}</p></div></div>
                 <label>{tr("Idioma do aplicativo")}<select aria-label={tr("Idioma do aplicativo")} value={language} onChange={event => { if (isLanguage(event.target.value)) changeLanguage(event.target.value); }}>{LANGUAGES.map(item => <option key={item.id} value={item.id} lang={item.id}>{item.name}</option>)}</select></label>
-                <p className="form-hint">{tr("A interface, datas e lembretes acompanham sua escolha. Escolha a moeda separadamente abaixo.")}</p>
+                <p className="form-hint">{tr("Ao trocar o idioma, a moeda muda automaticamente: inglês usa USD; português usa BRL; espanhol, francês e alemão usam EUR. É necessária uma cotação salva ou online para converter.")}</p>
               </section>
-              <CurrencySettings data={data} onSave={(currency, exchangeRates) => { const ok = save({ ...dataRef.current, currency, exchangeRates }); if (ok) setToast(tr("Moeda atualizada.")); return ok; }} />
+              <CurrencySettings key={language} data={data} requestedCurrency={languageCurrencyStatus?.status === "error" ? languageCurrencyStatus.target : undefined} onSave={(currency, exchangeRates) => { cancelLanguageCurrency(); const ok = save({ ...dataRef.current, currency, exchangeRates }); if (ok) setToast(tr("Moeda atualizada.")); return ok; }} />
               {!mobileApp && <section className="panel settings-panel account-panel">
                 <div className="panel-heading">
                   <div className="section-icon sage">

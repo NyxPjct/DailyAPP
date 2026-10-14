@@ -3,6 +3,8 @@ import type { Language } from "./i18n/core";
 
 export const CURRENCIES = ["BRL", "USD", "EUR", "GBP", "CAD", "AUD"] as const;
 export type Currency = typeof CURRENCIES[number];
+export const LANGUAGE_CURRENCIES: Record<Language, Currency> = { en: "USD", "pt-BR": "BRL", es: "EUR", fr: "EUR", de: "EUR" };
+export const currencyForLanguage = (language: Language): Currency => LANGUAGE_CURRENCIES[language];
 export type ForeignCurrency = Exclude<Currency, "BRL">;
 export interface ExchangeRate { rate: number; date: string; source: "currency-api" | "manual" }
 export type ExchangeRates = Partial<Record<ForeignCurrency, ExchangeRate>>;

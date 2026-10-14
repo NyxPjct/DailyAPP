@@ -1,3 +1,4 @@
+import { RATE_URL } from "../src/currency";
 import { readFileSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -54,6 +55,7 @@ test("localized amounts preserve cents and reject ambiguous separators", () => {
 
 for (const language of LANGUAGES) test(`${language.name}: whole interface changes offline, survives restart, and preserves records and money`, async ({ page }) => {
   const id = language.id, labels = expected[id], tr = (s: string, ...v: unknown[]) => translate(id, s, ...v);
+  await page.route(RATE_URL, route => route.abort("internetdisconnected"));
   const errors: string[] = []; page.on("pageerror", e => errors.push(e.message));
   await nativeBridge(page, "ios");
   await page.setViewportSize({ width: 390, height: 844 });
@@ -126,6 +128,7 @@ for (const language of LANGUAGES) test(`${language.name}: whole interface change
 });
 
 test("changing language updates native reminders, including delayed notifications, without dropping records", async ({ page }) => {
+  await page.route(RATE_URL, route => route.abort("internetdisconnected"));
   await nativeBridge(page, "android");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.setFixedTime(new Date("2026-10-14T15:00:00Z"));

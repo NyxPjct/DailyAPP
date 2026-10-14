@@ -7,14 +7,14 @@ import { CURRENCIES, fetchExchangeRates, isCurrency, parseRateInput, RATE_SOURCE
 import type { Currency, ExchangeRates } from "../currency";
 
 const names = { BRL: "Real brasileiro", USD: "Dólar americano", EUR: "Euro", GBP: "Libra esterlina", CAD: "Dólar canadense", AUD: "Dólar australiano" };
-export function CurrencySettings({ data, onSave }: { data: AppData; onSave: (currency: Currency, rates: ExchangeRates) => boolean }) {
-  const [currency, setCurrency] = useState<Currency>(data.currency ?? "BRL");
+export function CurrencySettings({ data, onSave, requestedCurrency }: { data: AppData; onSave: (currency: Currency, rates: ExchangeRates) => boolean; requestedCurrency?: Currency }) {
+  const [currency, setCurrency] = useState<Currency>(requestedCurrency ?? data.currency ?? "BRL");
   const [rates, setRates] = useState<ExchangeRates>(data.exchangeRates ?? {});
   const [manual, setManual] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const controller = useRef<AbortController | null>(null);
-  useEffect(() => { setCurrency(data.currency ?? "BRL"); setRates(data.exchangeRates ?? {}); }, [data.currency, data.exchangeRates]);
+  useEffect(() => { setCurrency(requestedCurrency ?? data.currency ?? "BRL"); setRates(data.exchangeRates ?? {}); }, [data.currency, data.exchangeRates, requestedCurrency]);
   useEffect(() => () => controller.current?.abort(), []);
   const entry = currency === "BRL" ? undefined : rates[currency];
   const old = !!entry && Date.now() - Date.parse(entry.date) > 7 * 86400000;
@@ -33,7 +33,7 @@ export function CurrencySettings({ data, onSave }: { data: AppData; onSave: (cur
     if (next && !controller.current?.signal.aborted) onSave(currency, next);
   }
   return <section className="panel settings-panel currency-settings">
-    <div className="panel-heading"><div className="section-icon sage"><Wallet size={19} /></div><div><h2>{tr("Moeda e conversão")}</h2><p>{tr("Escolha a moeda dos valores, independentemente do idioma.")}</p></div></div>
+    <div className="panel-heading"><div className="section-icon sage"><Wallet size={19} /></div><div><h2>{tr("Moeda e conversão")}</h2><p>{tr("A moeda acompanha a troca de idioma. Você também pode escolher outra moeda manualmente.")}</p></div></div>
     <form onSubmit={event => { event.preventDefault(); void apply(); }}>
       <label>{tr("Moeda do aplicativo")}<select aria-label={tr("Moeda do aplicativo")} value={currency} disabled={busy} onChange={event => { if (isCurrency(event.target.value)) { setCurrency(event.target.value); setManual(""); setError(""); } }}>{CURRENCIES.map(code => <option key={code} value={code}>{code} · {tr(names[code])}</option>)}</select></label>
       {currency !== "BRL" && <>
@@ -55,6 +55,7 @@ export function CurrencySettings({ data, onSave }: { data: AppData; onSave: (cur
       </>}
       <p className="form-hint">{tr("Os registros são preservados em BRL. Valores novos são convertidos para BRL ao salvar; telas e campos usam a moeda selecionada. As cotações são estimativas, sem tarifas bancárias.")}</p>
       <p className="form-hint">{tr("Sem internet, o app usa a última cotação salva. Novas cotações só são aplicadas ao salvar a moeda.")}</p>
+      <p className="form-hint">{tr("Uma escolha manual vale até a próxima troca de idioma, que aplica novamente a moeda desse idioma.")}</p>
       {error && <p className="form-error" role="alert">{error}</p>}
       <button type="submit" className="button primary" disabled={busy}>{tr("Salvar moeda")}</button>
     </form>
