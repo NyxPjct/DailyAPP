@@ -33,7 +33,8 @@ test("interpreta reais e centavos sem aceitar valores negativos ou ambíguos", (
     "1000000001",
   ])
     expect(parseAmount(input)).toBeNull();
-  expect(amountInput(123456)).toBe("1234,56");
+  expect(amountInput(123456)).toBe("1234.56");
+  expect(amountInput(123456, "pt-BR")).toBe("1234,56");
 });
 
 test("distingue valores pagos de previstos e mantém precisão financeira", () => {

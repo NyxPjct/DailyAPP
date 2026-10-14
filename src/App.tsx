@@ -1,3 +1,5 @@
+import { t as tr, translate, LANGUAGES, isLanguage, LANGUAGE_KEY, readLanguagePreference, setCurrentLanguage, getLocale, recordText, parseLocalizedAmount } from "./i18n/core";
+import type { Language } from "./i18n/core";
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import {
@@ -52,7 +54,6 @@ import {
   prettyDate,
   money,
   amountInput,
-  parseAmount,
   validDate,
   normalize,
   sortTasks,
@@ -85,6 +86,7 @@ import "@fontsource/manrope/latin-700.css";
 import "@fontsource/manrope/latin-800.css";
 
 type View = "overview" | "tasks" | "calendar" | "finance" | "settings";
+const parseAmount = parseLocalizedAmount;
 const mobileApp = import.meta.env.VITE_MOBILE_APP === true;
 const INTRO_KEY = "dailyapp.intro.v1";
 function introductionDone() {
@@ -100,12 +102,7 @@ type Editor =
   | { kind: "goal"; item?: FinancialGoal }
   | { kind: "opening" }
   | null;
-const navItems = [
-  { id: "overview" as const, label: "Visão geral", icon: LayoutDashboard },
-  { id: "calendar" as const, label: "Minha agenda", icon: CalendarDays },
-  { id: "tasks" as const, label: "Minhas tarefas", icon: ListTodo },
-  { id: "finance" as const, label: "Minhas finanças", icon: Wallet },
-];
+
 const categoryColors: Record<string, string> = {
   Alimentação: "#dea26f",
   Moradia: "#477d64",
@@ -129,7 +126,7 @@ function loadData() {
     return {
       data: freshData(),
       error:
-        "Não foi possível ler os dados salvos. Abra as configurações para recuperar um backup ou reiniciar.",
+        tr("Não foi possível ler os dados salvos. Abra as configurações para recuperar um backup ou reiniciar."),
       present: true,
     };
   }
@@ -205,7 +202,7 @@ function Modal({
           </div>
           <button
             className="icon-button"
-            aria-label="Fechar janela"
+            aria-label={tr("Fechar janela")}
             onClick={onClose}
           >
             <X size={20} />
@@ -225,32 +222,32 @@ function MobileIntroduction({ onFinish, onSkip }: {
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
   return (
-    <Modal title="Seu dia começa aqui." subtitle="Bem-vindo ao DailyAPP. Vamos abrir espaço para sua rotina." onClose={onSkip} focusFirstInput={false}>
+    <Modal title={tr("Seu dia começa aqui.")} subtitle={tr("Bem-vindo ao DailyAPP. Vamos abrir espaço para sua rotina.")} onClose={onSkip} focusFirstInput={false}>
       <div className="intro-features">
-        <div><CalendarDays size={21} /><p><strong>Agenda e tarefas</strong><span>Organize seus compromissos e marque o que já concluiu.</span></p></div>
-        <div><Wallet size={21} /><p><strong>Finanças com clareza</strong><span>Acompanhe receitas, despesas e o limite de gastos do mês.</span></p></div>
-        <div><ShieldCheck size={21} /><p><strong>Seu espaço pessoal</strong><span>Funciona sem internet e sem conta. Os registros ficam neste aparelho.</span></p></div>
+        <div><CalendarDays size={21} /><p><strong>{tr("Agenda e tarefas")}</strong><span>{tr("Organize seus compromissos e marque o que já concluiu.")}</span></p></div>
+        <div><Wallet size={21} /><p><strong>{tr("Finanças com clareza")}</strong><span>{tr("Acompanhe receitas, despesas e o limite de gastos do mês.")}</span></p></div>
+        <div><ShieldCheck size={21} /><p><strong>{tr("Seu espaço pessoal")}</strong><span>{tr("Funciona sem internet e sem conta. Os registros ficam neste aparelho.")}</span></p></div>
       </div>
       <form className="intro-form" onSubmit={(event) => {
         event.preventDefault();
         const budget = amount.trim() ? parseAmount(amount) : null;
         if (amount.trim() && budget === null) {
-          setError("Informe um valor maior que zero ou deixe o orçamento em branco.");
+          setError(tr("Informe um valor maior que zero ou deixe o orçamento em branco."));
           return;
         }
         onFinish(name.trim(), budget);
       }}>
-        <label>Como você quer ser chamado? <span className="optional">(opcional)</span>
-          <input maxLength={60} autoComplete="given-name" placeholder="Ex.: Ana" value={name} onChange={event => setName(event.target.value)} />
+        <label>{tr("Como você quer ser chamado? ")}<span className="optional">{tr("(opcional)")}</span>
+          <input maxLength={60} autoComplete="given-name" placeholder={tr("Ex.: Ana")} value={name} onChange={event => setName(event.target.value)} />
         </label>
-        <label>Limite de gastos do mês (R$) <span className="optional">(opcional)</span>
-          <input inputMode="decimal" placeholder="Ex.: 2.500,00" value={amount} onChange={event => { setAmount(event.target.value); setError(""); }} />
+        <label>{tr("Limite de gastos do mês (R$) ")}<span className="optional">{tr("(opcional)")}</span>
+          <input inputMode="decimal" placeholder={tr("Ex.: 2.500,00")} value={amount} onChange={event => { setAmount(event.target.value); setError(""); }} />
         </label>
-        <p className="intro-note">Você pode ajustar tudo depois. Em Ajustes, exporte backups para guardar uma cópia dos seus registros.</p>
+        <p className="intro-note">{tr("Você pode ajustar tudo depois. Em Ajustes, exporte backups para guardar uma cópia dos seus registros.")}</p>
         {error && <p className="form-error" role="alert">{error}</p>}
         <div className="modal-footer">
-          <button className="button secondary" type="button" onClick={onSkip}>Começar sem configurar</button>
-          <button className="button primary" type="submit">Começar <ArrowRight size={16} /></button>
+          <button className="button secondary" type="button" onClick={onSkip}>{tr("Começar sem configurar")}</button>
+          <button className="button primary" type="submit">{tr("Começar ")}<ArrowRight size={16} /></button>
         </div>
       </form>
     </Modal>
@@ -259,20 +256,20 @@ function MobileIntroduction({ onFinish, onSkip }: {
 
 function MobileHelp({ onClose }: { onClose: () => void }) {
   return (
-    <Modal title="Guia rápido" subtitle="Um registro de cada vez. Mais clareza no seu dia." onClose={onClose} focusFirstInput={false}>
+    <Modal title={tr("Guia rápido")} subtitle={tr("Um registro de cada vez. Mais clareza no seu dia.")} onClose={onClose} focusFirstInput={false}>
       <div className="mobile-help">
-        <div><ListTodo size={22} /><section><h3>Organize o dia</h3><p>Em Hoje ou Tarefas, crie uma tarefa com data e horário. Escolha Repetir para uma rotina diária, semanal, mensal ou anual. Marque o círculo quando concluir e gerencie as rotinas em Tarefas.</p></section></div>
-        <div><Wallet size={22} /><section><h3>Acompanhe seu dinheiro</h3><p>Registre receitas e despesas. Marque como recebida ou paga para incluir no saldo; os valores previstos continuam visíveis para seu planejamento.</p></section></div>
-        <div><Clock3 size={22} /><section><h3>Veja as próximas contas</h3><p>Em Hoje, confira contas e recebimentos pendentes, incluindo parcelas: dias anteriores, hoje e próximos sete dias. Toque na descrição para editar ou em Pagar/Receber para atualizar o status.</p></section></div>
-        <div><TrendingUp size={22} /><section><h3>Planeje o saldo</h3><p>Em Finanças → Planejamento, informe o saldo no início do mês. A previsão soma receitas e desconta despesas pagas e previstas desse mês. Não consulta bancos; ajuste datas e valores para manter a estimativa útil.</p></section></div>
-        <div><Target size={22} /><section><h3>Avance nas suas metas</h3><p>Em Planejamento, crie uma meta com valor desejado e prazo. Atualize o total guardado para acompanhar seu progresso. Esse valor não movimenta dinheiro nem altera o saldo automaticamente.</p></section></div>
-        <div><Target size={22} /><section><h3>Defina seu orçamento</h3><p>Em Finanças, escolha o mês e defina um limite de gastos. O orçamento considera despesas pagas e previstas.</p></section></div>
-        <div><Wallet size={22} /><section><h3>Controle cartões e parcelas</h3><p>Em Finanças → Cartões e parcelas, cadastre o cartão e registre o valor total de cada compra. As parcelas entram nas faturas. Marcar uma fatura como paga atualiza os gastos sem duplicá-los.</p></section></div>
-        <div><Bell size={22} /><section><h3>Receba lembretes</h3><p>Escolha um lembrete na tarefa, conta ou cartão e permita notificações no celular. Ao concluir ou pagar, os próximos avisos são retirados. Em Ajustes, confira os lembretes programados.</p></section></div>
-        <div><Download size={22} /><section><h3>Guarde uma cópia</h3><p>Em Ajustes, exporte um backup e escolha onde guardar o arquivo. Para transferir os dados a outro aparelho, importe esse JSON e confirme a restauração.</p></section></div>
+        <div><ListTodo size={22} /><section><h3>{tr("Organize o dia")}</h3><p>{tr("Em Hoje ou Tarefas, crie uma tarefa com data e horário. Escolha Repetir para uma rotina diária, semanal, mensal ou anual. Marque o círculo quando concluir e gerencie as rotinas em Tarefas.")}</p></section></div>
+        <div><Wallet size={22} /><section><h3>{tr("Acompanhe seu dinheiro")}</h3><p>{tr("Registre receitas e despesas. Marque como recebida ou paga para incluir no saldo; os valores previstos continuam visíveis para seu planejamento.")}</p></section></div>
+        <div><Clock3 size={22} /><section><h3>{tr("Veja as próximas contas")}</h3><p>{tr("Em Hoje, confira contas e recebimentos pendentes, incluindo parcelas: dias anteriores, hoje e próximos sete dias. Toque na descrição para editar ou em Pagar/Receber para atualizar o status.")}</p></section></div>
+        <div><TrendingUp size={22} /><section><h3>{tr("Planeje o saldo")}</h3><p>{tr("Em Finanças → Planejamento, informe o saldo no início do mês. A previsão soma receitas e desconta despesas pagas e previstas desse mês. Não consulta bancos; ajuste datas e valores para manter a estimativa útil.")}</p></section></div>
+        <div><Target size={22} /><section><h3>{tr("Avance nas suas metas")}</h3><p>{tr("Em Planejamento, crie uma meta com valor desejado e prazo. Atualize o total guardado para acompanhar seu progresso. Esse valor não movimenta dinheiro nem altera o saldo automaticamente.")}</p></section></div>
+        <div><Target size={22} /><section><h3>{tr("Defina seu orçamento")}</h3><p>{tr("Em Finanças, escolha o mês e defina um limite de gastos. O orçamento considera despesas pagas e previstas.")}</p></section></div>
+        <div><Wallet size={22} /><section><h3>{tr("Controle cartões e parcelas")}</h3><p>{tr("Em Finanças → Cartões e parcelas, cadastre o cartão e registre o valor total de cada compra. As parcelas entram nas faturas. Marcar uma fatura como paga atualiza os gastos sem duplicá-los.")}</p></section></div>
+        <div><Bell size={22} /><section><h3>{tr("Receba lembretes")}</h3><p>{tr("Escolha um lembrete na tarefa, conta ou cartão e permita notificações no celular. Ao concluir ou pagar, os próximos avisos são retirados. Em Ajustes, confira os lembretes programados.")}</p></section></div>
+        <div><Download size={22} /><section><h3>{tr("Guarde uma cópia")}</h3><p>{tr("Em Ajustes, exporte um backup e escolha onde guardar o arquivo. Para transferir os dados a outro aparelho, importe esse JSON e confirme a restauração.")}</p></section></div>
       </div>
-      <p className="intro-note">Os registros ficam neste aparelho. Desinstalar o aplicativo ou limpar seus dados pode removê-los. Guarde um backup antes de trocar de celular.</p>
-      <div className="modal-footer"><button className="button primary" onClick={onClose}>Entendi</button></div>
+      <p className="intro-note">{tr("Os registros ficam neste aparelho. Desinstalar o aplicativo ou limpar seus dados pode removê-los. Guarde um backup antes de trocar de celular.")}</p>
+      <div className="modal-footer"><button className="button primary" onClick={onClose}>{tr("Entendi")}</button></div>
     </Modal>
   );
 }
@@ -308,7 +305,7 @@ function MonthControl({
   return (
     <div className="month-control">
       <button
-        aria-label="Mês anterior"
+        aria-label={tr("Mês anterior")}
         className="icon-button"
         onClick={() => onChange(shiftMonth(month, -1))}
       >
@@ -316,7 +313,7 @@ function MonthControl({
       </button>
       <span>{monthLabel(month)}</span>
       <button
-        aria-label="Próximo mês"
+        aria-label={tr("Próximo mês")}
         className="icon-button"
         onClick={() => onChange(shiftMonth(month, 1))}
       >
@@ -346,48 +343,48 @@ function TaskRow({
         className="task-check"
         role="checkbox"
         aria-checked={task.completed}
-        aria-label={`${task.completed ? "Reabrir" : "Concluir"} tarefa: ${task.title}`}
+        aria-label={tr("{0} tarefa: {1}", task.completed ? tr("Reabrir") : tr("Concluir"), recordText(task.id, task.title))}
         onClick={onToggle}
       >
         {task.completed && <Check size={14} strokeWidth={3} />}
       </button>
       <button className="task-content" onClick={onEdit}>
-        <span className="task-title">{task.title}</span>
+        <span className="task-title">{recordText(task.id, recordText(task.id, task.title))}</span>
         <span className="task-meta">
           {(task.time || withDate) && (
             <span className={overdue ? "overdue" : ""}>
               <Clock3 size={12} />
               {withDate ? prettyDate(task.date) : ""}
-              {withDate && task.time ? " · " : ""}
+              {withDate && task.time ? tr(" · ") : ""}
               {task.time}
-              {overdue ? " · Atrasada" : ""}
+              {overdue ? tr(" · Atrasada") : ""}
             </span>
           )}
           <span className={`tag category-${task.category.toLowerCase()}`}>
-            {task.category}
+            {tr(task.category)}
           </span>
-          {task.recurrenceId && <span className="planning-badge"><Repeat2 size={12} />Recorrente</span>}
-          {task.reminderMinutes !== undefined && <span className="planning-badge"><Bell size={12} />Lembrete</span>}
+          {task.recurrenceId && <span className="planning-badge"><Repeat2 size={12} />{tr("Recorrente")}</span>}
+          {task.reminderMinutes !== undefined && <span className="planning-badge"><Bell size={12} />{tr("Lembrete")}</span>}
         </span>
       </button>
       <span
         className={`priority priority-${task.priority === "Alta" ? "high" : task.priority === "Média" ? "medium" : "low"}`}
-        title={`Prioridade ${task.priority.toLowerCase()}`}
+        title={tr("Prioridade {0}", tr(task.priority).toLowerCase())}
       >
         <Flag size={13} />
-        <span>{task.priority}</span>
+        <span>{tr(task.priority)}</span>
       </span>
       <div className="row-actions">
         <button
           className="icon-button"
-          aria-label={`Editar tarefa: ${task.title}`}
+          aria-label={tr("Editar tarefa: {0}", recordText(task.id, task.title))}
           onClick={onEdit}
         >
           <Pencil size={15} />
         </button>
         <button
           className="icon-button danger-hover"
-          aria-label={`Excluir tarefa: ${task.title}`}
+          aria-label={tr("Excluir tarefa: {0}", recordText(task.id, task.title))}
           onClick={onDelete}
         >
           <Trash2 size={15} />
@@ -429,7 +426,7 @@ function FinanceChart({
       <svg
         viewBox="0 0 620 218"
         role="img"
-        aria-label={`Receitas e despesas pagas acumuladas em ${monthLabel(month)}: receitas ${money(income.at(-1) ?? 0)}, despesas ${money(expense.at(-1) ?? 0)}`}
+        aria-label={tr("Receitas e despesas pagas acumuladas em {0}: receitas {1}, despesas {2}", monthLabel(month), money(income.at(-1) ?? 0), money(expense.at(-1) ?? 0))}
       >
         <defs>
           <linearGradient id="income-fill" x1="0" y1="0" x2="0" y2="1">
@@ -454,7 +451,7 @@ function FinanceChart({
               fill="#7b837d"
               fontSize="11"
             >
-              {Math.round((max * p) / 100).toLocaleString("pt-BR")}
+              {Math.round((max * p) / 100).toLocaleString(getLocale())}
             </text>
           </g>
         ))}
@@ -515,8 +512,8 @@ function Expenses({ entries }: { entries: Transaction[] }) {
     return (
       <Empty
         icon={<Wallet size={25} />}
-        title="Cada gasto conta"
-        text="Registre sua primeira despesa para conhecer seus hábitos."
+        title={tr("Cada gasto conta")}
+        text={tr("Registre sua primeira despesa para conhecer seus hábitos.")}
       />
     );
   return (
@@ -524,22 +521,22 @@ function Expenses({ entries }: { entries: Transaction[] }) {
       <div
         className="donut"
         role="img"
-        aria-label={`Total de despesas registradas: ${money(total)}`}
+        aria-label={tr("Total de despesas registradas: {0}", money(total))}
         style={{ background: `conic-gradient(${gradient})` }}
       >
         <div>
-          <span>Despesas</span>
+          <span>{tr("Despesas")}</span>
           <strong>{money(total)}</strong>
         </div>
       </div>
       <div className="category-list">
         {amounts.map((t) => (
-          <div className="category-line" key={t.category}>
+          <div className="category-line" key={tr(t.category)}>
             <span
               className="category-dot"
               style={{ background: categoryColors[t.category] }}
             />
-            <span>{t.category}</span>
+            <span>{tr(t.category)}</span>
             <strong>{money(t.amount)}</strong>
             <small>{Math.round((t.amount / total) * 100)}%</small>
           </div>
@@ -562,7 +559,7 @@ function TaskForm({
   onClose: () => void;
   recurrenceFrequency?: Frequency;
 }) {
-  const [title, setTitle] = useState(item?.title ?? "");
+  const [title, setTitle] = useState(item ? recordText(item.id, item.title) : "");
   const [day, setDay] = useState(item?.date ?? date ?? dateKey());
   const [time, setTime] = useState(item?.time ?? "");
   const [category, setCategory] = useState<Task["category"]>(
@@ -578,10 +575,10 @@ function TaskForm({
   function submit(e: FormEvent) {
     e.preventDefault();
     if (!title.trim() || !validDate(day)) {
-      setError("Informe um título e uma data válida entre 1900 e 2200.");
+      setError(tr("Informe um título e uma data válida entre 1900 e 2200."));
       return;
     }
-    if (reminder >= 0 && !time) { setError("Defina um horário para o lembrete da tarefa."); return; }
+    if (reminder >= 0 && !time) { setError(tr("Defina um horário para o lembrete da tarefa.")); return; }
     if (
       onSave({
         ...item,
@@ -600,26 +597,22 @@ function TaskForm({
   }
   return (
     <Modal
-      title={item ? "Editar tarefa" : "Nova tarefa"}
-      subtitle="Abra espaço para o que importa no seu dia."
+      title={item ? tr("Editar tarefa") : tr("Nova tarefa")}
+      subtitle={tr("Abra espaço para o que importa no seu dia.")}
       onClose={onClose}
     >
       <form onSubmit={submit}>
-        <label>
-          O que você precisa fazer?
-          <input
+        <label>{tr("O que você precisa fazer?")}<input
             autoFocus
             required
             maxLength={120}
-            placeholder="Ex.: Agendar consulta médica"
+            placeholder={tr("Ex.: Agendar consulta médica")}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </label>
         <div className="form-grid">
-          <label>
-            Data
-            <input
+          <label>{tr("Data")}<input
               type="date"
               min="1900-01-01"
               max="2200-12-31"
@@ -628,8 +621,7 @@ function TaskForm({
               onChange={(e) => setDay(e.target.value)}
             />
           </label>
-          <label>
-            Horário <span className="optional">(opcional)</span>
+          <label>{tr("Horário ")}<span className="optional">{tr("(opcional)")}</span>
             <input
               type="time"
               value={time}
@@ -638,56 +630,51 @@ function TaskForm({
           </label>
         </div>
         <div className="form-grid">
-          <label>
-            Categoria
-            <select
+          <label>{tr("Categoria")}<select
+              aria-label={tr("Categoria")}
               value={category}
               onChange={(e) => setCategory(e.target.value as Task["category"])}
             >
               {TASK_CATEGORIES.map((c) => (
-                <option key={c}>{c}</option>
+                <option key={c} value={c}>{tr(c)}</option>
               ))}
             </select>
           </label>
-          <label>
-            Prioridade
-            <select
+          <label>{tr("Prioridade")}<select
+              aria-label={tr("Prioridade")}
               value={priority}
               onChange={(e) => setPriority(e.target.value as Task["priority"])}
             >
               {PRIORITIES.map((p) => (
-                <option key={p}>{p}</option>
+                <option key={p} value={p}>{tr(p)}</option>
               ))}
             </select>
           </label>
         </div>
-        <label>
-          Observações <span className="optional">(opcional)</span>
+        <label>{tr("Observações ")}<span className="optional">{tr("(opcional)")}</span>
           <textarea
             maxLength={1000}
             rows={3}
-            placeholder="Algum detalhe para lembrar?"
+            placeholder={tr("Algum detalhe para lembrar?")}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
         </label>
         <div className="form-grid">
-          <label>Repetir tarefa<select aria-label="Repetir tarefa" value={frequency} disabled={!!item?.recurrenceId} onChange={e => setFrequency(e.target.value as Frequency | "")}><option value="">Não repetir</option>{Object.entries(FREQUENCIES).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
-          <label>Lembrete da tarefa<select aria-label="Lembrete da tarefa" value={reminder} disabled={!time} onChange={e => setReminder(Number(e.target.value))}><option value={-1}>Sem lembrete</option><option value={0}>No horário</option><option value={5}>5 minutos antes</option><option value={15}>15 minutos antes</option><option value={30}>30 minutos antes</option><option value={60}>1 hora antes</option><option value={1440}>1 dia antes</option></select></label>
+          <label>{tr("Repetir tarefa")}<select aria-label={tr("Repetir tarefa")} value={frequency} disabled={!!item?.recurrenceId} onChange={e => setFrequency(e.target.value as Frequency | "")}><option value="">{tr("Não repetir")}</option>{Object.entries(FREQUENCIES).map(([value, label]) => <option value={value} key={value}>{tr(label)}</option>)}</select></label>
+          <label>{tr("Lembrete da tarefa")}<select aria-label={tr("Lembrete da tarefa")} value={reminder} disabled={!time} onChange={e => setReminder(Number(e.target.value))}><option value={-1}>{tr("Sem lembrete")}</option><option value={0}>{tr("No horário")}</option><option value={5}>{tr("5 minutos antes")}</option><option value={15}>{tr("15 minutos antes")}</option><option value={30}>{tr("30 minutos antes")}</option><option value={60}>{tr("1 hora antes")}</option><option value={1440}>{tr("1 dia antes")}</option></select></label>
         </div>
-        <p className="form-hint">{item?.recurrenceId ? "Esta edição altera só esta ocorrência. Para encerrar a rotina, use Parar repetição em Tarefas." : "Repetições criam as próximas tarefas sem marcá-las como concluídas."} {!time ? "Defina um horário para ativar um lembrete." : "Lembretes aparecem no aplicativo instalado, com sua permissão."}</p>
+        <p className="form-hint">{item?.recurrenceId ? tr("Esta edição altera só esta ocorrência. Para encerrar a rotina, use Parar repetição em Tarefas.") : tr("Repetições criam as próximas tarefas sem marcá-las como concluídas.")} {!time ? tr("Defina um horário para ativar um lembrete.") : tr("Lembretes aparecem no aplicativo instalado, com sua permissão.")}</p>
         {error && (
           <p role="alert" className="form-error">
             {error}
           </p>
         )}
         <div className="modal-footer">
-          <button type="button" className="button secondary" onClick={onClose}>
-            Cancelar
-          </button>
+          <button type="button" className="button secondary" onClick={onClose}>{tr("Cancelar")}</button>
           <button className="button primary" type="submit">
             <Check size={16} />
-            {item ? "Salvar alterações" : "Criar tarefa"}
+            {item ? tr("Salvar alterações") : tr("Criar tarefa")}
           </button>
         </div>
       </form>
@@ -711,7 +698,7 @@ function TransactionForm({
   const [kind, setKind] = useState<Transaction["type"]>(
     item?.type ?? type ?? "expense",
   );
-  const [description, setDescription] = useState(item?.description ?? "");
+  const [description, setDescription] = useState(item ? recordText(item.id, item.description) : "");
   const [amount, setAmount] = useState(
     item ? amountInput(item.amountCents) : "",
   );
@@ -729,12 +716,12 @@ function TransactionForm({
     const cents = parseAmount(amount);
     if (!cents) {
       setError(
-        "Informe um valor maior que zero, com até duas casas decimais. Ex.: 125,90.",
+        tr("Informe um valor maior que zero, com até duas casas decimais. Ex.: 125,90."),
       );
       return;
     }
     if (!description.trim() || !validDate(day)) {
-      setError("Informe uma descrição e uma data válida entre 1900 e 2200.");
+      setError(tr("Informe uma descrição e uma data válida entre 1900 e 2200."));
       return;
     }
     if (
@@ -755,8 +742,8 @@ function TransactionForm({
   }
   return (
     <Modal
-      title={item ? "Editar movimentação" : "Nova movimentação"}
-      subtitle="Um registro de cada vez. Mais clareza para seu dinheiro."
+      title={item ? tr("Editar movimentação") : tr("Nova movimentação")}
+      subtitle={tr("Um registro de cada vez. Mais clareza para seu dinheiro.")}
       onClose={onClose}
     >
       <form onSubmit={submit}>
@@ -770,9 +757,7 @@ function TransactionForm({
               setCategory("Alimentação");
             }}
           >
-            <ArrowUpRight size={16} />
-            Despesa
-          </button>
+            <ArrowUpRight size={16} />{tr("Despesa")}</button>
           <button
             type="button"
             className={kind === "income" ? "selected" : ""}
@@ -782,39 +767,31 @@ function TransactionForm({
               setCategory("Salário");
             }}
           >
-            <ArrowDownLeft size={16} />
-            Receita
-          </button>
+            <ArrowDownLeft size={16} />{tr("Receita")}</button>
         </div>
-        <label>
-          Descrição
-          <input
+        <label>{tr("Descrição")}<input
             autoFocus
             required
             maxLength={120}
             placeholder={
               kind === "expense"
-                ? "Ex.: Compras do supermercado"
-                : "Ex.: Salário do mês"
+                ? tr("Ex.: Compras do supermercado")
+                : tr("Ex.: Salário do mês")
             }
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </label>
         <div className="form-grid">
-          <label>
-            Valor (R$)
-            <input
+          <label>{tr("Valor (R$)")}<input
               required
               inputMode="decimal"
-              placeholder="0,00"
+              placeholder={tr("0,00")}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
           </label>
-          <label>
-            Data
-            <input
+          <label>{tr("Data")}<input
               type="date"
               min="1900-01-01"
               max="2200-12-31"
@@ -824,15 +801,13 @@ function TransactionForm({
             />
           </label>
         </div>
-        <label>
-          Categoria
-          <select
+        <label>{tr("Categoria")}<select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
             {(kind === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES).map(
               (c) => (
-                <option key={c}>{c}</option>
+                <option key={c} value={c}>{tr(c)}</option>
               ),
             )}
           </select>
@@ -845,23 +820,22 @@ function TransactionForm({
           />
           <span>
             {kind === "expense"
-              ? "Esta despesa já foi paga"
-              : "Esta receita já foi recebida"}
+              ? tr("Esta despesa já foi paga")
+              : tr("Esta receita já foi recebida")}
             <small>
               {paid
-                ? "Será incluída no saldo do mês."
-                : "Ficará registrada como prevista."}
+                ? tr("Será incluída no saldo do mês.")
+                : tr("Ficará registrada como prevista.")}
             </small>
           </span>
         </label>
-        <label>
-          Observações <span className="optional">(opcional)</span>
+        <label>{tr("Observações ")}<span className="optional">{tr("(opcional)")}</span>
           <textarea
             rows={2}
             maxLength={1000}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Adicione um detalhe, se quiser"
+            placeholder={tr("Adicione um detalhe, se quiser")}
           />
         </label>
         {error && (
@@ -870,18 +844,16 @@ function TransactionForm({
           </p>
         )}
         {!item?.installment && <div className="form-grid">
-          <label>Repetir movimentação<select aria-label="Repetir movimentação" value={frequency} disabled={!!item?.recurrenceId} onChange={e => { const value = e.target.value as Frequency | ""; setFrequency(value); if (value && !item) setPaid(false); }}><option value="">Não repetir</option>{Object.entries(FREQUENCIES).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
-          <label>Lembrete da conta<select aria-label="Lembrete da conta" value={reminder} onChange={e => setReminder(Number(e.target.value))}><option value={-1}>Sem lembrete</option><option value={0}>Na data, às 9h</option><option value={1440}>1 dia antes, às 9h</option><option value={4320}>3 dias antes, às 9h</option></select></label>
+          <label>{tr("Repetir movimentação")}<select aria-label={tr("Repetir movimentação")} value={frequency} disabled={!!item?.recurrenceId} onChange={e => { const value = e.target.value as Frequency | ""; setFrequency(value); if (value && !item) setPaid(false); }}><option value="">{tr("Não repetir")}</option>{Object.entries(FREQUENCIES).map(([value, label]) => <option value={value} key={value}>{tr(label)}</option>)}</select></label>
+          <label>{tr("Lembrete da conta")}<select aria-label={tr("Lembrete da conta")} value={reminder} onChange={e => setReminder(Number(e.target.value))}><option value={-1}>{tr("Sem lembrete")}</option><option value={0}>{tr("Na data, às 9h")}</option><option value={1440}>{tr("1 dia antes, às 9h")}</option><option value={4320}>{tr("3 dias antes, às 9h")}</option></select></label>
         </div>}
-        {(frequency || item?.recurrenceId) && <p className="form-hint">{item?.recurrenceId ? "Esta edição altera só esta ocorrência. Gerencie a rotina em Finanças." : "As próximas movimentações ficam previstas até você marcar o pagamento ou recebimento."}</p>}
-        {item?.installment && <p className="form-hint">Parcela {item.installment.index}/{item.installment.count}. Esta edição altera só esta parcela. O lembrete da fatura é configurado no cartão.</p>}
+        {(frequency || item?.recurrenceId) && <p className="form-hint">{item?.recurrenceId ? tr("Esta edição altera só esta ocorrência. Gerencie a rotina em Finanças.") : tr("As próximas movimentações ficam previstas até você marcar o pagamento ou recebimento.")}</p>}
+        {item?.installment && <p className="form-hint">{tr("Parcela ")}{item.installment.index}/{item.installment.count}{tr(". Esta edição altera só esta parcela. O lembrete da fatura é configurado no cartão.")}</p>}
         <div className="modal-footer">
-          <button type="button" className="button secondary" onClick={onClose}>
-            Cancelar
-          </button>
+          <button type="button" className="button secondary" onClick={onClose}>{tr("Cancelar")}</button>
           <button className="button primary" type="submit">
             <Check size={16} />
-            {item ? "Salvar alterações" : "Registrar movimentação"}
+            {item ? tr("Salvar alterações") : tr("Registrar movimentação")}
           </button>
         </div>
       </form>
@@ -904,8 +876,8 @@ function BudgetForm({
   const [error, setError] = useState("");
   return (
     <Modal
-      title="Seu orçamento do mês"
-      subtitle={`Defina quanto deseja gastar em ${monthLabel(month)}.`}
+      title={tr("Seu orçamento do mês")}
+      subtitle={tr("Defina quanto deseja gastar em {0}.", monthLabel(month))}
       onClose={onClose}
       small
     >
@@ -914,39 +886,30 @@ function BudgetForm({
           e.preventDefault();
           const cents = parseAmount(amount);
           if (!cents) {
-            setError("Informe um limite maior que zero.");
+            setError(tr("Informe um limite maior que zero."));
             return;
           }
           if (onSave(cents)) onClose();
         }}
       >
-        <label>
-          Limite de despesas (R$)
-          <input
+        <label>{tr("Limite de despesas (R$)")}<input
             autoFocus
             required
             inputMode="decimal"
-            placeholder="Ex.: 3.000,00"
+            placeholder={tr("Ex.: 3.000,00")}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
         </label>
-        <p className="form-hint">
-          Despesas pagas e previstas contam para o orçamento. O limite é
-          exclusivo deste mês.
-        </p>
+        <p className="form-hint">{tr("Despesas pagas e previstas contam para o orçamento. O limite é exclusivo deste mês.")}</p>
         {error && (
           <p role="alert" className="form-error">
             {error}
           </p>
         )}
         <div className="modal-footer">
-          <button type="button" className="button secondary" onClick={onClose}>
-            Cancelar
-          </button>
-          <button className="button primary" type="submit">
-            Salvar orçamento
-          </button>
+          <button type="button" className="button secondary" onClick={onClose}>{tr("Cancelar")}</button>
+          <button className="button primary" type="submit">{tr("Salvar orçamento")}</button>
         </div>
       </form>
     </Modal>
@@ -965,6 +928,22 @@ export default function App({
   const [loaded] = useState(loadData);
   const [localData, setData] = useState<AppData>(loaded.data);
   const data = account?.snapshot.data ?? localData;
+  const [preferredLanguage, setPreferredLanguage] = useState(readLanguagePreference);
+  const language = data.language ?? preferredLanguage;
+  setCurrentLanguage(language);
+const navItems = [
+  { id: "overview" as const, label: tr("Visão geral"), icon: LayoutDashboard },
+  { id: "calendar" as const, label: tr("Minha agenda"), icon: CalendarDays },
+  { id: "tasks" as const, label: tr("Minhas tarefas"), icon: ListTodo },
+  { id: "finance" as const, label: tr("Minhas finanças"), icon: Wallet },
+];
+
+  useEffect(() => {
+    setPreferredLanguage(language);
+    document.documentElement.lang = language;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", tr("Organize sua rotina e cuide do seu dinheiro. Agenda, tarefas e finanças pessoais em um só lugar."));
+    try { localStorage.setItem(LANGUAGE_KEY, language); } catch { /* Preferences must not overwrite workspace errors. */ }
+  }, [language]);
   const [localStorageError, setStorageError] = useState(loaded.error);
   const storageError = workspace ? "" : localStorageError;
   const [view, setView] = useState<View>("overview");
@@ -1062,7 +1041,7 @@ export default function App({
           (taskFilter === "Pendentes" && !t.completed) ||
           (taskFilter === "Concluídas" && t.completed) ||
           (taskFilter === "Atrasadas" && !t.completed && t.date < today)) &&
-        normalize(t.title + " " + t.category + " " + t.notes).includes(
+        normalize(recordText(t.id, t.title) + " " + tr(t.category) + " " + t.notes).includes(
           normalize(taskSearch),
         ),
     ),
@@ -1076,7 +1055,7 @@ export default function App({
         (financeStatus === "Todos os status" ||
           (financeStatus === "Efetivadas" && t.paid) ||
           (financeStatus === "Previstas" && !t.paid)) &&
-        normalize(t.description + " " + t.category + " " + t.notes).includes(
+        normalize(recordText(t.id, t.description) + " " + tr(t.category) + " " + t.notes).includes(
           normalize(financeSearch),
         ),
     )
@@ -1092,8 +1071,8 @@ export default function App({
     return () => clearTimeout(timer);
   }, [toast]);
   useEffect(() => {
-    document.title = `${view === "overview" ? "Visão geral" : view === "settings" ? "Configurações" : navItems.find((n) => n.id === view)?.label} · DailyAPP`;
-  }, [view]);
+    document.title = tr("{0} · DailyAPP", view === "overview" ? tr("Visão geral") : view === "settings" ? tr("Configurações") : navItems.find((n) => n.id === view)?.label);
+  }, [view, language]);
   useEffect(() => {
     const media = window.matchMedia("(max-width: 760px)");
     const update = () => {
@@ -1117,7 +1096,7 @@ export default function App({
 
   function save(next: AppData, recovery = false) {
     try { next = validateData(next); }
-    catch (error) { setToast(error instanceof Error ? error.message : "Não foi possível validar os registros."); return false; }
+    catch (error) { setToast(error instanceof Error ? error.message : tr("Não foi possível validar os registros.")); return false; }
     if (workspace) {
       const ok = workspace.save(next, recovery);
       if (!ok) setToast(workspace.getSnapshot().message);
@@ -1125,13 +1104,13 @@ export default function App({
     }
     if (storageError && !recovery) {
       setToast(
-        "Recupere seus dados nas configurações antes de fazer alterações.",
+        tr("Recupere seus dados nas configurações antes de fazer alterações."),
       );
       return false;
     }
     if (next.tasks.length > 5000 || next.transactions.length > 10000) {
       setToast(
-        "Limite de registros atingido. Exporte um backup antes de remover registros antigos.",
+        tr("Limite de registros atingido. Exporte um backup antes de remover registros antigos."),
       );
       return false;
     }
@@ -1143,10 +1122,13 @@ export default function App({
       return true;
     } catch {
       setToast(
-        "Não foi possível salvar. Verifique o espaço e a permissão de armazenamento do dispositivo.",
+        tr("Não foi possível salvar. Verifique o espaço e a permissão de armazenamento do dispositivo."),
       );
       return false;
     }
+  }
+  function changeLanguage(next: Language) {
+    if (save({ ...data, language: next })) { setCurrentLanguage(next); setPreferredLanguage(next); setToast(tr("Idioma atualizado.")); }
   }
   function go(next: View) {
     setView(next);
@@ -1174,9 +1156,9 @@ export default function App({
       const allowed = await requestReminderPermission();
       const result = await syncReminders(dataRef.current);
       if (result.state !== "superseded") setReminders(result);
-      if (!allowed && result.state !== "web") setToast("Permita notificações nas configurações do celular para receber lembretes.");
-      else if (result.state === "error") setToast("Os dados foram salvos, mas não foi possível atualizar os lembretes. Tente novamente em Ajustes.");
-    } catch { setReminders({ state: "error", count: 0 }); setToast("Os dados foram salvos. Não foi possível ativar os lembretes neste momento."); }
+      if (!allowed && result.state !== "web") setToast(tr("Permita notificações nas configurações do celular para receber lembretes."));
+      else if (result.state === "error") setToast(tr("Os dados foram salvos, mas não foi possível atualizar os lembretes. Tente novamente em Ajustes."));
+    } catch { setReminders({ state: "error", count: 0 }); setToast(tr("Os dados foram salvos. Não foi possível ativar os lembretes neste momento.")); }
   }
   function saveTask(task: Task, frequency?: Frequency) {
     const exists = data.tasks.some((t) => t.id === task.id);
@@ -1192,7 +1174,7 @@ export default function App({
     if (ok && task.reminderMinutes !== undefined) void activateReminders();
     if (ok)
       setToast(
-        exists ? "Tarefa atualizada." : "Tarefa criada. Um passo de cada vez!",
+        exists ? tr("Tarefa atualizada.") : tr("Tarefa criada. Um passo de cada vez!"),
       );
     return ok;
   }
@@ -1205,18 +1187,18 @@ export default function App({
         ),
       })
     )
-      setToast(task.completed ? "Tarefa reaberta." : "Tarefa concluída. Boa!");
+      setToast(task.completed ? tr("Tarefa reaberta.") : tr("Tarefa concluída. Boa!"));
   }
   function deleteTask(task: Task) {
     setConfirm({
-      title: "Excluir tarefa?",
-      text: `A tarefa “${task.title}” será removida da sua agenda.`,
+      title: tr("Excluir tarefa?"),
+      text: tr("A tarefa “{0}” será removida da sua agenda.", recordText(task.id, task.title)),
       destructive: true,
       action: () => {
         if (
           save({ ...data, tasks: data.tasks.filter((t) => t.id !== task.id) })
         )
-          setToast("Tarefa excluída.");
+          setToast(tr("Tarefa excluída."));
       },
     });
   }
@@ -1250,15 +1232,15 @@ export default function App({
       setMonth(transaction.date.slice(0, 7));
       setFinanceTab("summary");
       setToast(
-        exists ? "Movimentação atualizada." : "Movimentação registrada.",
+        exists ? tr("Movimentação atualizada.") : tr("Movimentação registrada."),
       );
     }
     return ok;
   }
   function deleteTransaction(transaction: Transaction) {
     setConfirm({
-      title: transaction.installment ? "Excluir compra e parcelas?" : "Excluir movimentação?",
-      text: transaction.installment ? `Todas as parcelas da compra “${transaction.description}”, inclusive as pagas, serão removidas. Os saldos e faturas serão recalculados.` : `O registro “${transaction.description}” de ${money(transaction.amountCents)} será removido. Seu saldo será recalculado.`,
+      title: transaction.installment ? tr("Excluir compra e parcelas?") : tr("Excluir movimentação?"),
+      text: transaction.installment ? tr("Todas as parcelas da compra “{0}”, inclusive as pagas, serão removidas. Os saldos e faturas serão recalculados.", transaction.description) : tr("O registro “{0}” de {1} será removido. Seu saldo será recalculado.", recordText(transaction.id, transaction.description), money(transaction.amountCents)),
       destructive: true,
       action: () => {
         if (
@@ -1269,17 +1251,17 @@ export default function App({
             ),
           })
         )
-          setToast("Movimentação excluída.");
+          setToast(tr("Movimentação excluída."));
       },
     });
   }
   function stopRepeating(id: string) {
-    setConfirm({ title: "Parar repetição?", text: "As próximas ocorrências ainda não concluídas ou pagas serão removidas. O histórico e os registros de hoje serão mantidos.", action: () => { if (save(stopRecurrence(data, id, today))) setToast("Repetição encerrada. Seu histórico foi mantido."); } });
+    setConfirm({ title: tr("Parar repetição?"), text: tr("As próximas ocorrências ainda não concluídas ou pagas serão removidas. O histórico e os registros de hoje serão mantidos."), action: () => { if (save(stopRecurrence(data, id, today))) setToast(tr("Repetição encerrada. Seu histórico foi mantido.")); } });
   }
   function saveCard(card: CreditCard) {
     const cards = data.cards ?? [];
     const ok = save({ ...data, cards: cards.some(c => c.id === card.id) ? cards.map(c => c.id === card.id ? card : c) : [...cards, card] });
-    if (ok) { setToast("Cartão salvo."); if (card.reminderDays !== undefined) void activateReminders(); }
+    if (ok) { setToast(tr("Cartão salvo.")); if (card.reminderDays !== undefined) void activateReminders(); }
     return ok;
   }
   function savePurchase(input: PurchaseInput) {
@@ -1289,23 +1271,23 @@ export default function App({
       const parts = purchaseInstallments(card, input);
       if (!save({ ...data, transactions: [...data.transactions, ...parts] })) return false;
       setMonth(parts[0].date.slice(0, 7)); setFinanceTab("cards");
-      setToast(`${parts.length} ${parts.length === 1 ? "parcela registrada" : "parcelas registradas"}.`);
+      setToast(tr("{0} {1}.", parts.length, parts.length === 1 ? tr("parcela registrada") : tr("parcelas registradas")));
       if (card.reminderDays !== undefined) void activateReminders();
       return true;
     } catch (error) { setToast((error as Error).message); return false; }
   }
   function payInvoice(card: CreditCard) {
     const totals = cardSummary(data, card.id, month);
-    setConfirm({ title: "Marcar fatura como paga?", text: `${money(totals.pending)} das parcelas de ${card.name} neste mês serão marcados como pagos. Nenhum gasto adicional será criado.`, action: () => {
-      if (save({ ...data, transactions: data.transactions.map(t => t.installment?.cardId === card.id && t.date.startsWith(month) ? { ...t, paid: true } : t) })) setToast("Fatura marcada como paga.");
+    setConfirm({ title: tr("Marcar fatura como paga?"), text: tr("{0} das parcelas de {1} neste mês serão marcados como pagos. Nenhum gasto adicional será criado.", money(totals.pending), card.name), action: () => {
+      if (save({ ...data, transactions: data.transactions.map(t => t.installment?.cardId === card.id && t.date.startsWith(month) ? { ...t, paid: true } : t) })) setToast(tr("Fatura marcada como paga."));
     } });
   }
   function archiveCard(card: CreditCard) {
-    setConfirm({ title: card.archived ? "Reativar cartão?" : "Arquivar cartão?", text: card.archived ? "O cartão voltará a aceitar novas compras. Seu histórico será mantido." : "O cartão não aceitará novas compras. As parcelas, faturas e o histórico continuarão disponíveis.", action: () => { if (save({ ...data, cards: data.cards?.map(c => c.id === card.id ? { ...c, archived: !card.archived } : c) })) setToast(card.archived ? "Cartão reativado." : "Cartão arquivado. Suas parcelas foram mantidas."); } });
+    setConfirm({ title: card.archived ? tr("Reativar cartão?") : tr("Arquivar cartão?"), text: card.archived ? tr("O cartão voltará a aceitar novas compras. Seu histórico será mantido.") : tr("O cartão não aceitará novas compras. As parcelas, faturas e o histórico continuarão disponíveis."), action: () => { if (save({ ...data, cards: data.cards?.map(c => c.id === card.id ? { ...c, archived: !card.archived } : c) })) setToast(card.archived ? tr("Cartão reativado.") : tr("Cartão arquivado. Suas parcelas foram mantidas.")); } });
   }
   function settleTransaction(item: Transaction) {
     if (save({ ...data, transactions: data.transactions.map(t => t.id === item.id ? { ...t, paid: true } : t) }))
-      setToast(item.type === "income" ? "Recebimento confirmado." : "Pagamento confirmado.");
+      setToast(item.type === "income" ? tr("Recebimento confirmado.") : tr("Pagamento confirmado."));
   }
   function openPlanning() {
     setFinanceTab("planning"); changeMonth(today.slice(0, 7)); go("finance");
@@ -1313,17 +1295,17 @@ export default function App({
   function saveGoal(goal: FinancialGoal) {
     const goals = data.goals ?? [];
     const ok = save({ ...data, goals: goals.some(g => g.id === goal.id) ? goals.map(g => g.id === goal.id ? goal : g) : [...goals, goal] });
-    if (ok) setToast("Meta salva. Seu progresso está atualizado.");
+    if (ok) setToast(tr("Meta salva. Seu progresso está atualizado."));
     return ok;
   }
   function archiveGoal(goal: FinancialGoal) {
-    setConfirm({ title: goal.archived ? "Reativar meta?" : "Arquivar meta?", text: "O nome, o prazo e o progresso da meta serão preservados. Isso não altera suas movimentações.", action: () => {
-      if (save({ ...data, goals: data.goals?.map(g => g.id === goal.id ? { ...g, archived: !g.archived } : g) })) setToast(goal.archived ? "Meta reativada." : "Meta arquivada.");
+    setConfirm({ title: goal.archived ? tr("Reativar meta?") : tr("Arquivar meta?"), text: tr("O nome, o prazo e o progresso da meta serão preservados. Isso não altera suas movimentações."), action: () => {
+      if (save({ ...data, goals: data.goals?.map(g => g.id === goal.id ? { ...g, archived: !g.archived } : g) })) setToast(goal.archived ? tr("Meta reativada.") : tr("Meta arquivada."));
     } });
   }
   function deleteGoal(goal: FinancialGoal) {
-    setConfirm({ title: "Excluir meta?", text: `A meta “${goal.name}” e seu progresso serão removidos. Nenhuma movimentação será alterada.`, destructive: true, action: () => {
-      if (save({ ...data, goals: data.goals?.filter(g => g.id !== goal.id) })) setToast("Meta excluída.");
+    setConfirm({ title: tr("Excluir meta?"), text: tr("A meta “{0}” e seu progresso serão removidos. Nenhuma movimentação será alterada.", goal.name), destructive: true, action: () => {
+      if (save({ ...data, goals: data.goals?.filter(g => g.id !== goal.id) })) setToast(tr("Meta excluída."));
     } });
   }
   function saveOpening(amount?: number) {
@@ -1331,7 +1313,7 @@ export default function App({
     if (amount === undefined) delete openingBalances[month];
     else openingBalances[month] = amount;
     const ok = save({ ...data, openingBalances });
-    if (ok) setToast(amount === undefined ? "Saldo inicial removido deste mês." : "Saldo inicial salvo. Previsão atualizada.");
+    if (ok) setToast(amount === undefined ? tr("Saldo inicial removido deste mês.") : tr("Saldo inicial salvo. Previsão atualizada."));
     return ok;
   }
   function startDemo() {
@@ -1341,21 +1323,21 @@ export default function App({
         setMonth(monthKey());
         setSelectedDate(today);
         go("overview");
-        setToast("Dados de exemplo carregados. Explore à vontade!");
+        setToast(tr("Dados de exemplo carregados. Explore à vontade!"));
       }
     };
     if (hasData)
       setConfirm({
-        title: "Carregar dados de exemplo?",
-        text: "Os dados atuais serão substituídos. Exporte um backup nas configurações antes de continuar.",
+        title: tr("Carregar dados de exemplo?"),
+        text: tr("Os dados atuais serão substituídos. Exporte um backup nas configurações antes de continuar."),
         action,
       });
     else action();
   }
   function clearDemo() {
     setConfirm({
-      title: "Começar com seus dados?",
-      text: "As tarefas, movimentações e o orçamento de exemplo serão removidos. Registros e orçamentos que você criou serão preservados.",
+      title: tr("Começar com seus dados?"),
+      text: tr("As tarefas, movimentações e o orçamento de exemplo serão removidos. Registros e orçamentos que você criou serão preservados."),
       action: () => {
         const budgets = { ...data.budgets };
         if (data.demoBudgetMonth) delete budgets[data.demoBudgetMonth];
@@ -1371,7 +1353,7 @@ export default function App({
             budgets,
           })
         )
-          setToast("Tudo pronto para a sua rotina.");
+          setToast(tr("Tudo pronto para a sua rotina."));
       },
     });
   }
@@ -1379,9 +1361,9 @@ export default function App({
     try {
       const raw = storageError
         ? localStorage.getItem(STORAGE_KEY)
-        : JSON.stringify(data, null, 2);
+        : JSON.stringify({ ...data, language }, null, 2);
       if (!raw) {
-        setToast("Não há dados salvos para exportar.");
+        setToast(tr("Não há dados salvos para exportar."));
         return;
       }
       await saveBackup(
@@ -1389,36 +1371,36 @@ export default function App({
         `dailyapp-${storageError ? "recuperacao-" : ""}${today}.json`,
       );
       setToast(mobileApp
-        ? "Backup preparado. Guarde sua cópia em um lugar seguro."
-        : "Backup exportado. Guarde-o em um lugar seguro.");
+        ? tr("Backup preparado. Guarde sua cópia em um lugar seguro.")
+        : tr("Backup exportado. Guarde-o em um lugar seguro."));
     } catch (error) {
       if (error instanceof Error && /cancel/i.test(error.message)) return;
-      setToast("Não foi possível exportar o backup. Seus registros continuam salvos.");
+      setToast(tr("Não foi possível exportar o backup. Seus registros continuam salvos."));
     }
   }
   async function importData(file?: File) {
     if (!file) return;
     try {
       if (file.size > 10 * 1024 * 1024)
-        throw new Error("O arquivo deve ter no máximo 10 MB.");
+        throw new Error(tr("O arquivo deve ter no máximo 10 MB."));
       const imported = validateData(JSON.parse(await file.text()));
       setConfirm({
-        title: "Restaurar este backup?",
-        text: `O arquivo contém ${imported.tasks.length} tarefas, ${imported.transactions.length} movimentações e ${imported.goals?.length ?? 0} metas, além dos demais dados de planejamento. Os dados atuais serão substituídos.`,
+        title: tr("Restaurar este backup?"),
+        text: tr("O arquivo contém {0} tarefas, {1} movimentações e {2} metas, além dos demais dados de planejamento. Os dados atuais serão substituídos.", imported.tasks.length, imported.transactions.length, imported.goals?.length ?? 0),
         action: () => {
           if (save(imported, true)) {
             setName(imported.name);
-            setToast("Backup restaurado com sucesso.");
+            setToast(translate(imported.language ?? language, "Backup restaurado com sucesso."));
           }
         },
       });
     } catch (error) {
       setToast(
         error instanceof SyntaxError
-          ? "O arquivo não contém um JSON válido."
+          ? tr("O arquivo não contém um JSON válido.")
           : error instanceof Error
             ? error.message
-            : "Não foi possível importar o backup.",
+            : tr("Não foi possível importar o backup."),
       );
     } finally {
       if (importRef.current) importRef.current.value = "";
@@ -1430,7 +1412,7 @@ export default function App({
     <>
       <div className="stat-card">
         <div className="stat-top">
-          <span>Saldo do mês</span>
+          <span>{tr("Saldo do mês")}</span>
           <span className="stat-icon green">
             <Wallet size={19} />
           </span>
@@ -1438,13 +1420,11 @@ export default function App({
         <strong className={totals.balance < 0 ? "negative" : ""}>
           {money(totals.balance)}
         </strong>
-        <span className="stat-caption">
-          Receitas recebidas − despesas pagas
-        </span>
+        <span className="stat-caption">{tr("Receitas recebidas − despesas pagas")}</span>
       </div>
       <div className="stat-card">
         <div className="stat-top">
-          <span>Receitas recebidas</span>
+          <span>{tr("Receitas recebidas")}</span>
           <span className="stat-icon sage">
             <ArrowDownLeft size={20} />
           </span>
@@ -1452,13 +1432,13 @@ export default function App({
         <strong>{money(totals.income)}</strong>
         <span className="stat-caption">
           {totals.expectedIncome
-            ? `${money(totals.expectedIncome)} a receber`
-            : "Tudo que entrou neste mês"}
+            ? tr("{0} a receber", money(totals.expectedIncome))
+            : tr("Tudo que entrou neste mês")}
         </span>
       </div>
       <div className="stat-card">
         <div className="stat-top">
-          <span>Despesas pagas</span>
+          <span>{tr("Despesas pagas")}</span>
           <span className="stat-icon peach">
             <ArrowUpRight size={20} />
           </span>
@@ -1466,8 +1446,8 @@ export default function App({
         <strong>{money(totals.expense)}</strong>
         <span className="stat-caption">
           {totals.pending
-            ? `${money(totals.pending)} ainda a pagar`
-            : "Tudo que saiu neste mês"}
+            ? tr("{0} ainda a pagar", money(totals.pending))
+            : tr("Tudo que saiu neste mês")}
         </span>
       </div>
     </>
@@ -1480,10 +1460,10 @@ export default function App({
         <div className="section-icon">
           <Target size={19} />
         </div>
-        <h2>Seu orçamento</h2>
+        <h2>{tr("Seu orçamento")}</h2>
         <button
           className="icon-button"
-          aria-label="Editar orçamento"
+          aria-label={tr("Editar orçamento")}
           onClick={() => setEditor({ kind: "budget" })}
         >
           <Pencil size={16} />
@@ -1492,20 +1472,20 @@ export default function App({
       <p>
         {budget
           ? budgetPercent > 100
-            ? "Hora de ajustar a rota. Você pode retomar o controle."
-            : "Pequenas escolhas. Mais tranquilidade no fim do mês."
-          : "Dê um destino ao seu dinheiro antes de gastar."}
+            ? tr("Hora de ajustar a rota. Você pode retomar o controle.")
+            : tr("Pequenas escolhas. Mais tranquilidade no fim do mês.")
+          : tr("Dê um destino ao seu dinheiro antes de gastar.")}
       </p>
       {budget ? (
         <>
           <div className="budget-amount">
             <strong>{money(totals.committed)}</strong>
-            <span>de {money(budget)}</span>
+            <span>{tr("de ")}{money(budget)}</span>
           </div>
           <div
             className="progress-track"
             role="progressbar"
-            aria-label="Orçamento comprometido"
+            aria-label={tr("Orçamento comprometido")}
             aria-valuenow={Math.min(budgetPercent, 100)}
             aria-valuemin={0}
             aria-valuemax={100}
@@ -1513,36 +1493,32 @@ export default function App({
             <span style={{ width: `${Math.min(budgetPercent, 100)}%` }} />
           </div>
           <div className="budget-foot">
-            <span>{budgetPercent}% comprometidos</span>
+            <span>{budgetPercent}{tr("% comprometidos")}</span>
             <strong>
               {totals.committed > budget
-                ? `${money(totals.committed - budget)} acima`
-                : `${money(budget - totals.committed)} livres`}
+                ? tr("{0} acima", money(totals.committed - budget))
+                : tr("{0} livres", money(budget - totals.committed))}
             </strong>
           </div>
-          <small>Inclui despesas pagas e previstas.</small>
+          <small>{tr("Inclui despesas pagas e previstas.")}</small>
         </>
       ) : (
         <button
           className="button budget-button"
           onClick={() => setEditor({ kind: "budget" })}
         >
-          <Plus size={16} />
-          Definir orçamento
-        </button>
+          <Plus size={16} />{tr("Definir orçamento")}</button>
       )}
     </section>
   );
 
   return (
     <div className={`app-shell${mobileApp ? " mobile-app" : ""}`}>
-      <a className="skip-link" href="#main">
-        Ir para o conteúdo
-      </a>
+      <a className="skip-link" href="#main">{tr("Ir para o conteúdo")}</a>
       {mobileMenu && (
         <button
           className="sidebar-backdrop"
-          aria-label="Fechar menu"
+          aria-label={tr("Fechar menu")}
           onClick={() => setMobileMenu(false)}
         />
       )}
@@ -1573,18 +1549,17 @@ export default function App({
         <button
           className="brand"
           onClick={() => go("overview")}
-          aria-label="DailyAPP, página inicial"
+          aria-label={tr("DailyAPP, página inicial")}
         >
           <span className="brand-mark">
             <CheckCheck size={25} strokeWidth={2.5} />
           </span>
-          <span>
-            daily<span className="brand-light">app</span>
+          <span>{tr("daily")}<span className="brand-light">{tr("app")}</span>
             <span className="brand-dot">.</span>
           </span>
         </button>
-        <div className="sidebar-caption">SUA VIDA, MAIS LEVE</div>
-        <nav aria-label="Navegação principal">
+        <div className="sidebar-caption">{tr("SUA VIDA, MAIS LEVE")}</div>
+        <nav aria-label={tr("Navegação principal")}>
           {navItems.map((item) => (
             <button
               key={item.id}
@@ -1608,14 +1583,9 @@ export default function App({
             <span className="tip-icon">
               <Sparkles size={19} />
             </span>
-            <h3>Um passo de cada vez.</h3>
-            <p>
-              Organize o hoje.
-              <br />
-              Aproveite melhor o amanhã.
-            </p>
-            <button onClick={startDemo}>
-              Explorar exemplo <ArrowRight size={14} />
+            <h3>{tr("Um passo de cada vez.")}</h3>
+            <p>{tr("Organize o hoje.")}<br />{tr("Aproveite melhor o amanhã.")}</p>
+            <button onClick={startDemo}>{tr("Explorar exemplo ")}<ArrowRight size={14} />
             </button>
           </div>
           <button
@@ -1623,20 +1593,16 @@ export default function App({
             aria-current={view === "settings" ? "page" : undefined}
             onClick={() => go("settings")}
           >
-            <Settings2 size={19} />
-            Configurações
-          </button>
+            <Settings2 size={19} />{tr("Configurações")}</button>
           <div className="local-badge">
-            <ShieldCheck size={14} />
-            Seus dados ficam com você
-          </div>
+            <ShieldCheck size={14} />{tr("Seus dados ficam com você")}</div>
           <button className="profile" onClick={() => go("settings")}>
             <span className="avatar">
-              {data.name ? data.name.slice(0, 1).toUpperCase() : "V"}
+              {data.name ? data.name.slice(0, 1).toUpperCase() : tr("V")}
             </span>
             <span>
-              <strong>{data.name || "Seu espaço pessoal"}</strong>
-              <small>Uma rotina com propósito</small>
+              <strong>{data.name || tr("Seu espaço pessoal")}</strong>
+              <small>{tr("Uma rotina com propósito")}</small>
             </span>
             <Ellipsis size={18} />
           </button>
@@ -1647,24 +1613,24 @@ export default function App({
           <div className="breadcrumb">
             <button
               className="icon-button menu-button"
-              aria-label="Abrir menu"
+              aria-label={tr("Abrir menu")}
               aria-expanded={mobileMenu}
               onClick={() => setMobileMenu(true)}
             >
               <Menu size={21} />
             </button>
-            <span>{mobileApp ? "dailyapp." : "Meu espaço"}</span>
+            <span>{mobileApp ? tr("dailyapp.") : tr("Meu espaço")}</span>
             <ChevronRight size={13} />
             <strong>
               {view === "settings"
-                ? "Configurações"
+                ? tr("Configurações")
                 : navItems.find((n) => n.id === view)?.label}
             </strong>
           </div>
           <div className="topbar-date">
             <CalendarDays size={15} />
             <span>
-              {new Date().toLocaleDateString("pt-BR", {
+              {new Date().toLocaleDateString(getLocale(), {
                 day: "numeric",
                 month: "long",
                 year: "numeric",
@@ -1672,7 +1638,7 @@ export default function App({
             </span>
           </div>
           <span className="topbar-avatar" aria-hidden="true">
-            {data.name ? data.name.slice(0, 1).toUpperCase() : "V"}
+            {data.name ? data.name.slice(0, 1).toUpperCase() : tr("V")}
           </span>
         </header>
         <main id="main">
@@ -1680,15 +1646,14 @@ export default function App({
             <div className="error-banner" role="alert">
               <CircleHelp size={19} />
               <span>{storageError}</span>
-              <button onClick={() => go("settings")}>Recuperar dados</button>
+              <button onClick={() => go("settings")}>{tr("Recuperar dados")}</button>
             </div>
           )}
           {data.demo && (
             <div className="demo-banner">
               <Sparkles size={15} />
-              <span>Você está explorando dados de exemplo.</span>
-              <button onClick={clearDemo}>
-                Usar meus dados <ArrowRight size={14} />
+              <span>{tr("Você está explorando dados de exemplo.")}</span>
+              <button onClick={clearDemo}>{tr("Usar meus dados ")}<ArrowRight size={14} />
               </button>
             </div>
           )}
@@ -1699,40 +1664,40 @@ export default function App({
                   <>
                     <Sun size={16} />
                     {data.name
-                      ? `Olá, ${data.name.split(" ")[0]}!`
-                      : "BEM-VINDO AO SEU ESPAÇO"}
+                      ? tr("Olá, {0}!", data.name.split(" ")[0])
+                      : tr("BEM-VINDO AO SEU ESPAÇO")}
                   </>
                 ) : view === "calendar" ? (
-                  "TEMPO PARA O QUE IMPORTA"
+                  tr("TEMPO PARA O QUE IMPORTA")
                 ) : view === "tasks" ? (
-                  "UMA COISA DE CADA VEZ"
+                  tr("UMA COISA DE CADA VEZ")
                 ) : view === "finance" ? (
-                  "MAIS CLAREZA, MENOS PREOCUPAÇÃO"
+                  tr("MAIS CLAREZA, MENOS PREOCUPAÇÃO")
                 ) : (
-                  "DO SEU JEITO"
+                  tr("DO SEU JEITO")
                 )}
               </div>
               <h1 ref={headingRef} tabIndex={-1}>
                 {view === "overview"
-                  ? "Seu dia, em equilíbrio."
+                  ? tr("Seu dia, em equilíbrio.")
                   : view === "calendar"
-                    ? "Minha agenda"
+                    ? tr("Minha agenda")
                     : view === "tasks"
-                      ? "Minhas tarefas"
+                      ? tr("Minhas tarefas")
                       : view === "finance"
-                        ? "Minhas finanças"
-                        : "Seu espaço, suas escolhas."}
+                        ? tr("Minhas finanças")
+                        : tr("Seu espaço, suas escolhas.")}
               </h1>
               <p>
                 {view === "overview"
-                  ? "Cuide da sua rotina e do seu dinheiro em um só lugar."
+                  ? tr("Cuide da sua rotina e do seu dinheiro em um só lugar.")
                   : view === "calendar"
-                    ? "Encontre espaço para os compromissos e para você."
+                    ? tr("Encontre espaço para os compromissos e para você.")
                     : view === "tasks"
-                      ? "Transforme planos em pequenos passos possíveis."
+                      ? tr("Transforme planos em pequenos passos possíveis.")
                       : view === "finance"
-                        ? "Saiba de onde vem e para onde vai o seu dinheiro."
-                        : "Personalize sua experiência e cuide dos seus dados."}
+                        ? tr("Saiba de onde vem e para onde vai o seu dinheiro.")
+                        : tr("Personalize sua experiência e cuide dos seus dados.")}
               </p>
             </div>
             {view !== "settings" && (
@@ -1747,18 +1712,14 @@ export default function App({
                       })
                     }
                   >
-                    <Plus size={17} />
-                    Nova tarefa
-                  </button>
+                    <Plus size={17} />{tr("Nova tarefa")}</button>
                 )}
                 {(view === "overview" || view === "finance") && (
                   <button
                     className="button primary"
                     onClick={() => setEditor({ kind: "transaction" })}
                   >
-                    <Plus size={17} />
-                    Nova movimentação
-                  </button>
+                    <Plus size={17} />{tr("Nova movimentação")}</button>
                 )}
               </div>
             )}
@@ -1767,16 +1728,15 @@ export default function App({
           {view === "overview" && (
             <>
               <div className="section-toolbar">
-                <h2>
-                  Um olhar para o seu mês <span className="subtle-dot">·</span>{" "}
-                  <span className="light-text">seu resumo</span>
+                <h2>{tr("Um olhar para o seu mês ")}<span className="subtle-dot">·</span>{" "}
+                  <span className="light-text">{tr("seu resumo")}</span>
                 </h2>
                 <MonthControl month={month} onChange={changeMonth} />
               </div>
               <div className="stats-grid overview-stats">
                 <div className="stat-card">
                   <div className="stat-top">
-                    <span>Tarefas de hoje</span>
+                    <span>{tr("Tarefas de hoje")}</span>
                     <span className="stat-icon lavender">
                       <CheckCheck size={20} />
                     </span>
@@ -1790,8 +1750,8 @@ export default function App({
                   </strong>
                   <span className="stat-caption">
                     {todaysTasks.length
-                      ? `${todaysTasks.length - completedToday} pendentes · no seu ritmo`
-                      : "Um novo dia de possibilidades"}
+                      ? tr("{0} pendentes · no seu ritmo", todaysTasks.length - completedToday)
+                      : tr("Um novo dia de possibilidades")}
                   </span>
                 </div>
                 {financialCards}
@@ -1802,16 +1762,11 @@ export default function App({
                     <Leaf size={28} />
                   </div>
                   <div>
-                    <strong>O primeiro passo é seu.</strong>
-                    <p>
-                      Adicione uma tarefa, registre um gasto ou descubra como
-                      tudo funciona.
-                    </p>
+                    <strong>{tr("O primeiro passo é seu.")}</strong>
+                    <p>{tr("Adicione uma tarefa, registre um gasto ou descubra como tudo funciona.")}</p>
                   </div>
                   <button className="button secondary" onClick={startDemo}>
-                    <Sparkles size={16} />
-                    Explorar exemplo
-                  </button>
+                    <Sparkles size={16} />{tr("Explorar exemplo")}</button>
                 </div>
               )}
               <div className="dashboard-grid">
@@ -1821,9 +1776,9 @@ export default function App({
                       <ListTodo size={19} />
                     </div>
                     <div>
-                      <h2>O que temos para hoje?</h2>
+                      <h2>{tr("O que temos para hoje?")}</h2>
                       <p>
-                        {new Date().toLocaleDateString("pt-BR", {
+                        {new Date().toLocaleDateString(getLocale(), {
                           weekday: "long",
                           day: "numeric",
                           month: "long",
@@ -1836,16 +1791,14 @@ export default function App({
                         setTaskFilter("Hoje");
                         go("tasks");
                       }}
-                    >
-                      Ver todas <ArrowRight size={14} />
+                    >{tr("Ver todas ")}<ArrowRight size={14} />
                     </button>
                   </div>
                   {todaysTasks.length > 0 ? (
                     <>
                       <div className="daily-progress">
                         <span>
-                          {completedToday} de {todaysTasks.length} concluídas
-                        </span>
+                          {completedToday}{tr(" de ")}{todaysTasks.length}{tr(" concluídas")}</span>
                         <span>
                           {Math.round(
                             (completedToday / todaysTasks.length) * 100,
@@ -1866,16 +1819,14 @@ export default function App({
                     </>
                   ) : (
                     <Empty
-                      title="Seu dia está em aberto"
-                      text="Organize seus próximos passos. Sem pressa."
+                      title={tr("Seu dia está em aberto")}
+                      text={tr("Organize seus próximos passos. Sem pressa.")}
                       action={
                         <button
                           className="text-button"
                           onClick={() => setEditor({ kind: "task" })}
                         >
-                          <Plus size={15} />
-                          Adicionar primeira tarefa
-                        </button>
+                          <Plus size={15} />{tr("Adicionar primeira tarefa")}</button>
                       }
                     />
                   )}
@@ -1890,8 +1841,8 @@ export default function App({
                       <Clock3 size={14} />
                       {overdueTasks.length}{" "}
                       {overdueTasks.length === 1
-                        ? "tarefa de dias anteriores"
-                        : "tarefas de dias anteriores"}
+                        ? tr("tarefa de dias anteriores")
+                        : tr("tarefas de dias anteriores")}
                       <ArrowRight size={14} />
                     </button>
                   )}
@@ -1899,9 +1850,7 @@ export default function App({
                     className="panel-add"
                     onClick={() => setEditor({ kind: "task" })}
                   >
-                    <Plus size={16} />
-                    Adicionar tarefa
-                  </button>
+                    <Plus size={16} />{tr("Adicionar tarefa")}</button>
                 </section>
                 <TodayMoney data={data} today={today} onEdit={item => setEditor({ kind: "transaction", item })} onSettle={settleTransaction} onPlanning={openPlanning} />
                 <section className="panel chart-panel">
@@ -1910,12 +1859,12 @@ export default function App({
                       <TrendingUp size={19} />
                     </div>
                     <div>
-                      <h2>Seu dinheiro em movimento</h2>
-                      <p>Valores pagos acumulados no mês</p>
+                      <h2>{tr("Seu dinheiro em movimento")}</h2>
+                      <p>{tr("Valores pagos acumulados no mês")}</p>
                     </div>
                     <button
                       className="icon-button"
-                      aria-label="Ver finanças"
+                      aria-label={tr("Ver finanças")}
                       onClick={() => go("finance")}
                     >
                       <ArrowUpRight size={19} />
@@ -1923,28 +1872,23 @@ export default function App({
                   </div>
                   <div className="chart-legend">
                     <span>
-                      <i className="legend-dot income-dot" />
-                      Receitas
-                    </span>
+                      <i className="legend-dot income-dot" />{tr("Receitas")}</span>
                     <span>
-                      <i className="legend-dot expense-dot" />
-                      Despesas
-                    </span>
-                    <small>em R$</small>
+                      <i className="legend-dot expense-dot" />{tr("Despesas")}</span>
+                    <small>{tr("em R$")}</small>
                   </div>
                   <FinanceChart entries={totals.entries} month={month} />
                   <div className="chart-foot">
                     <span>
                       <span className="tiny-dot" />
                       {totals.entries.length
-                        ? `${totals.entries.length} movimentações registradas no mês`
-                        : "Cada registro ajuda a enxergar melhor"}
+                        ? tr("{0} movimentações registradas no mês", totals.entries.length)
+                        : tr("Cada registro ajuda a enxergar melhor")}
                     </span>
                     <button
                       className="text-button"
                       onClick={() => go("finance")}
-                    >
-                      Ver detalhes <ArrowRight size={14} />
+                    >{tr("Ver detalhes ")}<ArrowRight size={14} />
                     </button>
                   </div>
                 </section>
@@ -1954,12 +1898,12 @@ export default function App({
                       <Wallet size={19} />
                     </div>
                     <div>
-                      <h2>Para onde vai seu dinheiro?</h2>
-                      <p>Despesas pagas e previstas por categoria</p>
+                      <h2>{tr("Para onde vai seu dinheiro?")}</h2>
+                      <p>{tr("Despesas pagas e previstas por categoria")}</p>
                     </div>
                     <span className="small-badge">
                       {categoryCount}{" "}
-                      {categoryCount === 1 ? "categoria" : "categorias"}
+                      {categoryCount === 1 ? tr("categoria") : tr("categorias")}
                     </span>
                   </div>
                   <Expenses entries={totals.entries} />
@@ -1970,10 +1914,8 @@ export default function App({
                     <span>
                       <Coffee size={19} />
                     </span>
-                    <p>
-                      Você não precisa dar conta de tudo hoje.
-                      <br />
-                      <strong>Constância vale mais que perfeição.</strong>
+                    <p>{tr("Você não precisa dar conta de tudo hoje.")}<br />
+                      <strong>{tr("Constância vale mais que perfeição.")}</strong>
                     </p>
                     <Leaf size={40} strokeWidth={1.1} />
                   </div>
@@ -1987,7 +1929,7 @@ export default function App({
             <RecurrencePanel data={data} kind="task" onStop={stopRepeating} />
             <section className="panel tasks-panel">
               <div className="section-toolbar task-toolbar">
-                <div className="filter-tabs" aria-label="Filtrar tarefas">
+                <div className="filter-tabs" aria-label={tr("Filtrar tarefas")}>
                   {[
                     "Todas",
                     "Hoje",
@@ -2001,15 +1943,15 @@ export default function App({
                       key={f}
                       onClick={() => setTaskFilter(f)}
                     >
-                      {f}
+                      {tr(f)}
                     </button>
                   ))}
                 </div>
                 <label className="search-field">
                   <Search size={16} />
                   <input
-                    aria-label="Buscar tarefas"
-                    placeholder="Buscar uma tarefa..."
+                    aria-label={tr("Buscar tarefas")}
+                    placeholder={tr("Buscar uma tarefa...")}
                     value={taskSearch}
                     onChange={(e) => setTaskSearch(e.target.value)}
                   />
@@ -2018,12 +1960,10 @@ export default function App({
               <div className="list-summary">
                 <span>
                   {visibleTasks.length}{" "}
-                  {visibleTasks.length === 1 ? "tarefa" : "tarefas"}
+                  {visibleTasks.length === 1 ? tr("tarefa") : tr("tarefas")}
                 </span>
                 <small>
-                  {data.tasks.filter((t) => t.completed).length} concluídas no
-                  total
-                </small>
+                  {data.tasks.filter((t) => t.completed).length}{tr(" concluídas no total")}</small>
               </div>
               {visibleTasks.length ? (
                 <div className="task-list">
@@ -2034,22 +1974,20 @@ export default function App({
                   icon={<ListTodo size={27} />}
                   title={
                     hasData
-                      ? "Nenhuma tarefa por aqui"
-                      : "Vamos tirar os planos do papel?"
+                      ? tr("Nenhuma tarefa por aqui")
+                      : tr("Vamos tirar os planos do papel?")
                   }
                   text={
                     taskSearch
-                      ? "Tente buscar por outro termo."
-                      : "Crie uma tarefa ou escolha outro filtro para continuar."
+                      ? tr("Tente buscar por outro termo.")
+                      : tr("Crie uma tarefa ou escolha outro filtro para continuar.")
                   }
                   action={
                     <button
                       className="button primary"
                       onClick={() => setEditor({ kind: "task" })}
                     >
-                      <Plus size={16} />
-                      Nova tarefa
-                    </button>
+                      <Plus size={16} />{tr("Nova tarefa")}</button>
                   }
                 />
               )}
@@ -2065,15 +2003,11 @@ export default function App({
                   <button
                     className="button secondary compact"
                     onClick={resetMonth}
-                  >
-                    Hoje
-                  </button>
+                  >{tr("Hoje")}</button>
                 </div>
                 <div className="calendar-weekdays">
-                  {["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"].map(
-                    (d) => (
-                      <span key={d}>{d}</span>
-                    ),
+                  {Array.from({ length: 7 }, (_, index) => new Date(2026, 0, 4 + index, 12).toLocaleDateString(getLocale(), { weekday: "short" }).replace(/\.$/, "").toLocaleUpperCase(getLocale())).map(
+                    (day, index) => <span key={index}>{day}</span>,
                   )}
                 </div>
                 <div className="calendar-grid">
@@ -2090,7 +2024,7 @@ export default function App({
                     return (
                       <button
                         key={key}
-                        aria-label={`${day.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}, ${tasks.length} tarefas`}
+                        aria-label={tr("{0}, {1} tarefas", day.toLocaleDateString(getLocale(), { day: "numeric", month: "long" }), tasks.length)}
                         aria-pressed={key === selectedDate}
                         className={`calendar-day ${outside ? "outside-month" : ""} ${key === today ? "is-today" : ""} ${key === selectedDate ? "is-selected" : ""}`}
                         onClick={() => {
@@ -2106,11 +2040,11 @@ export default function App({
                               className={t.completed ? "done" : ""}
                             >
                               <i />
-                              {t.title}
+                              {recordText(t.id, t.title)}
                             </span>
                           ))}
                           {tasks.length > 2 && (
-                            <small>+{tasks.length - 2} tarefas</small>
+                            <small>+{tasks.length - 2}{tr(" tarefas")}</small>
                           )}
                         </div>
                         <div className="calendar-dots">
@@ -2127,13 +2061,9 @@ export default function App({
                 </div>
                 <div className="calendar-legend">
                   <span>
-                    <i className="legend-dot income-dot" />
-                    Tarefa pendente
-                  </span>
+                    <i className="legend-dot income-dot" />{tr("Tarefa pendente")}</span>
                   <span>
-                    <i className="legend-dot completed-dot" />
-                    Concluída
-                  </span>
+                    <i className="legend-dot completed-dot" />{tr("Concluída")}</span>
                 </div>
               </section>
               <section className="panel agenda-day-panel">
@@ -2143,13 +2073,13 @@ export default function App({
                   </div>
                   <div>
                     <h2>
-                      {parseDate(selectedDate).toLocaleDateString("pt-BR", {
+                      {parseDate(selectedDate).toLocaleDateString(getLocale(), {
                         day: "numeric",
                         month: "long",
                       })}
                     </h2>
                     <p>
-                      {parseDate(selectedDate).toLocaleDateString("pt-BR", {
+                      {parseDate(selectedDate).toLocaleDateString(getLocale(), {
                         weekday: "long",
                       })}
                     </p>
@@ -2161,8 +2091,8 @@ export default function App({
                   </div>
                 ) : (
                   <Empty
-                    title="Um dia de possibilidades"
-                    text="Selecione um dia e adicione seus compromissos."
+                    title={tr("Um dia de possibilidades")}
+                    text={tr("Selecione um dia e adicione seus compromissos.")}
                   />
                 )}
                 <button
@@ -2171,23 +2101,19 @@ export default function App({
                     setEditor({ kind: "task", date: selectedDate })
                   }
                 >
-                  <Plus size={16} />
-                  Adicionar neste dia
-                </button>
+                  <Plus size={16} />{tr("Adicionar neste dia")}</button>
               </section>
             </div>
           )}
 
           {view === "finance" && (
             <>
-              <div className="finance-subnav" role="group" aria-label="Visão financeira"><button aria-pressed={financeTab === "summary"} className={financeTab === "summary" ? "selected" : ""} onClick={() => setFinanceTab("summary")}>Resumo</button><button aria-pressed={financeTab === "cards"} className={financeTab === "cards" ? "selected" : ""} onClick={() => setFinanceTab("cards")}>Cartões e parcelas</button><button aria-pressed={financeTab === "planning"} className={financeTab === "planning" ? "selected" : ""} onClick={() => setFinanceTab("planning")}>Planejamento</button></div>
+              <div className="finance-subnav" role="group" aria-label={tr("Visão financeira")}><button aria-pressed={financeTab === "summary"} className={financeTab === "summary" ? "selected" : ""} onClick={() => setFinanceTab("summary")}>{tr("Resumo")}</button><button aria-pressed={financeTab === "cards"} className={financeTab === "cards" ? "selected" : ""} onClick={() => setFinanceTab("cards")}>{tr("Cartões e parcelas")}</button><button aria-pressed={financeTab === "planning"} className={financeTab === "planning" ? "selected" : ""} onClick={() => setFinanceTab("planning")}>{tr("Planejamento")}</button></div>
               <div className="section-toolbar">
-                <h2>{financeTab === "cards" ? "Suas faturas" : financeTab === "planning" ? "Seu planejamento" : "Seu resumo financeiro"}</h2>
+                <h2>{financeTab === "cards" ? tr("Suas faturas") : financeTab === "planning" ? tr("Seu planejamento") : tr("Seu resumo financeiro")}</h2>
                 <div className="month-tools">
                   {month !== monthKey() && (
-                    <button className="text-button" onClick={resetMonth}>
-                      Mês atual
-                    </button>
+                    <button className="text-button" onClick={resetMonth}>{tr("Mês atual")}</button>
                   )}
                   <MonthControl month={month} onChange={changeMonth} />
                 </div>
@@ -2198,15 +2124,13 @@ export default function App({
                 {financialCards}
                 <div className="stat-card">
                   <div className="stat-top">
-                    <span>A pagar</span>
+                    <span>{tr("A pagar")}</span>
                     <span className="stat-icon sand">
                       <Clock3 size={19} />
                     </span>
                   </div>
                   <strong>{money(totals.pending)}</strong>
-                  <span className="stat-caption">
-                    Despesas previstas neste mês
-                  </span>
+                  <span className="stat-caption">{tr("Despesas previstas neste mês")}</span>
                 </div>
               </div>
               <div className="finance-middle">
@@ -2216,8 +2140,8 @@ export default function App({
                       <Wallet size={19} />
                     </div>
                     <div>
-                      <h2>Despesas por categoria</h2>
-                      <p>Inclui valores pagos e previstos</p>
+                      <h2>{tr("Despesas por categoria")}</h2>
+                      <p>{tr("Inclui valores pagos e previstos")}</p>
                     </div>
                   </div>
                   <Expenses entries={totals.entries} />
@@ -2227,18 +2151,16 @@ export default function App({
               <section className="panel transactions-panel">
                 <div className="panel-heading">
                   <div>
-                    <h2>Suas movimentações</h2>
-                    <p>Um histórico para entender suas escolhas.</p>
+                    <h2>{tr("Suas movimentações")}</h2>
+                    <p>{tr("Um histórico para entender suas escolhas.")}</p>
                   </div>
                   <button className="text-button" onClick={exportData}>
-                    <Download size={15} />
-                    Exportar backup
-                  </button>
+                    <Download size={15} />{tr("Exportar backup")}</button>
                 </div>
                 <div className="transaction-toolbar">
                   <div
                     className="filter-tabs"
-                    aria-label="Filtrar movimentações"
+                    aria-label={tr("Filtrar movimentações")}
                   >
                     {["Todas", "Receitas", "Despesas"].map((f) => (
                       <button
@@ -2247,27 +2169,27 @@ export default function App({
                         className={financeFilter === f ? "selected" : ""}
                         onClick={() => setFinanceFilter(f)}
                       >
-                        {f}
+                        {tr(f)}
                       </button>
                     ))}
                   </div>
                   <div className="transaction-search">
                     <select
-                      aria-label="Filtrar status"
+                      aria-label={tr("Filtrar status")}
                       value={financeStatus}
                       onChange={(e) => setFinanceStatus(e.target.value)}
                     >
                       {["Todos os status", "Efetivadas", "Previstas"].map(
                         (s) => (
-                          <option key={s}>{s}</option>
+                          <option key={s} value={s}>{tr(s)}</option>
                         ),
                       )}
                     </select>
                     <label className="search-field">
                       <Search size={16} />
                       <input
-                        aria-label="Buscar movimentações"
-                        placeholder="Buscar movimentação..."
+                        aria-label={tr("Buscar movimentações")}
+                        placeholder={tr("Buscar movimentação...")}
                         value={financeSearch}
                         onChange={(e) => setFinanceSearch(e.target.value)}
                       />
@@ -2280,13 +2202,13 @@ export default function App({
                       <table>
                         <thead>
                           <tr>
-                            <th>Descrição</th>
-                            <th>Categoria</th>
-                            <th>Data</th>
-                            <th>Status</th>
-                            <th className="text-right">Valor</th>
+                            <th>{tr("Descrição")}</th>
+                            <th>{tr("Categoria")}</th>
+                            <th>{tr("Data")}</th>
+                            <th>{tr("Status")}</th>
+                            <th className="text-right">{tr("Valor")}</th>
                             <th>
-                              <span className="sr-only">Ações</span>
+                              <span className="sr-only">{tr("Ações")}</span>
                             </th>
                           </tr>
                         </thead>
@@ -2312,18 +2234,18 @@ export default function App({
                                       })
                                     }
                                   >
-                                    {t.description}{t.installment && <span className="installment-label"> · {t.installment.index}/{t.installment.count}</span>}
+                                    {recordText(t.id, t.description)}{t.installment && <span className="installment-label"> · {t.installment.index}/{t.installment.count}</span>}
                                     <small>
                                       {t.type === "income"
-                                        ? "Receita"
-                                        : "Despesa"}
-                                      {t.recurrenceId && " · Recorrente"}
-                                      {t.installment && ` · ${data.cards?.find(c => c.id === t.installment?.cardId)?.name ?? "Cartão"}`}
+                                        ? tr("Receita")
+                                        : tr("Despesa")}
+                                      {t.recurrenceId && tr(" · Recorrente")}
+                                      {t.installment && tr(" · {0}", data.cards?.find(c => c.id === t.installment?.cardId)?.name ?? tr("Cartão"))}
                                       <span className="mobile-transaction-meta">
                                         {" "}
                                         · {prettyDate(t.date)}
                                         <br />
-                                        {t.category}
+                                        {tr(t.category)}
                                       </span>
                                     </small>
                                   </button>
@@ -2331,14 +2253,14 @@ export default function App({
                               </td>
                               <td>
                                 <span className="neutral-tag">
-                                  {t.category}
+                                  {tr(t.category)}
                                 </span>
                               </td>
                               <td>{prettyDate(t.date)}</td>
                               <td>
                                 <button
                                   className={`status-pill ${t.paid ? "paid" : "pending"}`}
-                                  aria-label={`${t.paid ? "Marcar como prevista" : t.type === "income" ? "Marcar como recebida" : "Marcar como paga"}: ${t.description}`}
+                                  aria-label={tr("{0}: {1}", t.paid ? tr("Marcar como prevista") : t.type === "income" ? tr("Marcar como recebida") : tr("Marcar como paga"), recordText(t.id, t.description))}
                                   onClick={() => {
                                     if (
                                       save({
@@ -2351,28 +2273,28 @@ export default function App({
                                         ),
                                       })
                                     )
-                                      setToast("Status atualizado.");
+                                      setToast(tr("Status atualizado."));
                                   }}
                                 >
                                   <i />
                                   {t.paid
                                     ? t.type === "income"
-                                      ? "Recebida"
-                                      : "Paga"
-                                    : "Prevista"}
+                                      ? tr("Recebida")
+                                      : tr("Paga")
+                                    : tr("Prevista")}
                                 </button>
                               </td>
                               <td
                                 className={`transaction-amount ${t.type === "income" ? "positive" : ""}`}
                               >
-                                {t.type === "income" ? "+" : "−"}{" "}
+                                {t.type === "income" ? tr("+") : tr("−")}{" "}
                                 {money(t.amountCents)}
                               </td>
                               <td>
                                 <div className="row-actions">
                                   <button
                                     className="icon-button"
-                                    aria-label={`Editar movimentação: ${t.description}`}
+                                    aria-label={tr("Editar movimentação: {0}", recordText(t.id, t.description))}
                                     onClick={() =>
                                       setEditor({
                                         kind: "transaction",
@@ -2384,7 +2306,7 @@ export default function App({
                                   </button>
                                   <button
                                     className="icon-button danger-hover"
-                                    aria-label={`Excluir movimentação: ${t.description}`}
+                                    aria-label={tr("Excluir movimentação: {0}", recordText(t.id, t.description))}
                                     onClick={() => deleteTransaction(t)}
                                   >
                                     <Trash2 size={15} />
@@ -2399,24 +2321,21 @@ export default function App({
                     <div className="table-footer">
                       {visibleTransactions.length}{" "}
                       {visibleTransactions.length === 1
-                        ? "movimentação"
-                        : "movimentações"}{" "}
-                      neste filtro<span>Valores em reais (BRL)</span>
+                        ? tr("movimentação")
+                        : tr("movimentações")}{" "}{tr("neste filtro")}<span>{tr("Valores em reais (BRL)")}</span>
                     </div>
                   </>
                 ) : (
                   <Empty
                     icon={<Wallet size={27} />}
-                    title="Nenhuma movimentação encontrada"
-                    text="Registre uma receita ou despesa, ou ajuste os filtros e o mês."
+                    title={tr("Nenhuma movimentação encontrada")}
+                    text={tr("Registre uma receita ou despesa, ou ajuste os filtros e o mês.")}
                     action={
                       <button
                         className="button primary"
                         onClick={() => setEditor({ kind: "transaction" })}
                       >
-                        <Plus size={16} />
-                        Registrar movimentação
-                      </button>
+                        <Plus size={16} />{tr("Registrar movimentação")}</button>
                     }
                   />
                 )}
@@ -2427,7 +2346,12 @@ export default function App({
 
           {view === "settings" && (
             <div className="settings-grid">
-              <section className="panel settings-panel account-panel">
+              <section className="panel settings-panel language-panel">
+                <div className="panel-heading"><div className="section-icon sage"><Settings2 size={19} /></div><div><h2>{tr("Idioma")}</h2><p>{tr("Escolha o idioma do aplicativo.")}</p></div></div>
+                <label>{tr("Idioma do aplicativo")}<select aria-label={tr("Idioma do aplicativo")} value={language} onChange={event => { if (isLanguage(event.target.value)) changeLanguage(event.target.value); }}>{LANGUAGES.map(item => <option key={item.id} value={item.id} lang={item.id}>{item.name}</option>)}</select></label>
+                <p className="form-hint">{tr("A interface, datas e lembretes acompanham sua escolha. Valores continuam em reais (BRL).")}</p>
+              </section>
+              {!mobileApp && <section className="panel settings-panel account-panel">
                 <div className="panel-heading">
                   <div className="section-icon sage">
                     <ShieldCheck size={19} />
@@ -2435,13 +2359,13 @@ export default function App({
                   <div>
                     <h2>
                       {account
-                        ? "Sua conta conectada"
-                        : "Leve sua rotina com você"}
+                        ? tr("Sua conta conectada")
+                        : tr("Leve sua rotina com você")}
                     </h2>
                     <p>
                       {account
                         ? account.email
-                        : "Conta e sincronização entre dispositivos"}
+                        : tr("Conta e sincronização entre dispositivos")}
                     </p>
                   </div>
                 </div>
@@ -2449,48 +2373,38 @@ export default function App({
                   {account
                     ? account.snapshot.message
                     : localAccount?.available
-                      ? "Entre ou crie uma conta para acessar sua agenda e suas finanças em outros dispositivos. Seus registros locais podem ser importados depois."
-                      : "Você está usando o modo local. O acesso às contas está sendo preparado neste ambiente; seus registros continuam salvos neste navegador."}
+                      ? tr("Entre ou crie uma conta para acessar sua agenda e suas finanças em outros dispositivos. Seus registros locais podem ser importados depois.")
+                      : tr("Você está usando o modo local. O acesso às contas está sendo preparado neste ambiente; seus registros continuam salvos neste navegador.")}
                 </p>
                 {!account && localAccount?.available && (
                   <button
                     className="button primary"
                     onClick={localAccount.login}
-                  >
-                    Entrar ou criar conta
-                  </button>
+                  >{tr("Entrar ou criar conta")}</button>
                 )}
                 {account?.localAvailable && (
                   <div className="migration-card">
-                    <strong>Você tem registros da versão local.</strong>
-                    <p>
-                      Importe-os para sua conta. A cópia original neste
-                      navegador será preservada.
-                    </p>
+                    <strong>{tr("Você tem registros da versão local.")}</strong>
+                    <p>{tr("Importe-os para sua conta. A cópia original neste navegador será preservada.")}</p>
                     <button
                       className="button secondary"
                       disabled={!account.snapshot.canEdit}
                       onClick={() =>
                         setConfirm({
-                          title: "Importar registros locais?",
-                          text: "Tarefas, movimentações e orçamentos serão adicionados à sua conta. Registros já existentes na conta serão preservados e dados de exemplo serão ignorados.",
+                          title: tr("Importar registros locais?"),
+                          text: tr("Tarefas, movimentações e orçamentos serão adicionados à sua conta. Registros já existentes na conta serão preservados e dados de exemplo serão ignorados."),
                           action: account.migrate,
                         })
                       }
-                    >
-                      Importar meus dados locais
-                    </button>
+                    >{tr("Importar meus dados locais")}</button>
                   </div>
                 )}
                 {account &&
                   (account.snapshot.status === "conflict" ||
                     account.snapshot.status === "error") && (
                     <div className="migration-card">
-                      <strong>Recupere sua conta com cuidado.</strong>
-                      <p>
-                        Exporte um backup das alterações deste dispositivo antes
-                        de carregar a versão da nuvem.
-                      </p>
+                      <strong>{tr("Recupere sua conta com cuidado.")}</strong>
+                      <p>{tr("Exporte um backup das alterações deste dispositivo antes de carregar a versão da nuvem.")}</p>
                       <div className="backup-actions">
                         <button
                           className="button secondary"
@@ -2504,62 +2418,54 @@ export default function App({
                                 );
                               else
                                 setToast(
-                                  "Não existe uma cópia local para exportar.",
+                                  tr("Não existe uma cópia local para exportar."),
                                 );
                             } catch {
-                              setToast("Não foi possível ler a cópia local.");
+                              setToast(tr("Não foi possível ler a cópia local."));
                             }
                           }}
-                        >
-                          Exportar cópia local
-                        </button>
+                        >{tr("Exportar cópia local")}</button>
                         <button
                           className="button secondary"
                           onClick={() =>
                             setConfirm({
-                              title: "Carregar dados da nuvem?",
-                              text: "Alterações locais ainda não sincronizadas serão substituídas. Continue apenas depois de exportar uma cópia dos registros que deseja guardar.",
+                              title: tr("Carregar dados da nuvem?"),
+                              text: tr("Alterações locais ainda não sincronizadas serão substituídas. Continue apenas depois de exportar uma cópia dos registros que deseja guardar."),
                               action: () => {
                                 void account.store.useRemote();
                               },
                             })
                           }
-                        >
-                          Carregar dados da nuvem
-                        </button>
+                        >{tr("Carregar dados da nuvem")}</button>
                       </div>
                     </div>
                   )}
-              </section>
+              </section>}
               <section className="panel settings-panel">
                 <div className="panel-heading">
                   <div className="section-icon lavender">
                     <Settings2 size={19} />
                   </div>
                   <div>
-                    <h2>Um espaço com a sua cara</h2>
-                    <p>Como podemos chamar você?</p>
+                    <h2>{tr("Um espaço com a sua cara")}</h2>
+                    <p>{tr("Como podemos chamar você?")}</p>
                   </div>
                 </div>
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
                     if (save({ ...data, name: name.trim() }))
-                      setToast("Seu nome foi atualizado.");
+                      setToast(tr("Seu nome foi atualizado."));
                   }}
                 >
-                  <label>
-                    Seu nome
-                    <input
+                  <label>{tr("Seu nome")}<input
                       maxLength={60}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Ex.: Ana"
+                      placeholder={tr("Ex.: Ana")}
                     />
                   </label>
-                  <button className="button primary" type="submit">
-                    Salvar nome
-                  </button>
+                  <button className="button primary" type="submit">{tr("Salvar nome")}</button>
                 </form>
               </section>
               <section className="panel settings-panel data-panel">
@@ -2568,57 +2474,51 @@ export default function App({
                     <ShieldCheck size={19} />
                   </div>
                   <div>
-                    <h2>Seus dados, sob seu controle</h2>
+                    <h2>{tr("Seus dados, sob seu controle")}</h2>
                     <p>
                       {account
-                        ? "Cópia local e sincronização com sua conta."
-                        : "Salvos automaticamente neste dispositivo."}
+                        ? tr("Cópia local e sincronização com sua conta.")
+                        : tr("Salvos automaticamente neste dispositivo.")}
                     </p>
                   </div>
                 </div>
                 <p>
                   {account
-                    ? "Suas informações são sincronizadas com sua conta. Alterações pendentes permanecem neste dispositivo até serem confirmadas na nuvem. Exporte backups para manter uma cópia independente."
-                    : "Suas informações ficam neste dispositivo. Exporte um backup para guardar uma cópia ou transferir seus dados para outro dispositivo."}
+                    ? tr("Suas informações são sincronizadas com sua conta. Alterações pendentes permanecem neste dispositivo até serem confirmadas na nuvem. Exporte backups para manter uma cópia independente.")
+                    : tr("Suas informações ficam neste dispositivo. Exporte um backup para guardar uma cópia ou transferir seus dados para outro dispositivo.")}
                 </p>
                 <div className="data-counts">
                   <span>
-                    <strong>{data.tasks.length}</strong> tarefas
-                  </span>
+                    <strong>{data.tasks.length}</strong>{tr(" tarefas")}</span>
                   <span>
-                    <strong>{data.transactions.length}</strong> movimentações
-                  </span>
-                  {!!data.goals?.length && <span><strong>{data.goals.length}</strong> metas</span>}
+                    <strong>{data.transactions.length}</strong>{tr(" movimentações")}</span>
+                  {!!data.goals?.length && <span><strong>{data.goals.length}</strong>{tr(" metas")}</span>}
                 </div>
                 <div className="backup-actions">
                   <button className="button secondary" onClick={exportData}>
                     <ArrowDownToLine size={16} />
                     {storageError
-                      ? "Exportar dados originais"
-                      : "Exportar backup"}
+                      ? tr("Exportar dados originais")
+                      : tr("Exportar backup")}
                   </button>
                   <button
                     className="button secondary"
                     onClick={() => importRef.current?.click()}
                   >
-                    <Upload size={16} />
-                    Importar backup
-                  </button>
+                    <Upload size={16} />{tr("Importar backup")}</button>
                   <input
                     className="sr-only"
                     type="file"
                     accept=".json,application/json"
                     ref={importRef}
-                    aria-label="Arquivo de backup"
+                    aria-label={tr("Arquivo de backup")}
                     onChange={(e) => void importData(e.target.files?.[0])}
                   />
                 </div>
                 <small className="settings-note">
                   {mobileApp
-                    ? "Desinstalar o aplicativo ou limpar seus dados remove os registros locais. "
-                    : "Limpar os dados do navegador remove seus registros. "}O backup
-                  contém suas informações pessoais; guarde-o com cuidado.
-                </small>
+                    ? tr("Desinstalar o aplicativo ou limpar seus dados remove os registros locais. ")
+                    : tr("Limpar os dados do navegador remove seus registros. ")}{tr("O backup contém suas informações pessoais; guarde-o com cuidado.")}</small>
               </section>
               <section className="panel settings-panel">
                 <div className="panel-heading">
@@ -2626,18 +2526,13 @@ export default function App({
                     <Sparkles size={19} />
                   </div>
                   <div>
-                    <h2>Conheça as possibilidades</h2>
-                    <p>Experimente antes de começar.</p>
+                    <h2>{tr("Conheça as possibilidades")}</h2>
+                    <p>{tr("Experimente antes de começar.")}</p>
                   </div>
                 </div>
-                <p>
-                  Explore uma rotina de exemplo com tarefas e movimentações
-                  fictícias.
-                </p>
+                <p>{tr("Explore uma rotina de exemplo com tarefas e movimentações fictícias.")}</p>
                 <button className="button secondary" onClick={startDemo}>
-                  <Sparkles size={16} />
-                  Carregar exemplo
-                </button>
+                  <Sparkles size={16} />{tr("Carregar exemplo")}</button>
               </section>
               <section className="panel settings-panel reset-panel">
                 <div className="panel-heading">
@@ -2645,76 +2540,69 @@ export default function App({
                     <Trash2 size={19} />
                   </div>
                   <div>
-                    <h2>Começar de novo</h2>
-                    <p>Um novo início para sua organização.</p>
+                    <h2>{tr("Começar de novo")}</h2>
+                    <p>{tr("Um novo início para sua organização.")}</p>
                   </div>
                 </div>
-                <p>
-                  Apague tarefas, movimentações, cartões, metas, saldos iniciais e orçamentos deste
-                  dispositivo. Exporte um backup antes de continuar.
-                </p>
+                <p>{tr("Apague tarefas, movimentações, cartões, metas, saldos iniciais e orçamentos deste dispositivo. Exporte um backup antes de continuar.")}</p>
                 <button
                   className="button danger-outline"
                   onClick={() =>
                     setConfirm({
-                      title: "Apagar todos os dados?",
-                      text: "Esta ação remove tarefas, movimentações, cartões, rotinas, metas, saldos iniciais, orçamentos e seu nome. Você só poderá recuperá-los se tiver exportado um backup.",
+                      title: tr("Apagar todos os dados?"),
+                      text: tr("Esta ação remove tarefas, movimentações, cartões, rotinas, metas, saldos iniciais, orçamentos e seu nome. Você só poderá recuperá-los se tiver exportado um backup."),
                       destructive: true,
                       action: () => {
                         if (save(freshData(), true)) {
                           setName("");
                           setMonth(monthKey());
                           setToast(
-                            "Dados apagados. Tudo pronto para um novo início.",
+                            tr("Dados apagados. Tudo pronto para um novo início."),
                           );
                         }
                       },
                     })
                   }
                 >
-                  <Trash2 size={16} />
-                  Apagar meus dados
-                </button>
+                  <Trash2 size={16} />{tr("Apagar meus dados")}</button>
               </section>
               {mobileApp && (
                 <section className="panel settings-panel">
-                  <div className="panel-heading"><div className="section-icon sage"><CircleHelp size={19} /></div><div><h2>Um passo de cada vez</h2><p>Uma orientação para começar e cuidar dos seus registros.</p></div></div>
-                  <button className="button secondary" onClick={() => setHelpOpen(true)}><CircleHelp size={16} />Como usar o DailyAPP</button>
+                  <div className="panel-heading"><div className="section-icon sage"><CircleHelp size={19} /></div><div><h2>{tr("Um passo de cada vez")}</h2><p>{tr("Uma orientação para começar e cuidar dos seus registros.")}</p></div></div>
+                  <button className="button secondary" onClick={() => setHelpOpen(true)}><CircleHelp size={16} />{tr("Como usar o DailyAPP")}</button>
                 </section>
               )}
               <section className="panel settings-panel reminders-panel">
-                <div className="panel-heading"><div className="section-icon sage"><Bell size={19} /></div><div><h2>Lembretes no celular</h2><p>Tarefas, contas e faturas sem depender de internet.</p></div></div>
-                <p>{reminders.state === "web" ? "Lembretes são enviados pelo aplicativo instalado no Android ou iPhone. Esta prévia salva as configurações, mas não envia notificações." : reminders.state === "ready" ? `${reminders.count} ${reminders.count === 1 ? "lembrete programado" : "lembretes programados"} neste aparelho.` : reminders.state === "error" ? "Não foi possível atualizar os lembretes. Tente novamente." : "Permita notificações nas configurações do celular para receber seus lembretes."}</p>
-                {reminders.state !== "web" && <button className="button secondary" onClick={() => void activateReminders()}><Bell size={16} />{reminders.state === "ready" ? "Atualizar lembretes" : "Ativar lembretes"}</button>}
-                <p className="form-hint">Escolha um lembrete ao criar uma tarefa, conta ou cartão. Contas e faturas avisam às 9h. Os próximos 60 avisos são atualizados ao abrir o app. O sistema pode ajustar o horário para economizar bateria.</p>
+                <div className="panel-heading"><div className="section-icon sage"><Bell size={19} /></div><div><h2>{tr("Lembretes no celular")}</h2><p>{tr("Tarefas, contas e faturas sem depender de internet.")}</p></div></div>
+                <p>{reminders.state === "web" ? tr("Lembretes são enviados pelo aplicativo instalado no Android ou iPhone. Esta prévia salva as configurações, mas não envia notificações.") : reminders.state === "ready" ? tr("{0} {1} neste aparelho.", reminders.count, reminders.count === 1 ? tr("lembrete programado") : tr("lembretes programados")) : reminders.state === "error" ? tr("Não foi possível atualizar os lembretes. Tente novamente.") : tr("Permita notificações nas configurações do celular para receber seus lembretes.")}</p>
+                {reminders.state !== "web" && <button className="button secondary" onClick={() => void activateReminders()}><Bell size={16} />{reminders.state === "ready" ? tr("Atualizar lembretes") : tr("Ativar lembretes")}</button>}
+                <p className="form-hint">{tr("Escolha um lembrete ao criar uma tarefa, conta ou cartão. Contas e faturas avisam às 9h. Os próximos 60 avisos são atualizados ao abrir o app. O sistema pode ajustar o horário para economizar bateria.")}</p>
               </section>
               <div className="about-app">
                 <span className="brand-mark small">
                   <CheckCheck size={20} />
                 </span>
-                <strong>DailyAPP</strong>
-                <span>{mobileApp ? "Versão 1.1 · Uso pessoal" : "Versão 1.1 · Feito para uma vida mais leve."}</span>
+                <strong>{tr("DailyAPP")}</strong>
+                <span>{mobileApp ? tr("Versão 1.1 · Uso pessoal") : tr("Versão 1.1 · Feito para uma vida mais leve.")}</span>
               </div>
             </div>
           )}
           <footer className="page-footer">
-            <span>Menos correria. Mais equilíbrio.</span>
+            <span>{tr("Menos correria. Mais equilíbrio.")}</span>
             <span>
-              <Leaf size={13} />
-              Um dia de cada vez.
-            </span>
+              <Leaf size={13} />{tr("Um dia de cada vez.")}</span>
           </footer>
         </main>
       </div>
       {mobileApp && (
-        <nav className="mobile-tabbar" aria-label="Navegação do aplicativo" inert={!!editor || !!confirm || welcomeOpen || helpOpen}>
+        <nav className="mobile-tabbar" aria-label={tr("Navegação do aplicativo")} inert={!!editor || !!confirm || welcomeOpen || helpOpen}>
           {[
             ...navItems.map((item) => ({ ...item, shortLabel: { overview: "Hoje", calendar: "Agenda", tasks: "Tarefas", finance: "Finanças" }[item.id] })),
-            { id: "settings" as const, label: "Configurações", shortLabel: "Ajustes", icon: Settings2 },
+            { id: "settings" as const, label: tr("Configurações"), shortLabel: "Ajustes", icon: Settings2 },
           ].map((item) => (
             <button key={item.id} aria-label={item.label} aria-current={view === item.id ? "page" : undefined} onClick={() => go(item.id)}>
               <item.icon size={21} strokeWidth={view === item.id ? 2.4 : 1.7} />
-              <span>{item.shortLabel}</span>
+              <span>{tr(item.shortLabel)}</span>
             </button>
           ))}
         </nav>
@@ -2750,16 +2638,16 @@ export default function App({
               demoBudgetMonth:
                 data.demoBudgetMonth === month ? null : data.demoBudgetMonth,
             });
-            if (ok) setToast("Orçamento definido.");
+            if (ok) setToast(tr("Orçamento definido."));
             return ok;
           }}
           onClose={() => setEditor(null)}
         />
       )}
-      {editor?.kind === "goal" && <Modal title={editor.item ? "Atualizar meta" : "Nova meta"} subtitle="Um objetivo claro, no seu ritmo." onClose={() => setEditor(null)}><GoalForm item={editor.item} today={today} onSave={saveGoal} onClose={() => setEditor(null)} /></Modal>}
-      {editor?.kind === "opening" && <Modal title="Saldo inicial do mês" subtitle={monthLabel(month)} onClose={() => setEditor(null)}><OpeningBalanceForm month={month} amount={data.openingBalances?.[month]} onSave={saveOpening} onClear={() => saveOpening()} onClose={() => setEditor(null)} /></Modal>}
-      {editor?.kind === "card" && <Modal title={editor.item ? "Editar cartão" : "Novo cartão"} subtitle="Cadastre somente o nome e os dias da fatura." onClose={() => setEditor(null)}><CardForm item={editor.item} onSave={saveCard} onClose={() => setEditor(null)} /></Modal>}
-      {editor?.kind === "purchase" && <Modal title="Compra no cartão" subtitle="O valor total será dividido nas próximas faturas." onClose={() => setEditor(null)}><PurchaseForm cards={data.cards ?? []} selectedId={editor.cardId} onSave={savePurchase} onClose={() => setEditor(null)} /></Modal>}
+      {editor?.kind === "goal" && <Modal title={editor.item ? tr("Atualizar meta") : tr("Nova meta")} subtitle={tr("Um objetivo claro, no seu ritmo.")} onClose={() => setEditor(null)}><GoalForm item={editor.item} today={today} onSave={saveGoal} onClose={() => setEditor(null)} /></Modal>}
+      {editor?.kind === "opening" && <Modal title={tr("Saldo inicial do mês")} subtitle={monthLabel(month)} onClose={() => setEditor(null)}><OpeningBalanceForm month={month} amount={data.openingBalances?.[month]} onSave={saveOpening} onClear={() => saveOpening()} onClose={() => setEditor(null)} /></Modal>}
+      {editor?.kind === "card" && <Modal title={editor.item ? tr("Editar cartão") : tr("Novo cartão")} subtitle={tr("Cadastre somente o nome e os dias da fatura.")} onClose={() => setEditor(null)}><CardForm item={editor.item} onSave={saveCard} onClose={() => setEditor(null)} /></Modal>}
+      {editor?.kind === "purchase" && <Modal title={tr("Compra no cartão")} subtitle={tr("O valor total será dividido nas próximas faturas.")} onClose={() => setEditor(null)}><PurchaseForm cards={data.cards ?? []} selectedId={editor.cardId} onSave={savePurchase} onClose={() => setEditor(null)} /></Modal>}
       {confirm && (
         <Modal title={confirm.title} onClose={() => setConfirm(null)} small>
           <p className="confirm-text">{confirm.text}</p>
@@ -2767,18 +2655,14 @@ export default function App({
             <button
               className="button secondary"
               onClick={() => setConfirm(null)}
-            >
-              Cancelar
-            </button>
+            >{tr("Cancelar")}</button>
             <button
               className={`button ${confirm.destructive ? "danger" : "primary"}`}
               onClick={() => {
                 confirm.action();
                 setConfirm(null);
               }}
-            >
-              Confirmar
-            </button>
+            >{tr("Confirmar")}</button>
           </div>
         </Modal>
       )}
@@ -2788,7 +2672,7 @@ export default function App({
           <span>{toast}</span>
           <button
             className="icon-button"
-            aria-label="Fechar notificação"
+            aria-label={tr("Fechar notificação")}
             onClick={() => setToast("")}
           >
             <X size={16} />

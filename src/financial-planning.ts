@@ -1,14 +1,16 @@
-import { dateKey, parseDate, parseAmount } from "./domain";
+import { parseLocalizedAmount } from "./i18n/core";
+import type { Language } from "./i18n/core";
+import { dateKey, parseDate } from "./domain";
 import type { AppData, FinancialGoal, Transaction } from "./domain";
 
 // Zero and negative amounts are meaningful for opening balances; ordinary
 // transactions continue to require a strictly positive amount.
-export function parseBalanceInput(value: string): number | null {
+export function parseBalanceInput(value: string, language: Language = "pt-BR"): number | null {
   const clean = value.trim().replace(/^R\$\s*/, "");
-  const negative = clean.startsWith("-");
+  const negative = /^[−-]/.test(clean);
   const unsigned = negative ? clean.slice(1).trim() : clean;
   if (/^(?:0+|0{1,3}(?:\.000)+)(?:[,.]0{1,2})?$/.test(unsigned)) return 0;
-  const cents = parseAmount(unsigned);
+  const cents = parseLocalizedAmount(unsigned, language);
   return cents === null ? null : negative ? -cents : cents;
 }
 

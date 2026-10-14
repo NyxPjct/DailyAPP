@@ -1,6 +1,10 @@
+import { t as tr, getLocale, isLanguage } from "./i18n/core";
+import type { Language } from "./i18n/core";
 export const STORAGE_KEY = "dailyapp.v1";
 export function randomId(): string {
   if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  // getRandomValues also works in native WebViews whose custom URL scheme
+  // does not expose the secure-context-only randomUUID method.
   // getRandomValues also works in native WebViews whose custom URL scheme
   // does not expose the secure-context-only randomUUID method.
   const bytes = crypto.getRandomValues(new Uint8Array(16));
@@ -91,6 +95,7 @@ export type Recurrence = {
 );
 export interface AppData {
   schemaVersion: 1;
+  language?: Language;
   name: string;
   tasks: Task[];
   transactions: Transaction[];
@@ -126,18 +131,18 @@ export const shiftMonth = (month: string, offset: number) =>
     ),
   );
 export const monthLabel = (month: string) =>
-  parseDate(`${month}-01`).toLocaleDateString("pt-BR", {
+  parseDate(`${month}-01`).toLocaleDateString(getLocale(), {
     month: "long",
     year: "numeric",
   });
 export const prettyDate = (date: string) =>
   parseDate(date)
-    .toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
+    .toLocaleDateString(getLocale(), { day: "2-digit", month: "short" })
     .replace(".", "");
 export const money = (cents: number) =>
-  (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-export const amountInput = (cents: number) =>
-  (cents / 100).toFixed(2).replace(".", ",");
+  (cents / 100).toLocaleString(getLocale(), { style: "currency", currency: "BRL" });
+export const amountInput = (cents: number, language?: Language) =>
+  (cents / 100).toLocaleString(getLocale(language), { useGrouping: false, minimumFractionDigits: 2, maximumFractionDigits: 2 });
 export const normalize = (text: string) =>
   text
     .normalize("NFD")
@@ -151,6 +156,8 @@ export const sortTasks = (tasks: Task[]) =>
       (a.time || "23:59").localeCompare(b.time || "23:59") ||
       PRIORITIES.indexOf(b.priority) - PRIORITIES.indexOf(a.priority),
   );
+
+// Integer cents prevent rounding errors when adding currency amounts.
 
 // Integer cents prevent rounding errors when adding currency amounts.
 export function parseAmount(value: string): number | null {
@@ -192,36 +199,36 @@ const object = (value: unknown): value is Record<string, unknown> =>
 function planningFields(value: Record<string, unknown>, ids: Set<string>) {
   const result: Pick<AppData, "cards" | "recurrences" | "goals" | "openingBalances"> = {};
   if (value.goals !== undefined) {
-    if (!Array.isArray(value.goals) || value.goals.length > 100) throw new Error("O backup contém metas inválidas.");
+    if (!Array.isArray(value.goals) || value.goals.length > 100) throw new Error(tr("O backup contém metas inválidas."));
     result.goals = value.goals.map(goal => {
       if (!object(goal) || !validText(goal.id, 60) || ids.has(goal.id) || !validText(goal.name, 80) ||
         !validCents(goal.targetCents) || typeof goal.savedCents !== "number" || !Number.isSafeInteger(goal.savedCents) ||
         goal.savedCents < 0 || goal.savedCents > 100_000_000_000 || !validDate(goal.targetDate) ||
         !validText(goal.notes, 1000, true) || (goal.archived !== undefined && typeof goal.archived !== "boolean"))
-        throw new Error("O backup contém uma meta inválida.");
+        throw new Error(tr("O backup contém uma meta inválida."));
       ids.add(goal.id);
       return { id: goal.id, name: goal.name, targetCents: goal.targetCents, savedCents: goal.savedCents,
         targetDate: goal.targetDate, notes: goal.notes, ...(goal.archived !== undefined ? { archived: goal.archived } : {}) };
     });
   }
   if (value.openingBalances !== undefined) {
-    if (!object(value.openingBalances) || Object.keys(value.openingBalances).length > 1000) throw new Error("O backup contém saldos iniciais inválidos.");
+    if (!object(value.openingBalances) || Object.keys(value.openingBalances).length > 1000) throw new Error(tr("O backup contém saldos iniciais inválidos."));
     result.openingBalances = {};
     for (const [month, amount] of Object.entries(value.openingBalances)) {
       if (!validDate(`${month}-01`) || typeof amount !== "number" || !Number.isSafeInteger(amount) || Math.abs(amount) > 100_000_000_000)
-        throw new Error("O backup contém um saldo inicial inválido.");
+        throw new Error(tr("O backup contém um saldo inicial inválido."));
       result.openingBalances[month] = amount;
     }
   }
   if (value.cards !== undefined) {
-    if (!Array.isArray(value.cards) || value.cards.length > 100) throw new Error("O backup contém cartões inválidos.");
+    if (!Array.isArray(value.cards) || value.cards.length > 100) throw new Error(tr("O backup contém cartões inválidos."));
     result.cards = value.cards.map(card => {
       if (!object(card) || !validText(card.id, 60) || ids.has(card.id) || !validText(card.name, 60) || !validCents(card.limitCents) ||
         !Number.isInteger(card.closingDay) || Number(card.closingDay) < 1 || Number(card.closingDay) > 31 ||
         !Number.isInteger(card.dueDay) || Number(card.dueDay) < 1 || Number(card.dueDay) > 31 ||
         (card.reminderDays !== undefined && ![0, 1, 3].includes(Number(card.reminderDays))) ||
         (card.reminderDays !== undefined && typeof card.reminderDays !== "number") ||
-        (card.archived !== undefined && typeof card.archived !== "boolean")) throw new Error("O backup contém um cartão inválido.");
+        (card.archived !== undefined && typeof card.archived !== "boolean")) throw new Error(tr("O backup contém um cartão inválido."));
       ids.add(card.id);
       return { id: card.id, name: card.name, limitCents: card.limitCents, closingDay: Number(card.closingDay), dueDay: Number(card.dueDay),
         ...(card.reminderDays !== undefined ? { reminderDays: Number(card.reminderDays) } : {}),
@@ -229,12 +236,12 @@ function planningFields(value: Record<string, unknown>, ids: Set<string>) {
     });
   }
   if (value.recurrences !== undefined) {
-    if (!Array.isArray(value.recurrences) || value.recurrences.length > 1000) throw new Error("O backup contém repetições inválidas.");
+    if (!Array.isArray(value.recurrences) || value.recurrences.length > 1000) throw new Error(tr("O backup contém repetições inválidas."));
     result.recurrences = value.recurrences.map(series => {
       if (!object(series) || !validText(series.id, 60) || ids.has(series.id) || !Object.hasOwn(FREQUENCIES, String(series.frequency)) ||
         !validDate(series.anchorDate) || typeof series.active !== "boolean" || !Number.isInteger(series.nextIndex) ||
         Number(series.nextIndex) < 1 || Number(series.nextIndex) > 120000 || !object(series.template) || !["task", "transaction"].includes(String(series.kind)))
-        throw new Error("O backup contém uma repetição inválida.");
+        throw new Error(tr("O backup contém uma repetição inválida."));
       ids.add(series.id);
       const base = { id: series.id, frequency: series.frequency as Frequency, anchorDate: series.anchorDate, active: series.active, nextIndex: Number(series.nextIndex) };
       if (series.kind === "task") {
@@ -251,19 +258,19 @@ function planningFields(value: Record<string, unknown>, ids: Set<string>) {
   const cardIds = new Set(result.cards?.map(c => c.id));
   const purchaseParts = new Set<string>(), purchases = new Map<string, string>();
   for (const item of value.tasks as Record<string, unknown>[]) {
-    if (item.reminderMinutes !== undefined && (typeof item.reminderMinutes !== "number" || !REMINDER_MINUTES.includes(item.reminderMinutes as never) || !item.time)) throw new Error("O backup contém um lembrete de tarefa inválido.");
-    if (item.recurrenceId !== undefined && (typeof item.recurrenceId !== "string" || seriesMap.get(item.recurrenceId)?.kind !== "task")) throw new Error("O backup contém uma referência de repetição inválida.");
+    if (item.reminderMinutes !== undefined && (typeof item.reminderMinutes !== "number" || !REMINDER_MINUTES.includes(item.reminderMinutes as never) || !item.time)) throw new Error(tr("O backup contém um lembrete de tarefa inválido."));
+    if (item.recurrenceId !== undefined && (typeof item.recurrenceId !== "string" || seriesMap.get(item.recurrenceId)?.kind !== "task")) throw new Error(tr("O backup contém uma referência de repetição inválida."));
   }
   for (const item of value.transactions as Record<string, unknown>[]) {
-    if (item.reminderMinutes !== undefined && (typeof item.reminderMinutes !== "number" || !REMINDER_MINUTES.includes(item.reminderMinutes as never))) throw new Error("O backup contém um lembrete de conta inválido.");
-    if (item.recurrenceId !== undefined && (typeof item.recurrenceId !== "string" || seriesMap.get(item.recurrenceId)?.kind !== "transaction")) throw new Error("O backup contém uma referência de repetição inválida.");
+    if (item.reminderMinutes !== undefined && (typeof item.reminderMinutes !== "number" || !REMINDER_MINUTES.includes(item.reminderMinutes as never))) throw new Error(tr("O backup contém um lembrete de conta inválido."));
+    if (item.recurrenceId !== undefined && (typeof item.recurrenceId !== "string" || seriesMap.get(item.recurrenceId)?.kind !== "transaction")) throw new Error(tr("O backup contém uma referência de repetição inválida."));
     if (item.installment !== undefined) {
       const part = item.installment;
       if (!object(part) || typeof part.cardId !== "string" || !cardIds.has(part.cardId) || item.type !== "expense" || item.recurrenceId !== undefined || !validText(part.purchaseId, 60) ||
         !Number.isInteger(part.count) || Number(part.count) < 1 || Number(part.count) > 48 || !Number.isInteger(part.index) || Number(part.index) < 1 || Number(part.index) > Number(part.count) || !validDate(part.purchasedOn))
-        throw new Error("O backup contém uma parcela inválida.");
+        throw new Error(tr("O backup contém uma parcela inválida."));
       const key = `${part.purchaseId}:${part.index}`, purchase = `${part.cardId}:${part.count}:${part.purchasedOn}`;
-      if (purchaseParts.has(key) || (purchases.has(part.purchaseId) && purchases.get(part.purchaseId) !== purchase)) throw new Error("O backup contém parcelas duplicadas ou inconsistentes.");
+      if (purchaseParts.has(key) || (purchases.has(part.purchaseId) && purchases.get(part.purchaseId) !== purchase)) throw new Error(tr("O backup contém parcelas duplicadas ou inconsistentes."));
       purchaseParts.add(key); purchases.set(part.purchaseId, purchase);
     }
   }
@@ -282,12 +289,13 @@ export function validateData(value: unknown): AppData {
     value.tasks.length > 5000 ||
     value.transactions.length > 10000
   )
-    throw new Error("Este arquivo não é um backup válido do DailyAPP.");
+    throw new Error(tr("Este arquivo não é um backup válido do DailyAPP."));
   if (
     value.demoBudgetMonth != null &&
     !validDate(`${value.demoBudgetMonth}-01`)
   )
-    throw new Error("O backup contém um orçamento de exemplo inválido.");
+    throw new Error(tr("O backup contém um orçamento de exemplo inválido."));
+  if (value.language !== undefined && !isLanguage(value.language)) throw new Error(tr("O backup contém um idioma inválido."));
   const ids = new Set<string>();
   for (const task of value.tasks) {
     if (
@@ -303,7 +311,7 @@ export function validateData(value: unknown): AppData {
       !PRIORITIES.includes(task.priority as Task["priority"]) ||
       typeof task.completed !== "boolean"
     )
-      throw new Error("O backup contém uma tarefa inválida.");
+      throw new Error(tr("O backup contém uma tarefa inválida."));
     ids.add(task.id);
   }
   for (const transaction of value.transactions) {
@@ -321,19 +329,21 @@ export function validateData(value: unknown): AppData {
       ).includes(transaction.category as never) ||
       typeof transaction.paid !== "boolean"
     )
-      throw new Error("O backup contém uma movimentação inválida.");
+      throw new Error(tr("O backup contém uma movimentação inválida."));
     ids.add(transaction.id);
   }
   const budgets: Record<string, number> = {};
   for (const [month, amount] of Object.entries(value.budgets)) {
     if (!validDate(`${month}-01`) || !validCents(amount))
-      throw new Error("O backup contém um orçamento inválido.");
+      throw new Error(tr("O backup contém um orçamento inválido."));
     budgets[month] = amount;
   }
+  // Copy only known fields; imported files cannot inject unexpected state.
   // Copy only known fields; imported files cannot inject unexpected state.
   const planning = planningFields(value, ids);
   return {
     schemaVersion: 1,
+    ...(value.language !== undefined ? { language: value.language as Language } : {}),
     name: value.name,
     demo: value.demo,
     demoBudgetMonth: (value.demoBudgetMonth as string | null) ?? null,

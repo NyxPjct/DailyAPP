@@ -2,7 +2,8 @@ import { Capacitor } from "@capacitor/core";
 import type { PluginListenerHandle } from "@capacitor/core";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import type { AppData } from "../domain";
-import { buildReminderPlan, reminderStillCurrent } from "../reminders-plan";
+import { buildReminderPlan, reminderStillCurrent, localizePendingReminder } from "../reminders-plan";
+import { getLanguage, translate } from "../i18n/core";
 
 export type ReminderState = { state: "web" | "ready" | "permission" | "denied" | "error" | "superseded"; count: number };
 export const initialReminderState: ReminderState = { state: Capacitor.isNativePlatform() ? "permission" : "web", count: 0 };
@@ -25,15 +26,18 @@ export function syncReminders(data: AppData): Promise<ReminderState> {
     const pending = await LocalNotifications.getPending();
     if (run !== generation) return { state: "superseded", count: 0 };
     const now = new Date();
-    const delayed = pending.notifications.filter(n => n.extra?.dailyapp === true && permission.display === "granted" && n.extra.fireAt <= now.getTime() && reminderStillCurrent(data, n.extra));
+    const language = data.language ?? getLanguage();
+    const eligible = pending.notifications.filter(n => n.extra?.dailyapp === true && permission.display === "granted" && n.extra.fireAt <= now.getTime() && reminderStillCurrent(data, n.extra));
+    const delayed = eligible.filter(n => n.extra.language === language);
+    const updated = eligible.filter(n => n.extra.language !== language).map(n => localizePendingReminder(data, n, now));
     const keep = new Set(delayed.map(n => n.id));
     const owned = pending.notifications.filter(n => n.extra?.dailyapp === true && !keep.has(n.id)).map(n => ({ id: n.id }));
     if (owned.length) await LocalNotifications.cancel({ notifications: owned });
     if (permission.display !== "granted") return { state: permission.display === "denied" ? "denied" : "permission", count: 0 };
     if (run !== generation) return { state: "superseded", count: 0 };
-    if (Capacitor.getPlatform() === "android") await LocalNotifications.createChannel({ id: "dailyapp-reminders", name: "Lembretes do DailyAPP", description: "Tarefas, contas e faturas", importance: 4, visibility: 0, vibration: true });
+    if (Capacitor.getPlatform() === "android") await LocalNotifications.createChannel({ id: "dailyapp-reminders", name: translate(language, "Lembretes do DailyAPP"), description: translate(language, "Tarefas, contas e faturas"), importance: 4, visibility: 0, vibration: true });
     const foreign = pending.notifications.filter(n => n.extra?.dailyapp !== true);
-    const notifications = buildReminderPlan(data, now).slice(0, Math.max(0, 60 - delayed.length - foreign.length));
+    const notifications = [...updated, ...buildReminderPlan(data, now)].slice(0, Math.max(0, 60 - delayed.length - foreign.length));
     const occupied = new Set([...foreign, ...delayed].map(n => n.id));
     for (const n of notifications) { while (occupied.has(n.id)) n.id = n.id % 2147483647 + 1; occupied.add(n.id); }
     if (run !== generation) return { state: "superseded", count: 0 };

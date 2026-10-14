@@ -3557,3 +3557,8 @@ td:last-child {
   .recurrence-row { align-items: stretch; flex-direction: column; gap: 6px; }
   .recurrence-row button { align-self: flex-start; }
 }
+
+.language-panel > label { display: block; padding: 0 22px; font-size: 13px; font-weight: 600; }
+.language-panel select { margin-top: 8px; min-height: 44px; width: 100%; }
+.language-panel > .form-hint { padding: 0 22px 18px; }
+.mobile-help svg { flex-shrink: 0; }

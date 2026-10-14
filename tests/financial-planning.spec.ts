@@ -10,7 +10,7 @@ const entry = (id: string, amountCents: number, date: string, type: Transaction[
 const goal: FinancialGoal = { id: "goal", name: "Reserva", targetCents: 100001, savedCents: 10001, targetDate: "2027-01-31", notes: "" };
 
 test("saldo inicial aceita zero/negativo e mantém centavos; backups antigos e novos são validados sem campos extras", () => {
-  expect(["0,00", "-0.00", "-1.234,56", "12.34", "inválido", "1,234", "9999999999999999"].map(parseBalanceInput)).toEqual([0, 0, -123456, 1234, null, null, null]);
+  expect(["0,00", "-0.00", "-1.234,56", "12.34", "inválido", "1,234", "9999999999999999"].map(value => parseBalanceInput(value))).toEqual([0, 0, -123456, 1234, null, null, null]);
   expect(validateData(freshData())).toEqual(freshData());
   const data = { ...freshData(), goals: [{ ...goal, injected: "discard" }], openingBalances: { "2026-10": -1, "2026-11": 0 } };
   expect(validateData(data).goals).toEqual([goal]);

@@ -2,6 +2,8 @@
 
 ## O que esta versão entrega
 
+O aplicativo abre em inglês por padrão. Para trocar, abra **Settings → App language** e selecione **Português**, **Español**, **Français** ou **Deutsch**. Telas, categorias, formulários, ajuda, datas, números e lembretes acompanham a escolha. Os dados digitados são preservados no idioma original, e os valores continuam em reais (BRL). O idioma fica salvo e entra no backup; arquivos antigos mantêm a preferência atual. As capturas do README mostram inglês e os outros quatro idiomas.
+
 O DailyAPP usa os arquivos da aplicação dentro do instalador, com navegação inferior, ícones próprios, botão voltar no Android e compartilhamento de backups. Tarefas, agenda e finanças funcionam localmente. No primeiro uso, escolha seu nome e limite de gastos ou pule essa configuração. Em Ajustes, **Como usar o DailyAPP** abre o guia rápido. Não é necessário criar conta no Netlify ou Supabase.
 
 As pastas `android/` e `ios/` são projetos nativos completos do Capacitor. A interface móvel fica em `src/mobile-main.tsx`. `npm run build:mobile` usa a entrada móvel, desativa variáveis Supabase e gera `dist/mobile/`; `npm run mobile:sync` também copia o build e registra os plugins nos dois projetos.
@@ -14,7 +16,7 @@ Obtenha `artifacts/DailyAPP-1.1-pessoal.apk`, transfira-o para o celular Android
 
 Requer Android 7 ou superior e uma WebView atualizada. O pacote pessoal usa o build **Release**, com depuração da aplicação e da WebView desativadas, mas conserva o certificado de desenvolvimento da instalação anterior. É uma distribuição pessoal; a publicação na Play Store terá uma configuração própria de assinatura.
 
-Se instalou o APK de teste anterior desta sessão, exporte um backup em Ajustes e abra o novo APK **sem desinstalar o DailyAPP**. O identificador `com.nyxpjct.dailyapp` e o certificado foram mantidos; o código da versão passa para 4, com nome 1.1.0. Isso permite atualizar preservando os dados. O formato local também foi mantido. A instalação sobre a versão anterior ainda deve ser confirmada em um aparelho real.
+Se instalou o APK de teste anterior desta sessão, exporte um backup em Ajustes e abra o novo APK **sem desinstalar o DailyAPP**. O identificador `com.nyxpjct.dailyapp` e o certificado foram mantidos; o código da versão passa para 5, com nome 1.1.0. Isso permite atualizar preservando os dados. O formato local também foi mantido. A instalação sobre a versão anterior ainda deve ser confirmada em um aparelho real.
 
 Para gerar futuras atualizações compatíveis, preserve a chave local de desenvolvimento em `.cache/android-user/debug.keystore`. Ela fica fora do Git e do ZIP de código. Compilar em uma máquina com uma chave diferente cria uma assinatura diferente; nesse caso, a atualização pode ser recusada pelo Android. Desinstalar ou limpar os dados pode apagar os registros; restaure um backup se precisar fazer isso.
 
@@ -49,7 +51,7 @@ Esse comando preserva o build nativo em `dist/mobile`. Os dados ficam no navegad
 
 ## iPhone sem Mac pessoal
 
-Baixe [DailyAPP-1.1-sem-assinatura.ipa](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r1/DailyAPP-1.1-sem-assinatura.ipa) da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0-r1). O pacote foi compilado com Xcode 26.3 no GitHub Actions para arm64, iOS 15.4 ou superior, versão 1.1.0 (código 4). Seu SHA-256, integridade do ZIP, manifesto de privacidade, plugin de notificações e os 22 arquivos da interface foram conferidos após o download. Ele ainda precisa de assinatura pessoal; não instala sozinho.
+Baixe [DailyAPP-1.1-sem-assinatura.ipa](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.1.0-r1/DailyAPP-1.1-sem-assinatura.ipa) da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.1.0-r1). O pacote foi compilado com Xcode 26.3 no GitHub Actions para arm64, iOS 15.4 ou superior, versão 1.1.0 (código 5). Seu SHA-256, integridade do ZIP, manifesto de privacidade, plugin de notificações e os 22 arquivos da interface foram conferidos após o download. Ele ainda precisa de assinatura pessoal; não instala sozinho.
 
 No Windows, instale o **AltServer** pelo site oficial [altstore.io](https://altstore.io), siga as instruções oficiais para instalar o AltStore no seu próprio iPhone e importe o IPA nele. Forneça sua conta Apple apenas nas ferramentas oficiais do seu computador/aparelho.
 

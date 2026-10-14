@@ -1,3 +1,4 @@
+import { t as tr } from "../i18n/core";
 import { Capacitor } from "@capacitor/core";
 import type { PluginListenerHandle } from "@capacitor/core";
 import { App as NativeApp } from "@capacitor/app";
@@ -47,7 +48,7 @@ export function attachMobileResume(onResume: () => void) {
 export async function saveBackup(content: string, filename: string) {
   if (Capacitor.isNativePlatform()) {
     const { value } = await Share.canShare();
-    if (!value) throw new Error("Não foi possível abrir o compartilhamento.");
+    if (!value) throw new Error(tr("Não foi possível abrir o compartilhamento."));
     const file = await Filesystem.writeFile({
       path: `backups/${filename}`,
       data: content,
@@ -56,8 +57,8 @@ export async function saveBackup(content: string, filename: string) {
       recursive: true,
     });
     await Share.share({
-      title: "Backup do DailyAPP",
-      dialogTitle: "Salvar ou compartilhar backup",
+      title: tr("Backup do DailyAPP"),
+      dialogTitle: tr("Salvar ou compartilhar backup"),
       files: [file.uri],
     });
     return;
