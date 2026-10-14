@@ -1,3 +1,5 @@
+import { getCurrency, toDisplayCents, isCurrency, validateExchangeRates } from "./currency";
+import type { Currency, ExchangeRates } from "./currency";
 import { t as tr, getLocale, isLanguage } from "./i18n/core";
 import type { Language } from "./i18n/core";
 export const STORAGE_KEY = "dailyapp.v1";
@@ -96,6 +98,8 @@ export type Recurrence = {
 export interface AppData {
   schemaVersion: 1;
   language?: Language;
+  currency?: Currency;
+  exchangeRates?: ExchangeRates;
   name: string;
   tasks: Task[];
   transactions: Transaction[];
@@ -140,9 +144,9 @@ export const prettyDate = (date: string) =>
     .toLocaleDateString(getLocale(), { day: "2-digit", month: "short" })
     .replace(".", "");
 export const money = (cents: number) =>
-  (cents / 100).toLocaleString(getLocale(), { style: "currency", currency: "BRL" });
+  (toDisplayCents(cents) / 100).toLocaleString(getLocale(), { style: "currency", currency: getCurrency() });
 export const amountInput = (cents: number, language?: Language) =>
-  (cents / 100).toLocaleString(getLocale(language), { useGrouping: false, minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  (toDisplayCents(cents) / 100).toLocaleString(getLocale(language), { useGrouping: false, minimumFractionDigits: 2, maximumFractionDigits: 2 });
 export const normalize = (text: string) =>
   text
     .normalize("NFD")
@@ -296,6 +300,9 @@ export function validateData(value: unknown): AppData {
   )
     throw new Error(tr("O backup contém um orçamento de exemplo inválido."));
   if (value.language !== undefined && !isLanguage(value.language)) throw new Error(tr("O backup contém um idioma inválido."));
+  if (value.currency !== undefined && !isCurrency(value.currency)) throw new Error(tr("O backup contém uma moeda inválida."));
+  const exchangeRates = value.exchangeRates === undefined ? undefined : validateExchangeRates(value.exchangeRates);
+  if (value.currency !== undefined && value.currency !== "BRL" && !exchangeRates?.[value.currency as Exclude<Currency, "BRL">]) throw new Error(tr("O backup não contém a cotação da moeda selecionada."));
   const ids = new Set<string>();
   for (const task of value.tasks) {
     if (
@@ -344,6 +351,8 @@ export function validateData(value: unknown): AppData {
   return {
     schemaVersion: 1,
     ...(value.language !== undefined ? { language: value.language as Language } : {}),
+    ...(value.currency !== undefined ? { currency: value.currency as Currency } : {}),
+    ...(exchangeRates !== undefined ? { exchangeRates } : {}),
     name: value.name,
     demo: value.demo,
     demoBudgetMonth: (value.demoBudgetMonth as string | null) ?? null,

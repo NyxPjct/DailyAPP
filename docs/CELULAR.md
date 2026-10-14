@@ -2,7 +2,7 @@
 
 ## O que esta versão entrega
 
-O aplicativo abre em inglês por padrão. Para trocar, abra **Settings → App language** e selecione **Português**, **Español**, **Français** ou **Deutsch**. Telas, categorias, formulários, ajuda, datas, números e lembretes acompanham a escolha. Os dados digitados são preservados no idioma original, e os valores continuam em reais (BRL). O idioma fica salvo e entra no backup; arquivos antigos mantêm a preferência atual. As capturas do README mostram inglês e os outros quatro idiomas.
+O aplicativo abre em inglês por padrão. Para trocar, abra **Settings → App language** e selecione **Português**, **Español**, **Français** ou **Deutsch**. Telas, categorias, formulários, ajuda, datas, números e lembretes acompanham a escolha. Os dados digitados são preservados no idioma original, e a moeda pode ser escolhida separadamente em **Settings → App currency**. BRL, USD, EUR, GBP, CAD e AUD estão disponíveis, com conversão por cotação salva, atualização online ou taxa manual. O histórico permanece em centavos de BRL; campos novos aceitam a moeda escolhida. Sem internet, usa a última taxa salva. A data e a origem da cotação são exibidas. O idioma fica salvo e entra no backup; arquivos antigos mantêm a preferência atual. As capturas do README mostram inglês e os outros quatro idiomas.
 
 O DailyAPP usa os arquivos da aplicação dentro do instalador, com navegação inferior, ícones próprios, botão voltar no Android e compartilhamento de backups. Tarefas, agenda e finanças funcionam localmente. No primeiro uso, escolha seu nome e limite de gastos ou pule essa configuração. Em Ajustes, **Como usar o DailyAPP** abre o guia rápido. Não é necessário criar conta no Netlify ou Supabase.
 
@@ -16,7 +16,7 @@ Obtenha `artifacts/DailyAPP-1.1-pessoal.apk`, transfira-o para o celular Android
 
 Requer Android 7 ou superior e uma WebView atualizada. O pacote pessoal usa o build **Release**, com depuração da aplicação e da WebView desativadas, mas conserva o certificado de desenvolvimento da instalação anterior. É uma distribuição pessoal; a publicação na Play Store terá uma configuração própria de assinatura.
 
-Se instalou o APK de teste anterior desta sessão, exporte um backup em Ajustes e abra o novo APK **sem desinstalar o DailyAPP**. O identificador `com.nyxpjct.dailyapp` e o certificado foram mantidos; o código da versão passa para 5, com nome 1.1.0. Isso permite atualizar preservando os dados. O formato local também foi mantido. A instalação sobre a versão anterior ainda deve ser confirmada em um aparelho real.
+Se instalou o APK de teste anterior desta sessão, exporte um backup em Ajustes e abra o novo APK **sem desinstalar o DailyAPP**. O identificador `com.nyxpjct.dailyapp` e o certificado foram mantidos; o código da versão passa para 6, com nome 1.1.0. Isso permite atualizar preservando os dados. O formato local também foi mantido. A instalação sobre a versão anterior ainda deve ser confirmada em um aparelho real.
 
 Para gerar futuras atualizações compatíveis, preserve a chave local de desenvolvimento em `.cache/android-user/debug.keystore`. Ela fica fora do Git e do ZIP de código. Compilar em uma máquina com uma chave diferente cria uma assinatura diferente; nesse caso, a atualização pode ser recusada pelo Android. Desinstalar ou limpar os dados pode apagar os registros; restaure um backup se precisar fazer isso.
 

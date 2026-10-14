@@ -1,10 +1,11 @@
-import { t as tr, recordText, getLanguage, getLocale } from "../i18n/core";
+import { currencySymbol, parseCurrencyBalance } from "../currency";
+import { t as tr, recordText, getLocale } from "../i18n/core";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { ArrowRight, Check, Clock3, Pencil, Plus, Target, Trash2, TrendingUp, Wallet } from "lucide-react";
 import { amountInput, dateKey, money, monthLabel, prettyDate, randomId, validDate } from "../domain";
 import type { AppData, FinancialGoal, Transaction } from "../domain";
-import { goalProgress, monthlyForecast, parseBalanceInput, upcomingMoney } from "../financial-planning";
+import { goalProgress, monthlyForecast, upcomingMoney } from "../financial-planning";
 
 export function TodayMoney({ data, today, onEdit, onSettle, onPlanning }: {
   data: AppData; today: string; onEdit: (item: Transaction) => void;
@@ -75,19 +76,19 @@ export function GoalsPanel({ goals, today, onNew, onEdit, onArchive, onDelete }:
 export function GoalForm({ item, today = dateKey(), onSave, onClose }: { item?: FinancialGoal; today?: string; onSave: (goal: FinancialGoal) => boolean; onClose: () => void }) {
   const [name, setName] = useState(item?.name ?? "");
   const [target, setTarget] = useState(item ? amountInput(item.targetCents) : "");
-  const [saved, setSaved] = useState(item ? amountInput(item.savedCents) : "0,00");
+  const [saved, setSaved] = useState(item ? amountInput(item.savedCents) : amountInput(0));
   const [date, setDate] = useState(item?.targetDate ?? today);
   const [notes, setNotes] = useState(item?.notes ?? "");
   const [error, setError] = useState("");
   function submit(e: FormEvent) {
     e.preventDefault();
-    const targetCents = parseBalanceInput(target, getLanguage()), savedCents = parseBalanceInput(saved, getLanguage());
+    const targetCents = parseCurrencyBalance(target, item?.targetCents), savedCents = parseCurrencyBalance(saved, item?.savedCents);
     if (!name.trim() || targetCents === null || targetCents <= 0 || savedCents === null || savedCents < 0 || !validDate(date)) { setError(tr("Informe nome, valor desejado maior que zero, valor guardado sem sinal negativo e um prazo válido.")); return; }
     if (onSave({ ...item, id: item?.id ?? randomId(), name: name.trim(), targetCents, savedCents, targetDate: date, notes: notes.trim() })) onClose();
   }
   return <form onSubmit={submit}>
     <label>{tr("Nome da meta")}<input autoComplete="off" required maxLength={80} value={name} onChange={e => setName(e.target.value)} placeholder={tr("Ex.: reserva de emergência")} /></label>
-    <div className="form-row"><label>{tr("Valor desejado (R$)")}<input inputMode="decimal" required value={target} onChange={e => setTarget(e.target.value)} placeholder={tr("5.000,00")} /></label><label>{tr("Valor guardado (R$)")}<input inputMode="decimal" required value={saved} onChange={e => setSaved(e.target.value)} /></label></div>
+    <div className="form-row"><label>{tr("Valor desejado ({0})", currencySymbol())}<input inputMode="decimal" required value={target} onChange={e => setTarget(e.target.value)} placeholder={tr("5.000,00")} /></label><label>{tr("Valor guardado ({0})", currencySymbol())}<input inputMode="decimal" required value={saved} onChange={e => setSaved(e.target.value)} /></label></div>
     <label>{tr("Prazo da meta")}<input type="date" required min="1900-01-01" max="2200-12-31" value={date} onChange={e => setDate(e.target.value)} /></label>
     <label>{tr("Observações da meta")}<textarea maxLength={1000} rows={3} value={notes} onChange={e => setNotes(e.target.value)} /></label>
     <p className="form-hint">{tr("Valor guardado é o total que você já separou. Alterá-lo não cria movimentações nem muda sua previsão de saldo.")}</p>
@@ -101,11 +102,11 @@ export function OpeningBalanceForm({ month, amount, onSave, onClear, onClose }: 
   const [error, setError] = useState("");
   function submit(e: FormEvent) {
     e.preventDefault();
-    const cents = parseBalanceInput(value, getLanguage());
+    const cents = parseCurrencyBalance(value, amount);
     if (cents === null) { setError(tr("Informe um valor válido. Use 0,00 para zero ou o sinal − para saldo negativo.")); return; }
     if (onSave(cents)) onClose();
   }
-  return <form onSubmit={submit}><label>{tr("Saldo no início de ")}{monthLabel(month)}{tr(" (R$)")}<input required inputMode="text" autoComplete="off" value={value} onChange={e => setValue(e.target.value)} placeholder={tr("Ex.: 1.500,00 ou -200,00")} /></label>
+  return <form onSubmit={submit}><label>{tr("Saldo no início de ")}{monthLabel(month)}{tr(" ({0})", currencySymbol())}<input required inputMode="text" autoComplete="off" value={value} onChange={e => setValue(e.target.value)} placeholder={tr("Ex.: 1.500,00 ou -200,00")} /></label>
     <p className="form-hint">{tr("Informe o saldo disponível antes da primeira movimentação do mês. Não inclua novamente as receitas e despesas já cadastradas nesse mês. Zero e valores negativos são aceitos; não é o saldo atual do banco.")}</p>
     {error && <p className="form-error" role="alert">{error}</p>}
     {amount !== undefined && <button type="button" className="text-button" onClick={() => { if (onClear()) onClose(); }}>{tr("Remover saldo inicial deste mês")}</button>}

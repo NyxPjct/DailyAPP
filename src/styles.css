@@ -3562,3 +3562,12 @@ td:last-child {
 .language-panel select { margin-top: 8px; min-height: 44px; width: 100%; }
 .language-panel > .form-hint { padding: 0 22px 18px; }
 .mobile-help svg { flex-shrink: 0; }
+
+.currency-settings form { display: grid; gap: 14px; }
+.currency-settings .button { justify-self: start; max-width: 100%; white-space: normal; }
+.exchange-rate-info { display: grid; gap: 6px; padding: 14px; background: var(--background, #f7f8f5); border-radius: 12px; overflow-wrap: anywhere; }
+.exchange-rate-info small { color: #59665e; }
+.exchange-rate-info a { color: #23664b; }
+.manual-rate summary { cursor: pointer; padding: 12px 0; font-weight: 600; }
+.manual-rate label { margin: 10px 0; }
+.manual-rate .button { margin-top: 12px; }

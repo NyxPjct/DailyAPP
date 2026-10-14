@@ -1,4 +1,6 @@
-import { t as tr, translate, LANGUAGES, isLanguage, LANGUAGE_KEY, readLanguagePreference, setCurrentLanguage, getLocale, recordText, parseLocalizedAmount } from "./i18n/core";
+import { currencySymbol, getCurrency, parseCurrencyAmount, setCurrentCurrency, toDisplayCents } from "./currency";
+import { CurrencySettings } from "./features/CurrencySettings";
+import { t as tr, translate, LANGUAGES, isLanguage, LANGUAGE_KEY, readLanguagePreference, setCurrentLanguage, getLocale, recordText } from "./i18n/core";
 import type { Language } from "./i18n/core";
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
@@ -86,7 +88,7 @@ import "@fontsource/manrope/latin-700.css";
 import "@fontsource/manrope/latin-800.css";
 
 type View = "overview" | "tasks" | "calendar" | "finance" | "settings";
-const parseAmount = parseLocalizedAmount;
+const parseAmount = parseCurrencyAmount;
 const mobileApp = import.meta.env.VITE_MOBILE_APP === true;
 const INTRO_KEY = "dailyapp.intro.v1";
 function introductionDone() {
@@ -240,7 +242,7 @@ function MobileIntroduction({ onFinish, onSkip }: {
         <label>{tr("Como você quer ser chamado? ")}<span className="optional">{tr("(opcional)")}</span>
           <input maxLength={60} autoComplete="given-name" placeholder={tr("Ex.: Ana")} value={name} onChange={event => setName(event.target.value)} />
         </label>
-        <label>{tr("Limite de gastos do mês (R$) ")}<span className="optional">{tr("(opcional)")}</span>
+        <label>{tr("Limite de gastos do mês ({0}) ", currencySymbol())}<span className="optional">{tr("(opcional)")}</span>
           <input inputMode="decimal" placeholder={tr("Ex.: 2.500,00")} value={amount} onChange={event => { setAmount(event.target.value); setError(""); }} />
         </label>
         <p className="intro-note">{tr("Você pode ajustar tudo depois. Em Ajustes, exporte backups para guardar uma cópia dos seus registros.")}</p>
@@ -451,7 +453,7 @@ function FinanceChart({
               fill="#7b837d"
               fontSize="11"
             >
-              {Math.round((max * p) / 100).toLocaleString(getLocale())}
+              {Math.round(toDisplayCents(max * p) / 100).toLocaleString(getLocale())}
             </text>
           </g>
         ))}
@@ -713,7 +715,7 @@ function TransactionForm({
   const [error, setError] = useState("");
   function submit(e: FormEvent) {
     e.preventDefault();
-    const cents = parseAmount(amount);
+    const cents = parseAmount(amount, item?.amountCents);
     if (!cents) {
       setError(
         tr("Informe um valor maior que zero, com até duas casas decimais. Ex.: 125,90."),
@@ -783,7 +785,7 @@ function TransactionForm({
           />
         </label>
         <div className="form-grid">
-          <label>{tr("Valor (R$)")}<input
+          <label>{tr("Valor ({0})", currencySymbol())}<input
               required
               inputMode="decimal"
               placeholder={tr("0,00")}
@@ -884,7 +886,7 @@ function BudgetForm({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          const cents = parseAmount(amount);
+          const cents = parseAmount(amount, budget);
           if (!cents) {
             setError(tr("Informe um limite maior que zero."));
             return;
@@ -892,7 +894,7 @@ function BudgetForm({
           if (onSave(cents)) onClose();
         }}
       >
-        <label>{tr("Limite de despesas (R$)")}<input
+        <label>{tr("Limite de despesas ({0})", currencySymbol())}<input
             autoFocus
             required
             inputMode="decimal"
@@ -931,6 +933,7 @@ export default function App({
   const [preferredLanguage, setPreferredLanguage] = useState(readLanguagePreference);
   const language = data.language ?? preferredLanguage;
   setCurrentLanguage(language);
+  setCurrentCurrency(data.currency ?? "BRL", data.exchangeRates);
 const navItems = [
   { id: "overview" as const, label: tr("Visão geral"), icon: LayoutDashboard },
   { id: "calendar" as const, label: tr("Minha agenda"), icon: CalendarDays },
@@ -1318,7 +1321,7 @@ const navItems = [
   }
   function startDemo() {
     const action = () => {
-      const example = { ...createDemo(), name: data.name };
+      const example = { ...createDemo(), name: data.name, ...(data.language ? { language: data.language } : {}), ...(data.currency ? { currency: data.currency } : {}), ...(data.exchangeRates ? { exchangeRates: data.exchangeRates } : {}) };
       if (save(example)) {
         setMonth(monthKey());
         setSelectedDate(today);
@@ -1875,7 +1878,7 @@ const navItems = [
                       <i className="legend-dot income-dot" />{tr("Receitas")}</span>
                     <span>
                       <i className="legend-dot expense-dot" />{tr("Despesas")}</span>
-                    <small>{tr("em R$")}</small>
+                    <small>{tr("em {0}", getCurrency())}</small>
                   </div>
                   <FinanceChart entries={totals.entries} month={month} />
                   <div className="chart-foot">
@@ -2322,7 +2325,7 @@ const navItems = [
                       {visibleTransactions.length}{" "}
                       {visibleTransactions.length === 1
                         ? tr("movimentação")
-                        : tr("movimentações")}{" "}{tr("neste filtro")}<span>{tr("Valores em reais (BRL)")}</span>
+                        : tr("movimentações")}{" "}{tr("neste filtro")}<span>{tr("Valores em {0}", getCurrency())}</span>
                     </div>
                   </>
                 ) : (
@@ -2349,8 +2352,9 @@ const navItems = [
               <section className="panel settings-panel language-panel">
                 <div className="panel-heading"><div className="section-icon sage"><Settings2 size={19} /></div><div><h2>{tr("Idioma")}</h2><p>{tr("Escolha o idioma do aplicativo.")}</p></div></div>
                 <label>{tr("Idioma do aplicativo")}<select aria-label={tr("Idioma do aplicativo")} value={language} onChange={event => { if (isLanguage(event.target.value)) changeLanguage(event.target.value); }}>{LANGUAGES.map(item => <option key={item.id} value={item.id} lang={item.id}>{item.name}</option>)}</select></label>
-                <p className="form-hint">{tr("A interface, datas e lembretes acompanham sua escolha. Valores continuam em reais (BRL).")}</p>
+                <p className="form-hint">{tr("A interface, datas e lembretes acompanham sua escolha. Escolha a moeda separadamente abaixo.")}</p>
               </section>
+              <CurrencySettings data={data} onSave={(currency, exchangeRates) => { const ok = save({ ...dataRef.current, currency, exchangeRates }); if (ok) setToast(tr("Moeda atualizada.")); return ok; }} />
               {!mobileApp && <section className="panel settings-panel account-panel">
                 <div className="panel-heading">
                   <div className="section-icon sage">

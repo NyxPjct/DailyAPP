@@ -46,7 +46,7 @@ export function recordText(id: string, text: string, language = currentLanguage)
   return demoText[id] === text ? translate(language, text) : text;
 }
 
-export function parseLocalizedAmount(value: string, language = currentLanguage): number | null {
+export function parseLocalizedAmount(value: string, language = currentLanguage, maximumCents = 100_000_000_000): number | null {
   const parts = new Intl.NumberFormat(getLocale(language)).formatToParts(12345.6);
   const decimal = parts.find(p => p.type === "decimal")!.value;
   const group = parts.find(p => p.type === "group")!.value;
@@ -61,5 +61,5 @@ export function parseLocalizedAmount(value: string, language = currentLanguage):
   if (!localized && !alternate) return null;
   const normalized = localized ? clean.replace(new RegExp(grouping, "g"), "").replace(decimal, ".") : clean.replace(",", ".");
   const cents = Math.round(Number(normalized) * 100);
-  return Number.isSafeInteger(cents) && cents > 0 && cents <= 100_000_000_000 ? cents : null;
+  return Number.isSafeInteger(cents) && cents > 0 && cents <= maximumCents ? cents : null;
 }

@@ -73,10 +73,28 @@ try {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
     await page.screenshot({ path: new URL(filename, target).pathname });
   }
+  if (language === "en") {
+    // An explicitly labeled manual example keeps screenshots reproducible
+    // without presenting an invented rate as a current online quote.
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await page.getByLabel("App currency", { exact: true }).selectOption("USD");
+    await page.getByText("Enter a manual rate", { exact: true }).click();
+    await page.getByLabel("Value of 1 BRL in USD").fill("0.20");
+    await page.getByRole("button", { name: "Save manual rate", exact: true }).click();
+    await expect(page.locator(".exchange-rate-info")).toContainText("Manual rate");
+    await page.getByText("Enter a manual rate", { exact: true }).click();
+    await page.getByRole("button", { name: "Close notification", exact: true }).click();
+    await page.locator(".currency-settings").scrollIntoViewIfNeeded();
+    await page.screenshot({ path: new URL("moeda.png", target).pathname });
+    await page.getByRole("button", { name: "My finances", exact: true }).click();
+    await expect(page.locator(".stat-card").filter({ has: page.getByText("Income received", { exact: true }) })).toContainText("$1,330.00");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+    await page.screenshot({ path: new URL("financas-usd.png", target).pathname });
+  }
   expect(errors).toEqual([]);
   await context.close();
   }
-  console.log("Capturas da interface móvel com dados fictícios nos cinco idiomas: docs/screenshots/");
+  console.log("Capturas da interface móvel nos cinco idiomas e exemplo de conversão: docs/screenshots/");
 } finally {
   await browser?.close();
   await new Promise((resolve) => server.close(resolve));

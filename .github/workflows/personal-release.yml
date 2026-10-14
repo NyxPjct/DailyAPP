@@ -9,7 +9,7 @@ on:
       release_tag:
         description: Tag da versão pessoal já enviada ao GitHub
         required: true
-        default: personal-v1.1.0-r2
+        default: personal-v1.1.0-r3
 
 permissions:
   contents: read
@@ -62,7 +62,7 @@ jobs:
               downloads/DailyAPP-1.1-pessoal.apk.sha256 \
               artifacts/DailyAPP-index.zip \
               artifacts/DailyAPP-index.zip.sha256 \
-              --verify-tag --title 'DailyAPP 1.1 — five languages and personal use' \
+              --verify-tag --title 'DailyAPP 1.1 — currency conversion and personal use' \
               --notes-file docs/RELEASE-1.1.md
           fi
 

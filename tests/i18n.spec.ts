@@ -17,7 +17,7 @@ const saved = async (page: import("@playwright/test").Page) => page.evaluate(() 
 
 test("all five catalogs cover messages and placeholders; backups preserve valid language without rewriting legacy data", () => {
   expect(LANGUAGES.map(l => l.id)).toEqual(["en", "pt-BR", "es", "fr", "de"]);
-  for (const filename of ["src/App.tsx", "src/features/FinancialPlanning.tsx", "src/features/PlanningPanels.tsx", "src/domain.ts", "src/planning.ts", "src/mobile/platform.ts"]) {
+  for (const filename of ["src/currency.ts", "src/features/CurrencySettings.tsx", "src/App.tsx", "src/features/FinancialPlanning.tsx", "src/features/PlanningPanels.tsx", "src/domain.ts", "src/planning.ts", "src/mobile/platform.ts"]) {
     const source = readFileSync(filename, "utf8");
     for (const call of source.matchAll(/\btr\(\s*("(?:\\.|[^"\\])*")/g)) {
       const key = JSON.parse(call[1]).trim();
@@ -85,7 +85,7 @@ for (const language of LANGUAGES) test(`${language.name}: whole interface change
   await page.getByRole("button", { name: labels.finance, exact: true }).click();
   await page.getByRole("button", { name: tr("Nova movimentação"), exact: true }).click();
   await page.getByLabel(tr("Descrição"), { exact: true }).fill("Minha compra {0}");
-  await page.getByLabel(tr("Valor (R$)"), { exact: true }).fill(labels.amount);
+  await page.getByLabel(tr("Valor ({0})", new Intl.NumberFormat(labels.locale, { style: "currency", currency: "BRL" }).formatToParts(1).find(part => part.type === "currency")!.value), { exact: true }).fill(labels.amount);
   await page.getByRole("dialog").getByRole("button", { name: tr("Registrar movimentação"), exact: true }).click();
   expect((await saved(page)).transactions[0].amountCents).toBe(123456);
   await page.getByRole("button", { name: tr("Cartões e parcelas"), exact: true }).click();

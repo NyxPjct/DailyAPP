@@ -3803,5 +3803,257 @@ export const messages: Record<string, Record<ForeignLanguage, string>> = {
     "es": "Todo",
     "fr": "Tout",
     "de": "Alles"
+  },
+  "O backup contém cotações inválidas.": {
+    "en": "The backup contains invalid exchange rates.",
+    "es": "La copia contiene tipos de cambio no válidos.",
+    "fr": "La sauvegarde contient des taux de change invalides.",
+    "de": "Das Backup enthält ungültige Wechselkurse."
+  },
+  "O backup contém uma moeda inválida.": {
+    "en": "The backup contains an invalid currency.",
+    "es": "La copia contiene una moneda no válida.",
+    "fr": "La sauvegarde contient une devise invalide.",
+    "de": "Das Backup enthält eine ungültige Währung."
+  },
+  "O backup não contém a cotação da moeda selecionada.": {
+    "en": "The backup has no exchange rate for the selected currency.",
+    "es": "La copia no contiene el tipo de cambio de la moneda seleccionada.",
+    "fr": "La sauvegarde ne contient pas le taux de la devise sélectionnée.",
+    "de": "Das Backup enthält keinen Kurs für die gewählte Währung."
+  },
+  "A fonte retornou uma cotação inválida.": {
+    "en": "The source returned an invalid exchange rate.",
+    "es": "La fuente devolvió un tipo de cambio no válido.",
+    "fr": "La source a renvoyé un taux de change invalide.",
+    "de": "Die Quelle hat einen ungültigen Wechselkurs geliefert."
+  },
+  "Não foi possível atualizar a cotação. Use a taxa salva ou informe uma taxa manual.": {
+    "en": "Could not update the exchange rate. Use the saved rate or enter a manual rate.",
+    "es": "No se pudo actualizar el cambio. Usa el tipo guardado o introduce uno manual.",
+    "fr": "Impossible de mettre à jour le taux. Utilisez le taux enregistré ou saisissez un taux manuel.",
+    "de": "Der Kurs konnte nicht aktualisiert werden. Verwende den gespeicherten Kurs oder gib einen manuellen Kurs ein."
+  },
+  "Moeda atualizada.": {
+    "en": "Currency updated.",
+    "es": "Moneda actualizada.",
+    "fr": "Devise mise à jour.",
+    "de": "Währung aktualisiert."
+  },
+  "Moeda e conversão": {
+    "en": "Currency and conversion",
+    "es": "Moneda y conversión",
+    "fr": "Devise et conversion",
+    "de": "Währung und Umrechnung"
+  },
+  "Escolha a moeda dos valores, independentemente do idioma.": {
+    "en": "Choose the currency for amounts, independently of the language.",
+    "es": "Elige la moneda de los importes, independientemente del idioma.",
+    "fr": "Choisissez la devise des montants, indépendamment de la langue.",
+    "de": "Wähle die Währung unabhängig von der Sprache."
+  },
+  "Moeda do aplicativo": {
+    "en": "App currency",
+    "es": "Moneda de la app",
+    "fr": "Devise de l’application",
+    "de": "App-Währung"
+  },
+  "Real brasileiro": {
+    "en": "Brazilian real",
+    "es": "Real brasileño",
+    "fr": "Réal brésilien",
+    "de": "Brasilianischer Real"
+  },
+  "Dólar americano": {
+    "en": "US dollar",
+    "es": "Dólar estadounidense",
+    "fr": "Dollar américain",
+    "de": "US-Dollar"
+  },
+  "Euro": {
+    "en": "Euro",
+    "es": "Euro",
+    "fr": "Euro",
+    "de": "Euro"
+  },
+  "Libra esterlina": {
+    "en": "British pound",
+    "es": "Libra esterlina",
+    "fr": "Livre sterling",
+    "de": "Britisches Pfund"
+  },
+  "Dólar canadense": {
+    "en": "Canadian dollar",
+    "es": "Dólar canadiense",
+    "fr": "Dollar canadien",
+    "de": "Kanadischer Dollar"
+  },
+  "Dólar australiano": {
+    "en": "Australian dollar",
+    "es": "Dólar australiano",
+    "fr": "Dollar australien",
+    "de": "Australischer Dollar"
+  },
+  "1 BRL = {0} {1}": {
+    "en": "1 BRL = {0} {1}",
+    "es": "1 BRL = {0} {1}",
+    "fr": "1 BRL = {0} {1}",
+    "de": "1 BRL = {0} {1}"
+  },
+  "Nenhuma cotação salva para {0}.": {
+    "en": "No saved exchange rate for {0}.",
+    "es": "No hay tipo de cambio guardado para {0}.",
+    "fr": "Aucun taux enregistré pour {0}.",
+    "de": "Kein gespeicherter Kurs für {0}."
+  },
+  "Cotação de {0}": {
+    "en": "Rate dated {0}",
+    "es": "Tipo de cambio del {0}",
+    "fr": "Taux du {0}",
+    "de": "Kurs vom {0}"
+  },
+  "Taxa manual": {
+    "en": "Manual rate",
+    "es": "Tipo manual",
+    "fr": "Taux manuel",
+    "de": "Manueller Kurs"
+  },
+  "A cotação tem mais de sete dias. Atualize quando puder.": {
+    "en": "This rate is more than seven days old. Update it when you can.",
+    "es": "Este tipo de cambio tiene más de siete días. Actualízalo cuando puedas.",
+    "fr": "Ce taux date de plus de sept jours. Actualisez-le dès que possible.",
+    "de": "Dieser Kurs ist älter als sieben Tage. Aktualisiere ihn, sobald es möglich ist."
+  },
+  "Buscando cotação…": {
+    "en": "Fetching exchange rate…",
+    "es": "Obteniendo tipo de cambio…",
+    "fr": "Récupération du taux…",
+    "de": "Wechselkurs wird abgerufen…"
+  },
+  "Atualizar cotação": {
+    "en": "Refresh exchange rate",
+    "es": "Actualizar tipo de cambio",
+    "fr": "Actualiser le taux",
+    "de": "Wechselkurs aktualisieren"
+  },
+  "Informar taxa manual": {
+    "en": "Enter a manual rate",
+    "es": "Introducir tipo manual",
+    "fr": "Saisir un taux manuel",
+    "de": "Manuellen Kurs eingeben"
+  },
+  "Valor de 1 BRL em {0}": {
+    "en": "Value of 1 BRL in {0}",
+    "es": "Valor de 1 BRL en {0}",
+    "fr": "Valeur de 1 BRL en {0}",
+    "de": "Wert von 1 BRL in {0}"
+  },
+  "Exemplo: se 1 BRL vale 0,20 USD, informe 0,20. Aceita até oito casas decimais.": {
+    "en": "Example: if 1 BRL is worth 0.20 USD, enter 0.20. Up to eight decimal places are allowed.",
+    "es": "Ejemplo: si 1 BRL vale 0,20 USD, introduce 0,20. Admite hasta ocho decimales.",
+    "fr": "Exemple : si 1 BRL vaut 0,20 USD, saisissez 0,20. Jusqu’à huit décimales sont acceptées.",
+    "de": "Beispiel: Wenn 1 BRL 0,20 USD wert ist, gib 0,20 ein. Bis zu acht Nachkommastellen sind erlaubt."
+  },
+  "Informe uma taxa válida, maior que zero, com até oito casas decimais.": {
+    "en": "Enter a valid positive rate with up to eight decimal places.",
+    "es": "Introduce un tipo positivo válido con hasta ocho decimales.",
+    "fr": "Saisissez un taux positif valide avec au plus huit décimales.",
+    "de": "Gib einen gültigen positiven Kurs mit bis zu acht Nachkommastellen ein."
+  },
+  "Salvar taxa manual": {
+    "en": "Save manual rate",
+    "es": "Guardar tipo manual",
+    "fr": "Enregistrer le taux manuel",
+    "de": "Manuellen Kurs speichern"
+  },
+  "Os registros são preservados em BRL. Valores novos são convertidos para BRL ao salvar; telas e campos usam a moeda selecionada. As cotações são estimativas, sem tarifas bancárias.": {
+    "en": "Records are preserved in BRL. New amounts are converted to BRL when saved; screens and fields use the selected currency. Rates are estimates and exclude bank fees.",
+    "es": "Los registros se conservan en BRL. Los nuevos importes se convierten a BRL al guardar; las pantallas y campos usan la moneda seleccionada. Los tipos son estimados y no incluyen comisiones bancarias.",
+    "fr": "Les données sont conservées en BRL. Les nouveaux montants sont convertis en BRL à l’enregistrement ; les écrans et champs utilisent la devise choisie. Les taux sont indicatifs et excluent les frais bancaires.",
+    "de": "Einträge bleiben in BRL gespeichert. Neue Beträge werden beim Speichern in BRL umgerechnet; Ansichten und Felder verwenden die gewählte Währung. Die Kurse sind Schätzungen ohne Bankgebühren."
+  },
+  "Sem internet, o app usa a última cotação salva. Novas cotações só são aplicadas ao salvar a moeda.": {
+    "en": "Offline, the app uses the last saved rate. New rates are only applied when you save the currency.",
+    "es": "Sin internet, la app usa el último tipo guardado. Los tipos nuevos solo se aplican al guardar la moneda.",
+    "fr": "Hors connexion, l’app utilise le dernier taux enregistré. Les nouveaux taux sont appliqués uniquement lorsque vous enregistrez la devise.",
+    "de": "Offline verwendet die App den zuletzt gespeicherten Kurs. Neue Kurse werden erst beim Speichern der Währung angewendet."
+  },
+  "Salvar moeda": {
+    "en": "Save currency",
+    "es": "Guardar moneda",
+    "fr": "Enregistrer la devise",
+    "de": "Währung speichern"
+  },
+  "A interface, datas e lembretes acompanham sua escolha. Escolha a moeda separadamente abaixo.": {
+    "en": "The interface, dates, and reminders follow your choice. Choose the currency separately below.",
+    "es": "La interfaz, las fechas y los recordatorios siguen tu elección. Elige la moneda por separado abajo.",
+    "fr": "L’interface, les dates et les rappels suivent votre choix. Choisissez la devise séparément ci-dessous.",
+    "de": "Ansichten, Daten und Erinnerungen folgen deiner Auswahl. Wähle die Währung unten separat."
+  },
+  "em {0}": {
+    "en": "in {0}",
+    "es": "en {0}",
+    "fr": "en {0}",
+    "de": "in {0}"
+  },
+  "Valores em {0}": {
+    "en": "Amounts in {0}",
+    "es": "Importes en {0}",
+    "fr": "Montants en {0}",
+    "de": "Beträge in {0}"
+  },
+  "Escolha um cartão, descrição, valor e de 1 a 48 parcelas. Cada parcela precisa representar pelo menos um centavo em BRL.": {
+    "en": "Choose a card, description, amount, and 1 to 48 installments. Each installment must represent at least one BRL cent.",
+    "es": "Elige tarjeta, descripción, importe y de 1 a 48 cuotas. Cada cuota debe representar al menos un céntimo de BRL.",
+    "fr": "Choisissez une carte, une description, un montant et 1 à 48 échéances. Chaque échéance doit représenter au moins un centime de BRL.",
+    "de": "Wähle Karte, Beschreibung, Betrag und 1 bis 48 Raten. Jede Rate muss mindestens einem BRL-Cent entsprechen."
+  },
+  "Limite de gastos do mês ({0})": {
+    "en": "Monthly spending limit ({0})",
+    "es": "Límite de gastos del mes ({0})",
+    "fr": "Budget mensuel ({0})",
+    "de": "Monatliches Ausgabenlimit ({0})"
+  },
+  "Valor ({0})": {
+    "en": "Amount ({0})",
+    "es": "Importe ({0})",
+    "fr": "Montant ({0})",
+    "de": "Betrag ({0})"
+  },
+  "Limite de despesas ({0})": {
+    "en": "Expense limit ({0})",
+    "es": "Límite de gastos ({0})",
+    "fr": "Limite de dépenses ({0})",
+    "de": "Ausgabenlimit ({0})"
+  },
+  "Limite do cartão ({0})": {
+    "en": "Card limit ({0})",
+    "es": "Límite de la tarjeta ({0})",
+    "fr": "Limite de la carte ({0})",
+    "de": "Kartenlimit ({0})"
+  },
+  "Valor total da compra ({0})": {
+    "en": "Total purchase amount ({0})",
+    "es": "Importe total de la compra ({0})",
+    "fr": "Montant total de l'achat ({0})",
+    "de": "Gesamtbetrag des Kaufs ({0})"
+  },
+  "Valor desejado ({0})": {
+    "en": "Target amount ({0})",
+    "es": "Importe objetivo ({0})",
+    "fr": "Montant cible ({0})",
+    "de": "Zielbetrag ({0})"
+  },
+  "Valor guardado ({0})": {
+    "en": "Saved amount ({0})",
+    "es": "Importe ahorrado ({0})",
+    "fr": "Montant épargné ({0})",
+    "de": "Gesparter Betrag ({0})"
+  },
+  "({0})": {
+    "en": "({0})",
+    "es": "({0})",
+    "fr": "({0})",
+    "de": "({0})"
   }
 };

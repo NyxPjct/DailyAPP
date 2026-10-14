@@ -1,4 +1,5 @@
-import { t as tr, recordText, parseLocalizedAmount } from "../i18n/core";
+import { currencySymbol, parseCurrencyAmount } from "../currency";
+import { t as tr, recordText } from "../i18n/core";
 import { useState } from "react";
 import { CreditCard as CardIcon, Plus, Pencil, Repeat2, Bell, Archive, Check } from "lucide-react";
 import { FREQUENCIES, dateKey, prettyDate, money, amountInput, validDate, randomId, EXPENSE_CATEGORIES } from "../domain";
@@ -51,12 +52,12 @@ export function CardForm({ item, onSave, onClose }: { item?: CreditCard; onSave:
   const [closing, setClosing] = useState(String(item?.closingDay ?? 25)), [due, setDue] = useState(String(item?.dueDay ?? 5));
   const [reminder, setReminder] = useState(item?.reminderDays ?? -1), [error, setError] = useState("");
   return <form onSubmit={event => {
-    event.preventDefault(); const cents = parseLocalizedAmount(limit);
+    event.preventDefault(); const cents = parseCurrencyAmount(limit, item?.limitCents);
     if (!name.trim() || !cents || ![closing, due].every(v => /^\d+$/.test(v) && Number(v) >= 1 && Number(v) <= 31)) { setError(tr("Informe um nome, limite maior que zero e dias de 1 a 31.")); return; }
     if (onSave({ ...item, id: item?.id ?? randomId(), name: name.trim(), limitCents: cents, closingDay: Number(closing), dueDay: Number(due), reminderDays: reminder >= 0 ? reminder : undefined })) onClose();
   }}>
     <label>{tr("Nome do cartão")}<input required maxLength={60} placeholder={tr("Ex.: Meu cartão principal")} value={name} onChange={e => setName(e.target.value)} /></label>
-    <label>{tr("Limite do cartão (R$)")}<input required inputMode="decimal" placeholder={tr("Ex.: 5.000,00")} value={limit} onChange={e => setLimit(e.target.value)} /></label>
+    <label>{tr("Limite do cartão ({0})", currencySymbol())}<input required inputMode="decimal" placeholder={tr("Ex.: 5.000,00")} value={limit} onChange={e => setLimit(e.target.value)} /></label>
     <div className="form-grid"><label>{tr("Dia de fechamento")}<input type="number" min={1} max={31} required value={closing} onChange={e => setClosing(e.target.value)} /></label><label>{tr("Dia de vencimento")}<input type="number" min={1} max={31} required value={due} onChange={e => setDue(e.target.value)} /></label></div>
     <label>{tr("Lembrete da fatura")}<select value={reminder} onChange={e => setReminder(Number(e.target.value))}><option value={-1}>{tr("Sem lembrete")}</option><option value={0}>{tr("No vencimento, às 9h")}</option><option value={1}>{tr("1 dia antes, às 9h")}</option><option value={3}>{tr("3 dias antes, às 9h")}</option></select></label>
     <p className="form-hint">{tr("Compras no dia do fechamento ou depois entram na próxima fatura. Dias 29, 30 e 31 são ajustados para o último dia de meses menores. Mudanças nos dias valem para novas compras.")}</p>
@@ -69,13 +70,13 @@ export function PurchaseForm({ cards, selectedId, onSave, onClose }: { cards: Cr
   const [amount, setAmount] = useState(""), [count, setCount] = useState("1"), [day, setDay] = useState(dateKey());
   const [category, setCategory] = useState("Compras"), [notes, setNotes] = useState(""), [error, setError] = useState("");
   return <form onSubmit={e => {
-    e.preventDefault(); const cents = parseLocalizedAmount(amount);
-    if (!cents || !description.trim() || !validDate(day) || !cards.some(c => c.id === cardId && !c.archived) || !/^\d+$/.test(count) || Number(count) < 1 || Number(count) > 48 || cents < Number(count)) { setError(tr("Escolha um cartão, descrição, valor e de 1 a 48 parcelas de pelo menos R$ 0,01.")); return; }
+    e.preventDefault(); const cents = parseCurrencyAmount(amount);
+    if (!cents || !description.trim() || !validDate(day) || !cards.some(c => c.id === cardId && !c.archived) || !/^\d+$/.test(count) || Number(count) < 1 || Number(count) > 48 || cents < Number(count)) { setError(tr("Escolha um cartão, descrição, valor e de 1 a 48 parcelas. Cada parcela precisa representar pelo menos um centavo em BRL.")); return; }
     if (onSave({ cardId, description: description.trim(), amountCents: cents, count: Number(count), date: day, category, notes: notes.trim() })) onClose();
   }}>
     <label>{tr("Descrição da compra")}<input required maxLength={120} placeholder={tr("Ex.: Notebook")} value={description} onChange={e => setDescription(e.target.value)} /></label>
     <label>{tr("Cartão")}<select value={cardId} required onChange={e => setCardId(e.target.value)}>{cards.filter(c => !c.archived).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
-    <div className="form-grid"><label>{tr("Valor total da compra (R$)")}<input required inputMode="decimal" placeholder={tr("0,00")} value={amount} onChange={e => setAmount(e.target.value)} /></label><label>{tr("Número de parcelas")}<input required type="number" min={1} max={48} value={count} onChange={e => setCount(e.target.value)} /></label></div>
+    <div className="form-grid"><label>{tr("Valor total da compra ({0})", currencySymbol())}<input required inputMode="decimal" placeholder={tr("0,00")} value={amount} onChange={e => setAmount(e.target.value)} /></label><label>{tr("Número de parcelas")}<input required type="number" min={1} max={48} value={count} onChange={e => setCount(e.target.value)} /></label></div>
     <label>{tr("Data da compra")}<input required type="date" min="1900-01-01" max="2200-12-31" value={day} onChange={e => setDay(e.target.value)} /></label>
     <label>{tr("Categoria")}<select value={category} onChange={e => setCategory(e.target.value)}>{EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{tr(c)}</option>)}</select></label>
     <label>{tr("Observações ")}<span className="optional">{tr("(opcional)")}</span><textarea maxLength={1000} rows={2} value={notes} onChange={e => setNotes(e.target.value)} /></label>
