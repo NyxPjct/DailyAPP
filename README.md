@@ -1,4 +1,4 @@
-# DailyAPP 1.1 — personal use
+# DailyAPP 1.2 — personal use
 
 ## Downloads
 
@@ -10,7 +10,9 @@
 
 If DailyAPP is already installed on your Android phone, export a backup from Settings and install the new APK without uninstalling the app. [Check the APK's SHA-256 hash](downloads/DailyAPP-1.1-pessoal.apk.sha256).
 
-**1.1 update:** this revision keeps version 1.1.0, now with build 7, and makes currency switch automatically with the selected language, using saved or fetched rates while preserving recorded values. The [guide to each feature](#what-each-feature-does) and [language settings](#languages) are below.
+**Version 1.2.0, build 8:** accounts and wallets, internal transfers, category budgets, monthly reports, quick expense templates, subtasks, three daily priorities, and password-protected backups. Existing tasks, finances, languages, and currency settings are preserved. See the [guide to each feature](#what-each-feature-does).
+
+The download links above point to the verified previous release while the version 1.2 installers are being built.
 
 A multilingual app for tasks, scheduling, and personal finances. English is the default, with Portuguese, Spanish, French, and German available in Settings. Its React interface is packaged with Capacitor into apps installed on your phone. Screens, fonts, and icons are included in the installation; local operation does not require hosting, Netlify, or Supabase.
 
@@ -20,13 +22,21 @@ To open the mobile interface directly on a computer, generate `artifacts/index.h
 
 ## App screenshots
 
-Updated screenshots of **version 1.1, build 7**, showing the English interface and the new currency conversion settings.
+Screenshots of **version 1.2, build 8**, captured from the actual mobile interface with fictional data.
+
+| Accounts and transfers | Category budgets | Monthly report |
+| --- | --- | --- |
+| <img src="docs/screenshots/contas.png" alt="DailyAPP 1.2: account total and recorded bank balance" width="250"> | <img src="docs/screenshots/limites.png" alt="DailyAPP 1.2: spending limits and progress for each expense category" width="250"> | <img src="docs/screenshots/relatorio.png" alt="DailyAPP 1.2: confirmed monthly results and comparison with the previous month" width="250"> |
+
+| Three daily priorities | Task steps | Protected backup |
+| --- | --- | --- |
+| <img src="docs/screenshots/prioridades.png" alt="DailyAPP 1.2: up to three chosen priorities on Today" width="250"> | <img src="docs/screenshots/etapas.png" alt="DailyAPP 1.2: task form with an editable checklist of subtasks" width="250"> | <img src="docs/screenshots/backup.png" alt="DailyAPP 1.2: password and confirmation fields for an encrypted backup" width="250"> |
 
 | Today in USD | Finances in USD | Currency settings |
 | --- | --- | --- |
-| <img src="docs/screenshots/hoje-usd.png" alt="DailyAPP 1.1 build 7: Today with monthly totals converted to USD" width="250"> | <img src="docs/screenshots/financas-usd.png" alt="DailyAPP 1.1 build 7: income, expenses, and balance converted to USD" width="250"> | <img src="docs/screenshots/moeda.png" alt="DailyAPP 1.1 build 7: currency selector and saved manual exchange rate" width="250"> |
+| <img src="docs/screenshots/hoje-usd.png" alt="DailyAPP 1.2: Today with monthly totals converted to USD" width="250"> | <img src="docs/screenshots/financas-usd.png" alt="DailyAPP 1.2: income, expenses, and balance converted to USD" width="250"> | <img src="docs/screenshots/moeda.png" alt="DailyAPP 1.2: currency selector and saved manual exchange rate" width="250"> |
 
-These examples use fictional data and an explicitly labeled manual rate of **0.20 USD per BRL**. Changing the language selects USD for English, BRL for Portuguese, and EUR for Spanish, French, and German. Sample rates are 0.20 USD and 0.18 EUR per BRL.
+These examples use fictional data and an explicitly labeled manual rate of **0.20 USD per BRL**. Changing the language selects USD for English, BRL for Portuguese, and EUR for Spanish, French, and German. Sample rates are 0.20 USD and 0.18 EUR per BRL; they are illustrative, not current market quotes.
 
 English interface with a manual BRL override:
 
@@ -34,7 +44,7 @@ English interface with a manual BRL override:
 | --- | --- | --- |
 | <img src="docs/screenshots/hoje.png" alt="DailyAPP: daily overview, tasks, and monthly balance" width="250"> | <img src="docs/screenshots/tarefas.png" alt="DailyAPP: task list with times and categories" width="250"> | <img src="docs/screenshots/financas.png" alt="DailyAPP: income, expenses, balance, and spending by category" width="250"> |
 
-Mobile screenshots captured from the current app in Chromium at a 390 × 900 viewport, using **Explore example**. Expand a language below to see the same screens in that language. Run `npm run screenshots` to regenerate the fifteen language captures and three currency examples after installing the dependencies and the Playwright browser. To generate only one language, set `DAILYAPP_SCREENSHOT_LANGUAGES` to `en`, `pt-BR`, `es`, `fr`, or `de`.
+Mobile screenshots captured from the current app in Chromium at a 390 × 900 viewport, using **Explore example**. Expand a language below to see the same screens in that language. Run `npm run screenshots` to regenerate all 24 captures: fifteen language views, three currency examples, and six version 1.2 feature views after installing the dependencies and the Playwright browser. To generate only one language, set `DAILYAPP_SCREENSHOT_LANGUAGES` to `en`, `pt-BR`, `es`, `fr`, or `de`.
 
 <details>
 <summary>Português</summary>
@@ -78,10 +88,14 @@ Mobile screenshots captured from the current app in Chromium at a 390 × 900 vie
 - Real conversion between BRL, USD, EUR, GBP, CAD, and AUD, with online quotes, manual rates, and the last saved rate offline. Changing language selects USD, BRL, or EUR automatically; all six currencies remain available as manual overrides.
 - Bottom navigation with Today, Calendar, Tasks, Finances, and Settings.
 - First-use setup with an optional name and budget, plus a quick guide in Settings.
-- Create, edit, complete, and delete tasks with dates, times, categories, and priorities.
+- Create, edit, complete, and delete tasks with dates, times, categories, priorities, and up to 30 checklist steps.
+- Pick up to three daily priorities and complete them directly on Today.
 - Monthly calendar with tasks for the selected day.
 - Today screen with pending bills, income, and installments, including overdue items and the next seven days.
 - Income, expenses, confirmed or planned amounts, history, categories, and monthly budgets.
+- Bank, cash, and savings accounts with dated opening balances, linked transactions, and internal transfers.
+- Category budgets with in-app notices at 80% and 100%, plus monthly reports with previous-month comparisons and the five largest confirmed expenses.
+- Quick expense templates based on previous entries; review every new record before saving.
 - Recurring tasks and transactions with daily, weekly, monthly, or yearly repetition; ending a routine preserves its history.
 - Credit cards, estimated available limits, statement closing dates, payment due dates, and purchases split into up to 48 installments with exact cent allocation.
 - Monthly card bills that update their installments when marked as paid, without duplicating expenses.
@@ -89,7 +103,7 @@ Mobile screenshots captured from the current app in Chromium at a 390 × 900 vie
 - End-of-month and daily balance forecasts with a manually entered opening balance and negative-balance warnings.
 - Local reminders for tasks, bills, and card payments, with notification permission; reminders update when records are completed, paid, or edited.
 - Data stored on the device, without requiring an account or an internet connection.
-- JSON backup export through Android/iPhone sharing and import through the file picker.
+- Plain JSON or password-protected backup export through Android/iPhone sharing, with a restoration preview before replacing data.
 - Android's back button closes forms and returns to the home screen before minimizing the app.
 - Layout adapted to screen safe areas, with app icons for both platforms.
 
@@ -138,6 +152,7 @@ The guide uses the default English interface. Change the language in **Settings 
 | Feature | Purpose and how to use it |
 | --- | --- |
 | Monthly overview | Shows income received, expenses paid, and the difference between them in the selected month. This **monthly balance** does not include money you had before the month started. Use the arrows to change the period. |
+| Three daily priorities | Tap a task’s star in Tasks or Calendar to pin it to Today. Up to three tasks can be selected for the current day, including completed ones. Complete, edit, or remove a priority directly in this panel; removing the priority keeps the task. Previous days’ choices are retained without becoming today’s priorities. |
 | Today's tasks | Lists today's tasks, times, and progress. Tap the circle to complete a task or undo completion; **View all** opens the Today filter in Tasks. |
 | Earlier tasks | Highlights unfinished tasks from previous days and opens the Overdue filter. |
 | Bills and income | Collects pending transactions from previous days, today, and the next seven days, including installments and recurring records. This period follows the current date, regardless of the month selected in the overview. Tap a description to edit; **Pay** or **Receive** confirms the existing record without creating another one. To undo this, open the transaction in Finances and change its status back to Planned. |
@@ -151,6 +166,8 @@ The guide uses the default English interface. Change the language in **Settings 
 | --- | --- |
 | Calendar | Browse months and tap a date to see its tasks. **Today** returns to the current day. The calendar lists tasks; bills and installments appear on Today and in Finances. |
 | New task | Enter a title, date, optional time, category, priority, and notes. When creating a task from Calendar, the selected date is filled in automatically. |
+| Subtasks | In a task form, add up to 30 named steps, mark them individually, or remove them. The task list shows the completed-step count. Completing all steps does not automatically complete the parent task; completing the parent does not change its steps. Future occurrences of a recurring task start with their steps unchecked. |
+| Daily priority | The star adds or removes a task from Today’s three priorities. This is separate from the task’s normal priority and scheduled date. A fourth selection is refused until one of the three is removed. |
 | Edit and delete | Tap the task or pencil icon to edit. The trash icon asks for confirmation before deleting. |
 | Complete | The circle marks a task as completed; tapping again makes it pending. Today's progress updates accordingly. |
 | Search and filters | Search titles, categories, or notes. Use All, Today, Pending, Completed, and Overdue to find what you need. |
@@ -161,7 +178,8 @@ The guide uses the default English interface. Change the language in **Settings 
 
 | Feature | Purpose and how to use it |
 | --- | --- |
-| New transaction | Record income or an expense with a description, amount in the selected currency, date, category, and notes. Choose whether it has already been received/paid or is still planned. |
+| New transaction | Record income or an expense with a description, amount in the selected currency, date, category, notes, and optional account. Choose whether it has already been received/paid or is still planned. Account-linked records require a date on or after that account’s opening balance. |
+| Quick expense | Opens a new expense form using a frequent previous expense’s description, category, amount, and eligible account. Edit the date, amount, and payment status before saving. Nothing is recorded until you save. Installments and future-dated entries are excluded from the suggestions; routines and purchase schedules are not copied. |
 | Income, expenses, and balance | Confirmed income and expenses make up the month's net result. **To pay** adds up planned expenses for the period, including installments. |
 | Paid, Received, or Planned status | Tap the status to confirm or undo a payment or receipt. The record is updated; no additional transaction is created. The labels are Paid, Received, and Planned. |
 | History, search, and filters | Browse transactions for the selected month. Filter by income/expense and Confirmed/Planned; search descriptions, categories, or notes. |
@@ -170,14 +188,37 @@ The guide uses the default English interface. Change the language in **Settings 
 | Repeat transaction | Schedules recurring income and bills daily, weekly, monthly, or yearly. Future occurrences start as planned and require manual confirmation. |
 | Edit and delete | The pencil edits a transaction and the trash icon asks for confirmation. For installment purchases, deleting an installment removes **the entire purchase and all its installments, including paid ones**; the confirmation explains this. |
 
+### Finances → Accounts
+
+| Feature | Purpose and how to use it |
+| --- | --- |
+| New account | Create a bank, cash, or savings account with a name, opening date, and signed opening balance. Enter the balance **before** the transactions you will record from that date. These are manual accounts; the app does not connect to a bank. |
+| Account balance | Opening balance plus confirmed linked income, minus confirmed linked expenses, plus incoming transfers, minus outgoing transfers, through today. Planned and future-dated records are excluded. Amounts before the opening date are not counted. The total includes archived accounts. |
+| Existing transactions | Old entries remain unassigned. Edit a transaction and choose an account to include it in that balance; this does not create a duplicate entry. Transactions without an account still appear in monthly results and budgets. |
+| Transfer | Move an amount between two different active accounts. The date must be on or after both opening dates and no later than today. A transfer changes both balances and preserves their combined total; it is excluded from income, expenses, budgets, and monthly reports. |
+| Edit or remove transfer | Edit the amount, date, accounts, or note. Deletion asks for confirmation and reverses that transfer’s effect on both balances. |
+| Edit account | Correct the account’s name, type, opening date, or balance. Corrections recalculate its history; the app refuses an opening date later than linked transactions or transfers. |
+| Archive and reactivate | Archiving prevents selection for new transactions/transfers while retaining balances and history. Show archived accounts to reactivate one. Existing links and card payment settings are preserved. |
+
+Account balances, the monthly net result, savings goals, and the forecast’s manually entered monthly opening balance are separate calculations. An internal transfer does not automatically increase a goal’s saved amount.
+
+### Finances → Report
+
+| Feature | Purpose and how to use it |
+| --- | --- |
+| Monthly result | Shows confirmed income, confirmed expenses, and their difference for the selected month, using each record’s registered date. Planned amounts and internal transfers are excluded. The current month can be incomplete. |
+| Previous-month comparison | Compares confirmed expenses with the immediately preceding calendar month, including across years. No previous records produces an explanation; a zero previous expense total shows the amount difference without inventing a percentage. |
+| Largest expenses | Lists the five largest confirmed expenses in the selected month. Card installments appear on their registered due dates. |
+| Over-budget categories | Lists categories whose paid and planned expenses exceed their configured category limit. This uses committed spending, which differs from the report’s confirmed expense total. |
+
 ### Finances → Cards and installments
 
 | Feature | Purpose and how to use it |
 | --- | --- |
-| New card | Enter a name, limit, statement closing day, and payment due day. The app does not ask for a card number, password, or security code. |
+| New card | Enter a name, limit, statement closing day, and payment due day. Optionally choose the account used when paying its monthly bill. The app does not ask for a card number, password, or security code. |
 | Record purchase | Enter the **total** amount and between 1 and 48 installments. The app allocates cents without changing the total and creates each installment as a planned expense on its due date. Do not enter the same purchase again under New transaction. |
 | Closing and due dates | Purchases on or after the closing day enter the next billing cycle. Days 29, 30, and 31 are adjusted in shorter months. Changing a card's dates affects only new purchases. |
-| Monthly card bill | Shows the card's installments for the selected month and the amount still due. **Mark bill as paid** confirms those installments without creating another expense. |
+| Monthly card bill | Shows the card's installments for the selected month and the amount still due. **Mark bill as paid** confirms those installments without creating another expense. Previously unpaid installments are linked to the chosen payment account; already-paid installments keep their original account. Future months remain planned. |
 | Available limit | Estimates the limit minus all unpaid installments, including future ones. It does not query the bank and does not represent a limit approved by the bank. |
 | Archive and reactivate | Archiving prevents new purchases while preserving installments, bills, and earlier records. Reactivating allows new purchases. |
 
@@ -185,6 +226,7 @@ The guide uses the default English interface. Change the language in **Settings 
 
 | Feature | Purpose and how to use it |
 | --- | --- |
+| Category budgets | Set a separate limit for each expense category for the selected month. Paid and planned expenses, including installments, count toward each limit. The app shows notices at 80% and 100%; these are in-app notices, not phone notifications. Blank fields remove limits. Each month is independent, and category limits do not change the overall monthly budget. |
 | Monthly opening balance | Enter the money available **before the first transaction of that month**. Zero and negative values are allowed. Do not use a current balance that already includes recorded transactions. Enter each month separately; balances do not carry over automatically. |
 | Balance forecast | Calculates **opening balance + income − expenses for the month**, both confirmed and planned. Each installment is included once, in its due month. Marking a payment changes its status while keeping the projected amount the same. The forecast appears only after an opening balance is entered. |
 | Daily evolution | Shows the projected closing balance for each date with transactions and the lowest daily balance. A warning highlights negative estimates. The order of payments within the same day is not simulated. |
@@ -208,8 +250,9 @@ The app schedules up to **60 upcoming notifications** and refreshes them when op
 | App language | Select English, Português, Español, Français, or Deutsch in Settings. The interface changes immediately and selects USD for English, BRL for Portuguese, and EUR for Spanish/French/German. The choices are saved across restarts and included in backups. |
 | App currency | Override the language’s currency manually until the next language change. Refresh and save an online quote, use a cached quote offline, or enter a manual rate. All financial screens and fields convert while stored BRL cents remain preserved. |
 | Your name | Personalizes the greeting. Name and budget are optional during first-use setup. |
-| Export backup | Creates a JSON file with tasks, transactions, cards, routines, goals, opening balances, budgets, reminder settings, the selected language, currency, and saved exchange rates with dates and sources. On a phone, choose where to save it through the share menu; on a computer, download the file. |
-| Import backup | Select a DailyAPP JSON file and confirm restoration. This **replaces the current data**, rather than merging it. Earlier backups are still accepted; export your current data first if you want to preserve it. |
+| Export backup | Creates a readable JSON copy of tasks and their steps/priorities, transactions, accounts, transfers, cards, routines, goals, opening balances, overall/category budgets, reminder settings, language, currency, and saved exchange rates. On a phone, choose where to save it through the share menu; on a computer, download the file. |
+| Password-protected backup | Encrypts the same data in a JSON file using a password of 12–256 characters, entered twice. The password is not saved and cannot be recovered by the app. Keep it separately from the exported file. |
+| Import backup | Select plain or protected DailyAPP JSON. Protected files ask for their password first. Review task, transaction, account, transfer, and goal counts, plus the currency, before confirming. Canceling the preview leaves current data unchanged. Confirmation **replaces current data**, rather than merging it. Earlier backups are still accepted. |
 | Load/Explore example | Loads fictional data to explore the screens. If data already exists, asks for confirmation before replacing it. **Start with your own data** removes example tasks, transactions, and budget while preserving personal records you added. |
 | How to use DailyAPP | Opens the in-app quick guide through **How to use DailyAPP**. |
 | Phone reminders | Shows the number of scheduled notifications and lets you enable/refresh them. If permission was denied, allow notifications in your phone's settings. |
@@ -251,7 +294,7 @@ In Android Studio, select a phone/emulator and run the project. To generate the 
 npm run mobile:personal
 ```
 
-The installer is saved to `artifacts/DailyAPP-1.1-pessoal.apk`. It uses a Release build with application and WebView debugging disabled. It preserves the previous APK's development certificate to support updates to the personal installation, with `versionCode` 5. Keep that local key when building future updates. Play Store publication requires a dedicated distribution key. `npm run mobile:apk` remains available to generate a debug APK.
+The installer is saved to `artifacts/DailyAPP-1.2-pessoal.apk`. It uses a Release build with application and WebView debugging disabled. It preserves the previous APK's development certificate to support updates to the personal installation, with `versionCode` 8 and version name `1.2.0`. Keep that local key when building future updates. Play Store publication requires a dedicated distribution key. `npm run mobile:apk` remains available to generate a debug APK.
 
 ## iPhone
 
@@ -263,7 +306,7 @@ npm run mobile:ios
 
 In Xcode, select the **App** project, configure your team under **Signing & Capabilities**, and run it in the simulator or on a connected iPhone. The project uses Swift Package Manager and includes the privacy manifest required by the filesystem plugin. The app requires iOS 15.4 or later.
 
-IPA 1.1 was built and published through [.github/workflows/personal-release.yml](.github/workflows/personal-release.yml), using Xcode 26.3 on the `macos-15` runner. Its bundled interface files were compared with the Android package, and download hashes were checked. The result is an IPA **without personal signing**. Signing and installation instructions are in the [mobile guide (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal); installation and operation on a real iPhone still need to be confirmed. The [ios-personal.yml](.github/workflows/ios-personal.yml) workflow also supports generating a build artifact manually, without creating a Release.
+The unsigned IPA is built and published through [.github/workflows/personal-release.yml](.github/workflows/personal-release.yml), using Xcode 26.3 on the `macos-15` runner. Its bundled interface files were compared with the Android package, and download hashes were checked. The result is an IPA **without personal signing**. Signing and installation instructions are in the [mobile guide (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal); installation and operation on a real iPhone still need to be confirmed. The [ios-personal.yml](.github/workflows/ios-personal.yml) workflow also supports generating a build artifact manually, without creating a Release.
 
 ## Verification
 
@@ -272,7 +315,7 @@ npm run build:mobile
 npm test
 ```
 
-The 87 tests use Playwright and Chromium. They cover automatic language/currency switching, cancellation of stale requests, safe conversion after closing an amount form, actual currency conversion, inverse amount inputs, quote failures, cached and manual rates, balance forecasts, goals, bills on Today, tasks, finances, local data, backups, storage failures, dates, navigation, first use, existing-data upgrades, all five languages, accessibility, and offline use of the mobile interface. Native plugin contracts are simulated: browser tests do not replace testing on a phone, especially for the keyboard, file picker, and sharing.
+All **104 tests** passed using Playwright and Chromium. They cover account balances and transfer conservation, linked card payments without duplicates, category thresholds, monthly reports, quick expense creation, subtasks and three-priority limits, protected backups without Web Crypto SubtleCrypto, incorrect passwords, tamper detection, canceling restoration, and automatic language/currency switching, cancellation of stale requests, safe conversion after closing an amount form, actual currency conversion, inverse amount inputs, quote failures, cached and manual rates, balance forecasts, goals, bills on Today, tasks, finances, local data, backups, storage failures, dates, navigation, first use, existing-data upgrades, all five languages, accessibility, and offline use of the mobile interface. Native plugin contracts are simulated: browser tests do not replace testing on a phone, especially for the keyboard, file picker, and sharing.
 
 Test servers use ports 5174 (local workspace), 5175 (mocked accounts from the earlier implementation), and 5176 (mobile app interface). In the cloud environment, the available browser is `/usr/bin/chromium`; on other machines, run `npx playwright install chromium` once.
 
@@ -280,7 +323,15 @@ Test servers use ports 5174 (local workspace), 5175 (mocked accounts from the ea
 
 Records are stored in the app WebView's private storage. Closing and reopening the app keeps them. The `dailyapp.v1` format is preserved: users with existing records enter the app directly. Uninstalling the app or clearing its data may remove those records. In **Settings**, export a backup to keep a copy or transfer records between devices; restoring requires confirmation.
 
-Local storage is not an encrypted vault. The current mobile version does not connect to banks, require login, or synchronize devices automatically. The earlier account implementation is preserved in `src/cloud/` for a future stage if requested; it is not included in the mobile package.
+### Protected backup format
+
+Protected exports use **AES-256-GCM** with authenticated encryption and **PBKDF2-SHA256, 600,000 iterations**, a fresh 16-byte salt, and a fresh 12-byte nonce per export. Cryptography comes from pinned `@noble/ciphers` and `@noble/hashes` packages; randomness uses the platform’s secure generator. Passwords are normalized to NFC, never logged or persisted, and spaces are preserved. The protected plaintext is limited to 12 MiB; imported files are limited to 20 MiB. A wrong password, altered ciphertext, invalid metadata, or invalid app data prevents restoration.
+
+The encrypted file protects the **exported backup**. Local storage is not an encrypted vault. There is no password recovery, automatic cloud backup, biometric lock, or encryption of the app’s live database. Plain JSON exports remain available and readable.
+
+Version 1.0/1.1 backups remain accepted; version 1.2 fields are optional, and existing data is not reassigned or rewritten at startup. Use version 1.2 or later to retain the new fields when restoring a 1.2 backup.
+
+The current mobile version does not connect to banks, require login, or synchronize devices automatically. The earlier account implementation is preserved in `src/cloud/` for a future stage if requested; it is not included in the mobile package.
 
 ## Project structure
 
@@ -292,6 +343,9 @@ src/mobile-main.tsx   Installed app entry point
 src/mobile/           Sharing, files, and back button
 src/App.tsx           Tasks, calendar, finances, and settings
 src/domain.ts         Types, validation, and calculations
+src/finance-tools.ts  Account balances, category budgets, reports, and templates
+src/backup-crypto.ts  Authenticated password-protected backup format
+src/features/         Planning, account/report panels, task steps, and backup forms
 src/i18n/             Five-language catalogs, locale formatting, and saved language preference
 src/currency.ts       BRL-based conversion, quote validation, online rates, and inverse inputs
 resources/            Logo for icons and splash screen generation

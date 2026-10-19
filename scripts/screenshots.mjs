@@ -46,7 +46,7 @@ try {
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.clock.setFixedTime(new Date("2026-10-14T15:00:00Z"));
+  await page.clock.setFixedTime(new Date("2026-10-19T15:00:00Z"));
   await page.goto(`http://127.0.0.1:${server.address().port}`, {
     waitUntil: "networkidle",
   });
@@ -84,7 +84,7 @@ try {
     await page.getByRole("button", { name: message(navigation), exact: true }).click();
     await expect(page.getByRole("heading", { name: message(heading), exact: true })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
-    await page.screenshot({ path: new URL(filename, target).pathname });
+    await page.screenshot({ animations: "disabled",  path: new URL(filename, target).pathname });
   }
   if (language === "en") {
     // An explicitly labeled manual example keeps screenshots reproducible
@@ -100,21 +100,60 @@ try {
       const inset = (topbar?.getBoundingClientRect().bottom ?? 0) + 16;
       window.scrollBy({ top: panel.getBoundingClientRect().top - inset });
     });
-    await page.screenshot({ path: new URL("moeda.png", target).pathname });
+    await page.screenshot({ animations: "disabled",  path: new URL("moeda.png", target).pathname });
     await page.getByRole("button", { name: "My finances", exact: true }).click();
     await expect(page.locator(".stat-card").filter({ has: page.getByText("Income received", { exact: true }) })).toContainText("$1,330.00");
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
-    await page.screenshot({ path: new URL("financas-usd.png", target).pathname });
+    await page.screenshot({ animations: "disabled",  path: new URL("financas-usd.png", target).pathname });
     await page.getByRole("navigation", { name: message("Navegação do aplicativo"), exact: true }).getByRole("button", { name: message("Visão geral"), exact: true }).click();
     await expect(page.getByRole("heading", { name: message("Seu dia, em equilíbrio."), exact: true })).toBeVisible();
     await expect(page.locator(".stat-card").filter({ has: page.getByText("Monthly balance", { exact: true }) })).toContainText("$926.70");
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
-    await page.screenshot({ path: new URL("hoje-usd.png", target).pathname });
+    await page.screenshot({ animations: "disabled",  path: new URL("hoje-usd.png", target).pathname });
+    // New version 1.2 examples use isolated, fictional ledger records. The
+    // app validates them on reload and renders its normal screens and forms.
+    await page.evaluate(() => {
+      const data = JSON.parse(localStorage.getItem("dailyapp.v1"));
+      data.accounts = [
+        { id: "example-bank", name: "Daily Bank", kind: "bank", openingCents: 150000, openingDate: "2026-10-01" },
+        { id: "example-wallet", name: "Pocket", kind: "cash", openingCents: 20000, openingDate: "2026-10-01" },
+        { id: "example-savings", name: "Travel fund", kind: "savings", openingCents: 250000, openingDate: "2026-10-01" },
+      ];
+      data.transactions = data.transactions.map(t => ({ ...t, accountId: "example-bank" }));
+      data.transactions.push({ id: "previous-month", description: "September expenses", amountCents: 240000, type: "expense", date: "2026-09-19", category: "Outros", paid: true, notes: "" });
+      data.transfers = [{ id: "example-transfer", fromAccountId: "example-bank", toAccountId: "example-savings", amountCents: 50000, date: "2026-10-19", notes: "Monthly savings" }];
+      data.categoryBudgets = { "2026-10": { Alimentação: 50000, Moradia: 120000, Transporte: 20000, Saúde: 20000 } };
+      data.tasks = data.tasks.map((t,index) => ({ ...t, ...(index < 3 ? { focusDate: "2026-10-19" } : {}) }));
+      data.tasks[0].subtasks = [{ id: "step-1", title: "Choose the three main outcomes", completed: true }, { id: "step-2", title: "Reserve time in the calendar", completed: false }];
+      localStorage.setItem("dailyapp.v1", JSON.stringify(data));
+    });
+    await page.reload({ waitUntil: "networkidle" });
+    for (const [file,tab,heading] of [["contas.png","Accounts","Accounts and wallets"],["limites.png","Planning","Category budgets"],["relatorio.png","Report","Monthly report"]]) {
+      await page.getByRole("button",{ name:"My finances",exact:true }).click();
+      await page.getByRole("group",{ name:"Financial view" }).getByRole("button",{ name:tab,exact:true }).click();
+      const section = page.getByRole("heading",{ name:heading,exact:true });
+      await expect(section).toBeVisible();
+      await section.evaluate(element => { window.scrollBy({top: element.getBoundingClientRect().top - 100}); });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+      await page.screenshot({ animations: "disabled",  path:new URL(file,target).pathname });
+    }
+    await page.getByRole("navigation",{name:"App navigation"}).getByRole("button",{name:"Overview",exact:true}).click();
+    await page.locator(".daily-focus").evaluate(element => { window.scrollBy({top:element.getBoundingClientRect().top-80}); });
+    await page.screenshot({ animations: "disabled", path:new URL("prioridades.png",target).pathname});
+    await page.getByRole("button",{name:"My tasks",exact:true}).click();
+    await page.getByRole("button",{name:"Edit task: Plan this week's priorities",exact:true}).click();
+    await page.getByRole("group",{name:"Subtasks",exact:true}).scrollIntoViewIfNeeded();
+    await page.screenshot({ animations: "disabled", path:new URL("etapas.png",target).pathname});
+    await page.getByRole("button",{name:"Cancel",exact:true}).click();
+    await page.getByRole("button",{name:"Settings",exact:true}).click();
+    await page.getByRole("button",{name:"Password-protected backup",exact:true}).click();
+    await page.screenshot({ animations: "disabled", path:new URL("backup.png",target).pathname});
+
   }
   expect(errors).toEqual([]);
   await context.close();
   }
-  console.log("Capturas da interface móvel nos cinco idiomas e exemplo de conversão: docs/screenshots/");
+  console.log("Capturas da interface móvel nos cinco idiomas, conversão e recursos 1.2: docs/screenshots/");
 } finally {
   await browser?.close();
   await new Promise((resolve) => server.close(resolve));

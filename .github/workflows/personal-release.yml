@@ -9,7 +9,7 @@ on:
       release_tag:
         description: Tag da versão pessoal já enviada ao GitHub
         required: true
-        default: personal-v1.1.0-r4
+        default: personal-v1.2.0
 
 permissions:
   contents: read
@@ -34,7 +34,7 @@ jobs:
           ref: ${{ inputs.release_tag || github.ref }}
       - name: Conferir a integridade do APK
         working-directory: downloads
-        run: sha256sum --check DailyAPP-1.1-pessoal.apk.sha256
+        run: sha256sum --check DailyAPP-1.2-pessoal.apk.sha256
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -52,18 +52,18 @@ jobs:
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" \
-              downloads/DailyAPP-1.1-pessoal.apk \
-              downloads/DailyAPP-1.1-pessoal.apk.sha256 \
+              downloads/DailyAPP-1.2-pessoal.apk \
+              downloads/DailyAPP-1.2-pessoal.apk.sha256 \
               artifacts/DailyAPP-index.zip \
               artifacts/DailyAPP-index.zip.sha256 --clobber
           else
             gh release create "$RELEASE_TAG" \
-              downloads/DailyAPP-1.1-pessoal.apk \
-              downloads/DailyAPP-1.1-pessoal.apk.sha256 \
+              downloads/DailyAPP-1.2-pessoal.apk \
+              downloads/DailyAPP-1.2-pessoal.apk.sha256 \
               artifacts/DailyAPP-index.zip \
               artifacts/DailyAPP-index.zip.sha256 \
-              --verify-tag --title 'DailyAPP 1.1 — automatic currency and personal use' \
-              --notes-file docs/RELEASE-1.1.md
+              --verify-tag --title 'DailyAPP 1.2 — accounts, budgets and daily planning' \
+              --notes-file docs/RELEASE-1.2.md
           fi
 
   iphone:
@@ -109,9 +109,9 @@ jobs:
           mkdir -p "$RUNNER_TEMP/dailyapp-ipa/Payload"
           ditto "$app" "$RUNNER_TEMP/dailyapp-ipa/Payload/App.app"
           ditto -c -k --keepParent "$RUNNER_TEMP/dailyapp-ipa/Payload" \
-            "$GITHUB_WORKSPACE/artifacts/DailyAPP-1.1-sem-assinatura.ipa"
+            "$GITHUB_WORKSPACE/artifacts/DailyAPP-1.2-sem-assinatura.ipa"
           cd artifacts
-          shasum -a 256 DailyAPP-1.1-sem-assinatura.ipa > DailyAPP-1.1-sem-assinatura.ipa.sha256
+          shasum -a 256 DailyAPP-1.2-sem-assinatura.ipa > DailyAPP-1.2-sem-assinatura.ipa.sha256
       - name: Guardar resultado e log de compilação
         if: always()
         uses: actions/upload-artifact@v4
@@ -125,5 +125,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release upload "$RELEASE_TAG" \
-            artifacts/DailyAPP-1.1-sem-assinatura.ipa \
-            artifacts/DailyAPP-1.1-sem-assinatura.ipa.sha256 --clobber
+            artifacts/DailyAPP-1.2-sem-assinatura.ipa \
+            artifacts/DailyAPP-1.2-sem-assinatura.ipa.sha256 --clobber

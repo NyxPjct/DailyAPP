@@ -31,7 +31,7 @@ export function materializeRecurrences(data: AppData, today = dateKey()): AppDat
       if (date > horizon || (series.kind === "task" ? tasks.length >= 5000 : transactions.length >= 10000)) break;
       const id = `${series.id}:${date}`;
       if (series.kind === "task") {
-        if (!ids.has(id)) tasks.push({ ...series.template, id, date, completed: false, recurrenceId: series.id });
+        if (!ids.has(id)) tasks.push({ ...series.template, ...(series.template.subtasks ? { subtasks: series.template.subtasks.map(child => ({ ...child, completed: false })) } : {}), id, date, completed: false, recurrenceId: series.id });
       } else if (!ids.has(id)) transactions.push({ ...series.template, id, date, paid: false, recurrenceId: series.id });
       ids.add(id);
       index++;
@@ -44,7 +44,7 @@ export function materializeRecurrences(data: AppData, today = dateKey()): AppDat
 
 export function repeatingTask(data: AppData, task: Task, frequency: Frequency, today = dateKey()): AppData {
   if ((data.recurrences?.filter(s => s.active).length ?? 0) >= 100 || (data.recurrences?.length ?? 0) >= 1000) throw new Error(tr("Limite de repetições atingido. Exporte um backup antes de reorganizar suas rotinas."));
-  const { id: _id, date: _date, completed: _completed, recurrenceId: _series, ...template } = task;
+  const { id: _id, date: _date, completed: _completed, recurrenceId: _series, focusDate: _focus, ...template } = task;
   const series: Recurrence = { id: randomId(), kind: "task", frequency, anchorDate: task.date, nextIndex: 1, active: true, template };
   return materializeRecurrences({ ...data, tasks: [...data.tasks, { ...task, recurrenceId: series.id }], recurrences: [...(data.recurrences ?? []), series] }, today);
 }

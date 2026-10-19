@@ -3573,3 +3573,53 @@ td:last-child {
 .manual-rate .button { margin-top: 12px; }
 .currency-language-banner { background: #eef3eb; border-color: #cddcc7; color: #355844; }
 .currency-settings > form { padding-bottom: 20px; }
+
+/* Version 1.2: wallets, category limits, reports, and daily focus. */
+.finance-subnav { display: flex; overflow-x: auto; max-width: 100%; gap: 8px; }
+.finance-subnav > button { flex: 0 0 auto; min-width: 96px; }
+.v12-stack { display: grid; gap: 22px; min-width: 0; }
+.v12-panel { padding: 22px; margin-bottom: 20px; min-width: 0; }
+.v12-panel h2 { display: flex; gap: 8px; align-items: center; font-size: 18px; }
+.v12-panel h3 { margin-top: 20px; font-size: 15px; }
+.v12-panel .planning-heading h3 { display: flex; align-items: center; gap: 8px; margin: 0; }
+.wallet-total { display: grid; gap: 8px; padding: 18px; margin: 16px 0; border-radius: 14px; background: #edf3eb; }
+.wallet-total strong { color: #23664b; font: 700 28px Manrope, sans-serif; overflow-wrap: anywhere; }
+.wallet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; margin-top: 18px; }
+.wallet-card { border: 1px solid #dfe7dc; border-radius: 14px; padding: 18px; display: grid; gap: 12px; min-width: 0; overflow-wrap: anywhere; }
+.wallet-card small { color: #59665e; }
+.wallet-card .planning-heading { flex-direction: row; align-items: center; margin-bottom: 0; }
+.wallet-balance { font: 700 24px Manrope, sans-serif; }
+.v12-list { list-style: none; padding: 0; margin: 18px 0; }
+.v12-list li { display: flex; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid #edf1e9; overflow-wrap: anywhere; }
+.v12-list li > div { flex: 1; min-width: 0; }
+.v12-list small { display: block; margin-top: 5px; color: #59665e; }
+.v12-list li > strong { flex-shrink: 0; }
+.category-limits { grid-column: 1 / -1; }
+.category-budget-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,235px),1fr)); gap: 16px; margin-top: 18px; }
+.category-budget-grid article { border: 1px solid #e1e8dd; border-radius: 12px; padding: 16px; }
+.category-budget-grid .planning-heading { margin-bottom: 12px; font-size: 13px; }
+.category-budget-grid small { color: #59665e; }
+.category-budget-grid .progress-track { margin-top: 12px; }
+.budget-alert { color: #94521c; font-weight: 600; font-size: 12px; margin-top: 10px; }
+.report-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin: 22px 0; }
+.report-grid > div { display: grid; gap: 12px; padding: 18px; background: #f2f5ef; border-radius: 14px; }
+.report-grid strong { font: 700 23px Manrope,sans-serif; overflow-wrap: anywhere; }
+.quick-expense-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.quick-expense-buttons .button { white-space: normal; text-align: left; }
+.subtask-editor { margin: 18px 0; border: 1px solid #dce6d5; border-radius: 12px; padding: 16px; }
+.subtask-editor legend { font-weight: 600; padding: 0 6px; }
+.subtask-edit-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.subtask-edit-row input[type=checkbox], .daily-focus input[type=checkbox] { width: 22px; min-height: 22px; height: 22px; accent-color: #23664b; flex-shrink: 0; }
+.subtask-edit-row span { flex: 1; overflow-wrap: anywhere; }
+.subtask-editor .button { margin-top: 10px; }
+.daily-focus .v12-list .text-button { flex: 1; text-align: left; white-space: normal; }
+.task-row .row-actions .icon-button[aria-pressed=true] { color: #a66b17; }
+@media(max-width:600px) {
+ .v12-panel { padding: 18px; }
+ .report-grid { grid-template-columns: 1fr; }
+ .v12-list li { flex-wrap: wrap; }
+ .v12-list li > div { flex-basis: 45%; }
+ .planning-heading { flex-wrap: wrap; }
+ .task-row .row-actions { gap: 0; }
+ .task-row .task-content { min-width: 0; }
+}

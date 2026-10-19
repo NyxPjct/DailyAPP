@@ -1,3 +1,9 @@
+import { AccountSelect, AccountsPanel, AccountForm, TransferForm, CategoryBudgetsPanel, CategoryBudgetForm, ReportPanel, QuickExpenses } from "./features/FinanceTools";
+import { DailyFocus, SubtaskEditor } from "./features/TaskTools";
+import { BackupPasswordForm } from "./features/BackupPasswordForm";
+import { encryptBackup, decryptBackup, isEncryptedBackup } from "./backup-crypto";
+import type { EncryptedBackup } from "./backup-crypto";
+import type { WalletAccount, Transfer } from "./domain";
 import { currencyForLanguage, currencySymbol, fetchExchangeRates, getCurrency, parseCurrencyAmount, setCurrentCurrency, toDisplayCents } from "./currency";
 import type { Currency, ExchangeRates } from "./currency";
 import { CurrencySettings } from "./features/CurrencySettings";
@@ -40,6 +46,7 @@ import {
   X,
   Bell,
   Repeat2,
+  Star,
 } from "lucide-react";
 import {
   STORAGE_KEY,
@@ -98,7 +105,12 @@ function introductionDone() {
 }
 type Editor =
   | { kind: "task"; item?: Task; date?: string }
-  | { kind: "transaction"; item?: Transaction; type?: Transaction["type"] }
+  | { kind: "transaction"; item?: Transaction; preset?: Transaction; type?: Transaction["type"] }
+  | { kind: "account"; item?: WalletAccount }
+  | { kind: "transfer"; item?: Transfer }
+  | { kind: "category-budgets" }
+  | { kind: "protect-backup" }
+  | { kind: "unlock-backup"; envelope: EncryptedBackup }
   | { kind: "budget" }
   | { kind: "card"; item?: CreditCard }
   | { kind: "purchase"; cardId: string }
@@ -332,7 +344,9 @@ function TaskRow({
   onEdit,
   onDelete,
   withDate = false,
+  onFocus,
 }: {
+  onFocus: () => void;
   task: Task;
   onToggle: () => void;
   onEdit: () => void;
@@ -366,6 +380,7 @@ function TaskRow({
           <span className={`tag category-${task.category.toLowerCase()}`}>
             {tr(task.category)}
           </span>
+          {!!task.subtasks?.length && <span className="planning-badge">{tr("{0}/{1} etapas", task.subtasks.filter(c=>c.completed).length, task.subtasks.length)}</span>}
           {task.recurrenceId && <span className="planning-badge"><Repeat2 size={12} />{tr("Recorrente")}</span>}
           {task.reminderMinutes !== undefined && <span className="planning-badge"><Bell size={12} />{tr("Lembrete")}</span>}
         </span>
@@ -378,6 +393,7 @@ function TaskRow({
         <span>{tr(task.priority)}</span>
       </span>
       <div className="row-actions">
+        <button className="icon-button" aria-pressed={task.focusDate===dateKey()} aria-label={tr("Priorizar hoje: {0}",recordText(task.id,task.title))} onClick={onFocus}><Star size={15} fill={task.focusDate===dateKey()?"currentColor":"none"}/></button>
         <button
           className="icon-button"
           aria-label={tr("Editar tarefa: {0}", recordText(task.id, task.title))}
@@ -571,6 +587,7 @@ function TaskForm({
   const [priority, setPriority] = useState<Task["priority"]>(
     item?.priority ?? "Média",
   );
+  const [subtasks,setSubtasks] = useState(item?.subtasks ?? []);
   const [notes, setNotes] = useState(item?.notes ?? "");
   const [frequency, setFrequency] = useState<Frequency | "">(recurrenceFrequency ?? "");
   const [reminder, setReminder] = useState(item?.reminderMinutes ?? -1);
@@ -593,6 +610,7 @@ function TaskForm({
         priority,
         notes: notes.trim(),
         completed: item?.completed ?? false,
+        ...(subtasks.length || item?.subtasks ? { subtasks } : {}),
         reminderMinutes: reminder >= 0 ? reminder : undefined,
       }, !item?.recurrenceId && frequency ? frequency : undefined)
     )
@@ -663,6 +681,7 @@ function TaskForm({
             onChange={(e) => setNotes(e.target.value)}
           />
         </label>
+        <SubtaskEditor value={subtasks} onChange={setSubtasks} />
         <div className="form-grid">
           <label>{tr("Repetir tarefa")}<select aria-label={tr("Repetir tarefa")} value={frequency} disabled={!!item?.recurrenceId} onChange={e => setFrequency(e.target.value as Frequency | "")}><option value="">{tr("Não repetir")}</option>{Object.entries(FREQUENCIES).map(([value, label]) => <option value={value} key={value}>{tr(label)}</option>)}</select></label>
           <label>{tr("Lembrete da tarefa")}<select aria-label={tr("Lembrete da tarefa")} value={reminder} disabled={!time} onChange={e => setReminder(Number(e.target.value))}><option value={-1}>{tr("Sem lembrete")}</option><option value={0}>{tr("No horário")}</option><option value={5}>{tr("5 minutos antes")}</option><option value={15}>{tr("15 minutos antes")}</option><option value={30}>{tr("30 minutos antes")}</option><option value={60}>{tr("1 hora antes")}</option><option value={1440}>{tr("1 dia antes")}</option></select></label>
@@ -687,27 +706,33 @@ function TaskForm({
 
 function TransactionForm({
   item,
+  preset,
+  accounts,
   type,
   onSave,
   onClose,
   recurrenceFrequency,
 }: {
   item?: Transaction;
+  preset?: Transaction;
+  accounts: WalletAccount[];
   type?: Transaction["type"];
   onSave: (transaction: Transaction, frequency?: Frequency) => boolean;
   onClose: () => void;
   recurrenceFrequency?: Frequency;
 }) {
+  const source = item ?? preset;
+  const [accountId,setAccountId] = useState(source?.accountId && accounts.some(a=>a.id===source.accountId && (!a.archived || !!item)) ? source.accountId : "");
   const [kind, setKind] = useState<Transaction["type"]>(
-    item?.type ?? type ?? "expense",
+    source?.type ?? type ?? "expense",
   );
-  const [description, setDescription] = useState(item ? recordText(item.id, item.description) : "");
+  const [description, setDescription] = useState(source ? recordText(source.id, source.description) : "");
   const [amount, setAmount] = useState(
-    item ? amountInput(item.amountCents) : "",
+    source ? amountInput(source.amountCents) : "",
   );
   const [day, setDay] = useState(item?.date ?? dateKey());
   const [category, setCategory] = useState(
-    item?.category ?? (type === "income" ? "Salário" : "Alimentação"),
+    source?.category ?? (type === "income" ? "Salário" : "Alimentação"),
   );
   const [paid, setPaid] = useState(item?.paid ?? true);
   const [notes, setNotes] = useState(item?.notes ?? "");
@@ -734,6 +759,7 @@ function TransactionForm({
         description: description.trim(),
         amountCents: cents,
         date: day,
+        accountId: accountId || undefined,
         category,
         type: kind,
         paid,
@@ -832,6 +858,7 @@ function TransactionForm({
             </small>
           </span>
         </label>
+        <AccountSelect accounts={accounts} value={accountId} onChange={setAccountId} />
         <label>{tr("Observações ")}<span className="optional">{tr("(opcional)")}</span>
           <textarea
             rows={2}
@@ -972,7 +999,7 @@ const navItems = [
   const [financeFilter, setFinanceFilter] = useState("Todas");
   const [financeStatus, setFinanceStatus] = useState("Todos os status");
   const [financeSearch, setFinanceSearch] = useState("");
-  const [financeTab, setFinanceTab] = useState<"summary" | "cards" | "planning">("summary");
+  const [financeTab, setFinanceTab] = useState<"summary" | "cards" | "planning" | "accounts" | "reports">("summary");
   const [today, setToday] = useState(dateKey);
   const [refreshTick, setRefreshTick] = useState(0);
   const [reminders, setReminders] = useState<ReminderState>(initialReminderState);
@@ -1218,6 +1245,11 @@ const navItems = [
       );
     return ok;
   }
+  function toggleFocus(task: Task) {
+    const focused = task.focusDate === today;
+    if (!focused && data.tasks.filter(t=>t.focusDate===today).length >= 3) { setToast(tr("Escolha no máximo três prioridades para cada dia.")); return; }
+    save({ ...data, tasks: data.tasks.map(t=>t.id===task.id?{...t,focusDate:focused?undefined:today}:t) });
+  }
   function toggleTask(task: Task) {
     if (
       save({
@@ -1248,6 +1280,7 @@ const navItems = [
         key={task.id}
         task={task}
         onToggle={() => toggleTask(task)}
+        onFocus={() => toggleFocus(task)}
         onEdit={() => setEditor({ kind: "task", item: task })}
         onDelete={() => deleteTask(task)}
         withDate={withDate}
@@ -1298,6 +1331,22 @@ const navItems = [
   function stopRepeating(id: string) {
     setConfirm({ title: tr("Parar repetição?"), text: tr("As próximas ocorrências ainda não concluídas ou pagas serão removidas. O histórico e os registros de hoje serão mantidos."), action: () => { if (save(stopRecurrence(data, id, today))) setToast(tr("Repetição encerrada. Seu histórico foi mantido.")); } });
   }
+  function saveWallet(item: WalletAccount) {
+    const old = data.accounts ?? [];
+    const ok = save({ ...data, accounts: old.some(a=>a.id===item.id)?old.map(a=>a.id===item.id?item:a):[...old,item] });
+    if (ok) setToast(tr("Conta salva.")); return ok;
+  }
+  function archiveWallet(item: WalletAccount) {
+    setConfirm({title:item.archived?tr("Reativar conta?"):tr("Arquivar conta?"),text:tr("A conta e seus registros serão preservados. O saldo continua no total, mesmo arquivada."),action:()=>{save({...data,accounts:data.accounts?.map(a=>a.id===item.id?{...a,archived:!a.archived}:a)});}});
+  }
+  function saveTransfer(item: Transfer) {
+    const old=data.transfers??[];
+    const ok=save({...data,transfers:old.some(t=>t.id===item.id)?old.map(t=>t.id===item.id?item:t):[...old,item]});
+    if(ok)setToast(tr("Transferência salva.")); return ok;
+  }
+  function deleteTransfer(item: Transfer) {
+    setConfirm({title:tr("Excluir transferência?"),text:tr("Os saldos das duas contas serão recalculados. Receitas e despesas não serão alteradas."),destructive:true,action:()=>{save({...data,transfers:data.transfers?.filter(t=>t.id!==item.id)});}});
+  }
   function saveCard(card: CreditCard) {
     const cards = data.cards ?? [];
     const ok = save({ ...data, cards: cards.some(c => c.id === card.id) ? cards.map(c => c.id === card.id ? card : c) : [...cards, card] });
@@ -1319,7 +1368,7 @@ const navItems = [
   function payInvoice(card: CreditCard) {
     const totals = cardSummary(data, card.id, month);
     setConfirm({ title: tr("Marcar fatura como paga?"), text: tr("{0} das parcelas de {1} neste mês serão marcados como pagos. Nenhum gasto adicional será criado.", money(totals.pending), card.name), action: () => {
-      if (save({ ...data, transactions: data.transactions.map(t => t.installment?.cardId === card.id && t.date.startsWith(month) ? { ...t, paid: true } : t) })) setToast(tr("Fatura marcada como paga."));
+      if (save({ ...data, transactions: data.transactions.map(t => t.installment?.cardId === card.id && t.date.startsWith(month) ? { ...t, paid: true, ...(card.paymentAccountId && !t.paid ? { accountId: card.paymentAccountId } : {}) } : t) })) setToast(tr("Fatura marcada como paga."));
     } });
   }
   function archiveCard(card: CreditCard) {
@@ -1418,15 +1467,10 @@ const navItems = [
       setToast(tr("Não foi possível exportar o backup. Seus registros continuam salvos."));
     }
   }
-  async function importData(file?: File) {
-    if (!file) return;
-    try {
-      if (file.size > 10 * 1024 * 1024)
-        throw new Error(tr("O arquivo deve ter no máximo 10 MB."));
-      const imported = validateData(JSON.parse(await file.text()));
+  function previewRestore(imported: AppData) {
       setConfirm({
         title: tr("Restaurar este backup?"),
-        text: tr("O arquivo contém {0} tarefas, {1} movimentações e {2} metas, além dos demais dados de planejamento. Os dados atuais serão substituídos.", imported.tasks.length, imported.transactions.length, imported.goals?.length ?? 0),
+        text: tr("Prévia: {0} tarefas, {1} movimentações, {2} contas, {3} transferências e {4} metas. Moeda: {5}. Os dados atuais serão substituídos somente ao confirmar.", imported.tasks.length, imported.transactions.length, imported.accounts?.length ?? 0, imported.transfers?.length ?? 0, imported.goals?.length ?? 0, imported.currency ?? "BRL"),
         action: () => {
           if (save(imported, true)) {
             setName(imported.name);
@@ -1434,6 +1478,16 @@ const navItems = [
           }
         },
       });
+  }
+  async function importData(file?: File) {
+    if (!file) return;
+    try {
+      if (file.size > 20 * 1024 * 1024)
+        throw new Error(tr("O arquivo deve ter no máximo 20 MB."));
+      const parsed = JSON.parse(await file.text());
+      if (isEncryptedBackup(parsed)) { setEditor({kind:"unlock-backup",envelope:parsed}); return; }
+      const imported = validateData(parsed);
+      previewRestore(imported);
     } catch (error) {
       setToast(
         error instanceof SyntaxError
@@ -1901,6 +1955,7 @@ const navItems = [
                   >
                     <Plus size={16} />{tr("Adicionar tarefa")}</button>
                 </section>
+                <DailyFocus tasks={data.tasks} today={today} onToggle={toggleTask} onEdit={item=>setEditor({kind:"task",item})} onRemove={toggleFocus} />
                 <TodayMoney data={data} today={today} onEdit={item => setEditor({ kind: "transaction", item })} onSettle={settleTransaction} onPlanning={openPlanning} />
                 <section className="panel chart-panel">
                   <div className="panel-heading">
@@ -2157,7 +2212,7 @@ const navItems = [
 
           {view === "finance" && (
             <>
-              <div className="finance-subnav" role="group" aria-label={tr("Visão financeira")}><button aria-pressed={financeTab === "summary"} className={financeTab === "summary" ? "selected" : ""} onClick={() => setFinanceTab("summary")}>{tr("Resumo")}</button><button aria-pressed={financeTab === "cards"} className={financeTab === "cards" ? "selected" : ""} onClick={() => setFinanceTab("cards")}>{tr("Cartões e parcelas")}</button><button aria-pressed={financeTab === "planning"} className={financeTab === "planning" ? "selected" : ""} onClick={() => setFinanceTab("planning")}>{tr("Planejamento")}</button></div>
+              <div className="finance-subnav" role="group" aria-label={tr("Visão financeira")}><button aria-pressed={financeTab === "summary"} className={financeTab === "summary" ? "selected" : ""} onClick={() => setFinanceTab("summary")}>{tr("Resumo")}</button><button aria-pressed={financeTab === "cards"} className={financeTab === "cards" ? "selected" : ""} onClick={() => setFinanceTab("cards")}>{tr("Cartões e parcelas")}</button><button aria-pressed={financeTab === "accounts"} className={financeTab === "accounts" ? "selected" : ""} onClick={()=>setFinanceTab("accounts")}>{tr("Contas")}</button><button aria-pressed={financeTab === "reports"} className={financeTab === "reports" ? "selected" : ""} onClick={()=>setFinanceTab("reports")}>{tr("Relatório")}</button><button aria-pressed={financeTab === "planning"} className={financeTab === "planning" ? "selected" : ""} onClick={() => setFinanceTab("planning")}>{tr("Planejamento")}</button></div>
               <div className="section-toolbar">
                 <h2>{financeTab === "cards" ? tr("Suas faturas") : financeTab === "planning" ? tr("Seu planejamento") : tr("Seu resumo financeiro")}</h2>
                 <div className="month-tools">
@@ -2167,7 +2222,8 @@ const navItems = [
                   <MonthControl month={month} onChange={changeMonth} />
                 </div>
               </div>
-              {financeTab === "cards" ? <CardsPanel data={data} month={month} onNew={() => setEditor({ kind: "card" })} onEdit={item => setEditor({ kind: "card", item })} onArchive={archiveCard} onPurchase={card => setEditor({ kind: "purchase", cardId: card.id })} onPay={payInvoice} /> : financeTab === "planning" ? <div className="planning-layout"><ForecastPanel data={data} month={month} onOpening={() => setEditor({ kind: "opening" })} /><GoalsPanel goals={data.goals ?? []} today={today} onNew={() => setEditor({ kind: "goal" })} onEdit={item => setEditor({ kind: "goal", item })} onArchive={archiveGoal} onDelete={deleteGoal} /></div> : <>
+              {financeTab === "accounts" ? <AccountsPanel data={data} today={today} month={month} onNew={()=>setEditor({kind:"account"})} onEdit={item=>setEditor({kind:"account",item})} onArchive={archiveWallet} onTransfer={item=>setEditor({kind:"transfer",item})} onDeleteTransfer={deleteTransfer}/> : financeTab === "reports" ? <ReportPanel data={data} month={month}/> : financeTab === "cards" ? <CardsPanel data={data} month={month} onNew={() => setEditor({ kind: "card" })} onEdit={item => setEditor({ kind: "card", item })} onArchive={archiveCard} onPurchase={card => setEditor({ kind: "purchase", cardId: card.id })} onPay={payInvoice} /> : financeTab === "planning" ? <div className="planning-layout"><ForecastPanel data={data} month={month} onOpening={() => setEditor({ kind: "opening" })} /><GoalsPanel goals={data.goals ?? []} today={today} onNew={() => setEditor({ kind: "goal" })} onEdit={item => setEditor({ kind: "goal", item })} onArchive={archiveGoal} onDelete={deleteGoal} /><CategoryBudgetsPanel data={data} month={month} onEdit={()=>setEditor({kind:"category-budgets"})}/></div> : <>
+              <QuickExpenses data={data} onSelect={preset=>setEditor({kind:"transaction",preset})} />
               <RecurrencePanel data={data} kind="transaction" onStop={stopRepeating} />
               <div className="stats-grid">
                 {financialCards}
@@ -2545,6 +2601,8 @@ const navItems = [
                   {!!data.goals?.length && <span><strong>{data.goals.length}</strong>{tr(" metas")}</span>}
                 </div>
                 <div className="backup-actions">
+                  <button className="button secondary" disabled={!!storageError} onClick={()=>setEditor({kind:"protect-backup"})}>{tr("Backup com senha")}</button>
+
                   <button className="button secondary" onClick={exportData}>
                     <ArrowDownToLine size={16} />
                     {storageError
@@ -2633,7 +2691,7 @@ const navItems = [
                   <CheckCheck size={20} />
                 </span>
                 <strong>{tr("DailyAPP")}</strong>
-                <span>{mobileApp ? tr("Versão 1.1 · Uso pessoal") : tr("Versão 1.1 · Feito para uma vida mais leve.")}</span>
+                <span>{mobileApp ? tr("Versão 1.2 · Uso pessoal") : tr("Versão 1.2 · Feito para uma vida mais leve.")}</span>
               </div>
             </div>
           )}
@@ -2672,6 +2730,8 @@ const navItems = [
         <TransactionForm
           item={editor.item}
           type={editor.type}
+          preset={editor.preset}
+          accounts={data.accounts ?? []}
           recurrenceFrequency={data.recurrences?.find(s => s.id === editor.item?.recurrenceId)?.frequency}
           onSave={saveTransaction}
           onClose={() => setEditor(null)}
@@ -2696,8 +2756,13 @@ const navItems = [
       )}
       {editor?.kind === "goal" && <Modal title={editor.item ? tr("Atualizar meta") : tr("Nova meta")} subtitle={tr("Um objetivo claro, no seu ritmo.")} onClose={() => setEditor(null)}><GoalForm item={editor.item} today={today} onSave={saveGoal} onClose={() => setEditor(null)} /></Modal>}
       {editor?.kind === "opening" && <Modal title={tr("Saldo inicial do mês")} subtitle={monthLabel(month)} onClose={() => setEditor(null)}><OpeningBalanceForm month={month} amount={data.openingBalances?.[month]} onSave={saveOpening} onClear={() => saveOpening()} onClose={() => setEditor(null)} /></Modal>}
-      {editor?.kind === "card" && <Modal title={editor.item ? tr("Editar cartão") : tr("Novo cartão")} subtitle={tr("Cadastre somente o nome e os dias da fatura.")} onClose={() => setEditor(null)}><CardForm item={editor.item} onSave={saveCard} onClose={() => setEditor(null)} /></Modal>}
+      {editor?.kind === "card" && <Modal title={editor.item ? tr("Editar cartão") : tr("Novo cartão")} subtitle={tr("Cadastre somente o nome e os dias da fatura.")} onClose={() => setEditor(null)}><CardForm item={editor.item} accounts={data.accounts??[]} onSave={saveCard} onClose={() => setEditor(null)} /></Modal>}
       {editor?.kind === "purchase" && <Modal title={tr("Compra no cartão")} subtitle={tr("O valor total será dividido nas próximas faturas.")} onClose={() => setEditor(null)}><PurchaseForm cards={data.cards ?? []} selectedId={editor.cardId} onSave={savePurchase} onClose={() => setEditor(null)} /></Modal>}
+      {editor?.kind === "account" && <Modal title={editor.item?tr("Editar conta"):tr("Nova conta")} onClose={()=>setEditor(null)}><AccountForm item={editor.item} onSave={saveWallet} onClose={()=>setEditor(null)}/></Modal>}
+      {editor?.kind === "transfer" && <Modal title={tr("Transferência entre contas")} onClose={()=>setEditor(null)}><TransferForm item={editor.item} accounts={data.accounts??[]} onSave={saveTransfer} onClose={()=>setEditor(null)}/></Modal>}
+      {editor?.kind === "category-budgets" && <Modal title={tr("Orçamento por categoria")} subtitle={monthLabel(month)} onClose={()=>setEditor(null)}><CategoryBudgetForm data={data} month={month} onClose={()=>setEditor(null)} onSave={limits=>save({...data,categoryBudgets:{...data.categoryBudgets,[month]:limits}})}/></Modal>}
+      {editor?.kind === "protect-backup" && <Modal title={tr("Backup com senha")} onClose={()=>setEditor(null)}><BackupPasswordForm onClose={()=>setEditor(null)} onSubmit={async (password,signal)=>{const envelope=await encryptBackup(JSON.stringify({...dataRef.current,language},null,2),password);if(signal.aborted)return;await saveBackup(JSON.stringify(envelope),`dailyapp-protegido-${today}.json`);setEditor(null);setToast(tr("Backup protegido preparado. Guarde a senha separadamente."));}}/></Modal>}
+      {editor?.kind === "unlock-backup" && <Modal title={tr("Desbloquear backup")} onClose={()=>setEditor(null)}><BackupPasswordForm unlock onClose={()=>setEditor(null)} onSubmit={async (password,signal)=>{const text=await decryptBackup(editor.envelope,password);if(signal.aborted)return;const imported=validateData(JSON.parse(text));setEditor(null);previewRestore(imported);}}/></Modal>}
       {confirm && (
         <Modal title={confirm.title} onClose={() => setConfirm(null)} small>
           <p className="confirm-text">{confirm.text}</p>

@@ -4091,5 +4091,725 @@ export const messages: Record<string, Record<ForeignLanguage, string>> = {
     "es": "La elección manual dura hasta el siguiente cambio de idioma, que vuelve a aplicar la moneda de ese idioma.",
     "fr": "Un choix manuel reste valable jusqu’au prochain changement de langue, qui réapplique la devise de cette langue.",
     "de": "Eine manuelle Auswahl gilt bis zum nächsten Sprachwechsel, der wieder die Währung dieser Sprache anwendet."
+  },
+  "A conta e seus registros serão preservados. O saldo continua no total, mesmo arquivada.": {
+    "en": "The account and its records are preserved. Its balance stays in the total when archived.",
+    "es": "La cuenta y sus registros se conservan. Su saldo sigue en el total al archivarla.",
+    "fr": "Le compte et ses données sont conservés. Son solde reste inclus même après archivage.",
+    "de": "Das Konto und seine Einträge bleiben erhalten. Sein Saldo bleibt auch archiviert im Gesamtbetrag."
+  },
+  "A conta escolhida será usada ao marcar uma fatura como paga. Parcelas já pagas mantêm sua conta original.": {
+    "en": "This account is used when marking a bill as paid. Already paid installments keep their original account.",
+    "es": "Esta cuenta se usa al marcar una factura como pagada. Las cuotas ya pagadas conservan su cuenta original.",
+    "fr": "Ce compte est utilisé pour marquer une facture comme payée. Les échéances déjà payées gardent leur compte initial.",
+    "de": "Dieses Konto wird beim Bezahlen einer Rechnung verwendet. Bereits bezahlte Raten behalten ihr ursprüngliches Konto."
+  },
+  "Abra um modelo com o último valor e revise antes de salvar. Nenhum gasto é criado ao tocar no atalho.": {
+    "en": "Open a template with its latest amount and review it before saving. Tapping a shortcut creates no expense.",
+    "es": "Abre una plantilla con el último importe y revísala antes de guardar. Tocar un atajo no crea un gasto.",
+    "fr": "Ouvrez un modèle avec le dernier montant et vérifiez-le avant de l’enregistrer. Toucher un raccourci ne crée aucune dépense.",
+    "de": "Öffne eine Vorlage mit dem letzten Betrag und prüfe sie vor dem Speichern. Ein Tipp auf den Schnellzugriff erstellt keine Ausgabe."
+  },
+  "Adicionar etapa": {
+    "en": "Add step",
+    "es": "Añadir paso",
+    "fr": "Ajouter une étape",
+    "de": "Schritt hinzufügen"
+  },
+  "Arquivar conta": {
+    "en": "Archive account",
+    "es": "Archivar cuenta",
+    "fr": "Archiver le compte",
+    "de": "Konto archivieren"
+  },
+  "Arquivar conta?": {
+    "en": "Archive account?",
+    "es": "¿Archivar cuenta?",
+    "fr": "Archiver le compte ?",
+    "de": "Konto archivieren?"
+  },
+  "As despesas confirmadas ficaram iguais.": {
+    "en": "Confirmed expenses stayed the same.",
+    "es": "Los gastos confirmados no cambiaron.",
+    "fr": "Les dépenses confirmées sont identiques.",
+    "de": "Die bestätigten Ausgaben sind gleich geblieben."
+  },
+  "As senhas não coincidem.": {
+    "en": "Passwords do not match.",
+    "es": "Las contraseñas no coinciden.",
+    "fr": "Les mots de passe ne correspondent pas.",
+    "de": "Die Passwörter stimmen nicht überein."
+  },
+  "Atenção: pelo menos 80% do limite usado": {
+    "en": "Warning: at least 80% of the limit used",
+    "es": "Atención: se ha usado al menos el 80% del límite",
+    "fr": "Attention : au moins 80 % du plafond utilisé",
+    "de": "Achtung: Mindestens 80 % des Limits verbraucht"
+  },
+  "Backup com senha": {
+    "en": "Password-protected backup",
+    "es": "Copia con contraseña",
+    "fr": "Sauvegarde avec mot de passe",
+    "de": "Passwortgeschütztes Backup"
+  },
+  "Backup protegido preparado. Guarde a senha separadamente.": {
+    "en": "Protected backup ready. Keep the password separately.",
+    "es": "Copia protegida preparada. Guarda la contraseña por separado.",
+    "fr": "Sauvegarde protégée prête. Conservez le mot de passe séparément.",
+    "de": "Geschütztes Backup bereit. Bewahre das Passwort getrennt auf."
+  },
+  "Cada mês tem seus próprios limites. Deixe vazio para remover um limite; o orçamento total do mês continua separado.": {
+    "en": "Each month has its own limits. Leave a field empty to remove its limit; the overall monthly budget stays separate.",
+    "es": "Cada mes tiene sus propios límites. Deja un campo vacío para quitar su límite; el presupuesto mensual total sigue separado.",
+    "fr": "Chaque mois a ses propres plafonds. Laissez un champ vide pour supprimer son plafond ; le budget mensuel total reste distinct.",
+    "de": "Jeder Monat hat eigene Limits. Ein leeres Feld entfernt das Limit; das gesamte Monatsbudget bleibt getrennt."
+  },
+  "Cadastre banco, dinheiro ou poupança para acompanhar seus saldos.": {
+    "en": "Add bank, cash, or savings accounts to track balances.",
+    "es": "Añade cuentas bancarias, efectivo o ahorro para seguir tus saldos.",
+    "fr": "Ajoutez des comptes bancaires, espèces ou épargne pour suivre vos soldes.",
+    "de": "Füge Bank-, Bargeld- oder Sparkonten hinzu, um Salden zu verfolgen."
+  },
+  "Categorias acima do limite": {
+    "en": "Categories over budget",
+    "es": "Categorías por encima del límite",
+    "fr": "Catégories au-dessus du plafond",
+    "de": "Kategorien über dem Limit"
+  },
+  "Comparação com o mês anterior": {
+    "en": "Previous month comparison",
+    "es": "Comparación con el mes anterior",
+    "fr": "Comparaison avec le mois précédent",
+    "de": "Vergleich mit dem Vormonat"
+  },
+  "Concluir etapa: {0}": {
+    "en": "Complete step: {0}",
+    "es": "Completar paso: {0}",
+    "fr": "Terminer l’étape : {0}",
+    "de": "Schritt abschließen: {0}"
+  },
+  "Concluir prioridade: {0}": {
+    "en": "Complete priority: {0}",
+    "es": "Completar prioridad: {0}",
+    "fr": "Terminer la priorité : {0}",
+    "de": "Priorität abschließen: {0}"
+  },
+  "Confirmar senha": {
+    "en": "Confirm password",
+    "es": "Confirmar contraseña",
+    "fr": "Confirmer le mot de passe",
+    "de": "Passwort bestätigen"
+  },
+  "Conta bancária": {
+    "en": "Bank account",
+    "es": "Cuenta bancaria",
+    "fr": "Compte bancaire",
+    "de": "Bankkonto"
+  },
+  "Conta da movimentação": {
+    "en": "Transaction account",
+    "es": "Cuenta del movimiento",
+    "fr": "Compte de l’opération",
+    "de": "Buchungskonto"
+  },
+  "Conta de destino": {
+    "en": "Destination account",
+    "es": "Cuenta de destino",
+    "fr": "Compte destinataire",
+    "de": "Zielkonto"
+  },
+  "Conta de origem": {
+    "en": "Source account",
+    "es": "Cuenta de origen",
+    "fr": "Compte d’origine",
+    "de": "Ausgangskonto"
+  },
+  "Conta salva.": {
+    "en": "Account saved.",
+    "es": "Cuenta guardada.",
+    "fr": "Compte enregistré.",
+    "de": "Konto gespeichert."
+  },
+  "Conta {0}": {
+    "en": "Account {0}",
+    "es": "Cuenta {0}",
+    "fr": "Compte {0}",
+    "de": "Konto {0}"
+  },
+  "Contas": {
+    "en": "Accounts",
+    "es": "Cuentas",
+    "fr": "Comptes",
+    "de": "Konten"
+  },
+  "Contas e carteiras": {
+    "en": "Accounts and wallets",
+    "es": "Cuentas y carteras",
+    "fr": "Comptes et portefeuilles",
+    "de": "Konten und Geldbörsen"
+  },
+  "Data da transferência": {
+    "en": "Transfer date",
+    "es": "Fecha de la transferencia",
+    "fr": "Date du virement",
+    "de": "Überweisungsdatum"
+  },
+  "Data do saldo inicial": {
+    "en": "Opening balance date",
+    "es": "Fecha del saldo inicial",
+    "fr": "Date du solde initial",
+    "de": "Datum des Anfangssaldos"
+  },
+  "Definir limites": {
+    "en": "Set limits",
+    "es": "Definir límites",
+    "fr": "Définir les plafonds",
+    "de": "Limits festlegen"
+  },
+  "Desbloquear backup": {
+    "en": "Unlock backup",
+    "es": "Desbloquear copia",
+    "fr": "Déverrouiller la sauvegarde",
+    "de": "Backup entsperren"
+  },
+  "Desbloquear e conferir": {
+    "en": "Unlock and review",
+    "es": "Desbloquear y revisar",
+    "fr": "Déverrouiller et vérifier",
+    "de": "Entsperren und prüfen"
+  },
+  "Despesas anteriores: {0}": {
+    "en": "Previous expenses: {0}",
+    "es": "Gastos anteriores: {0}",
+    "fr": "Dépenses précédentes : {0}",
+    "de": "Frühere Ausgaben: {0}"
+  },
+  "Digite a senha usada na exportação. Os dados só serão restaurados depois de conferir a prévia e confirmar.": {
+    "en": "Enter the password used during export. Data is restored only after reviewing the preview and confirming.",
+    "es": "Introduce la contraseña usada al exportar. Los datos solo se restauran después de revisar la vista previa y confirmar.",
+    "fr": "Saisissez le mot de passe utilisé à l’exportation. Les données ne seront restaurées qu’après vérification et confirmation.",
+    "de": "Gib das beim Export verwendete Passwort ein. Daten werden erst nach Prüfung der Vorschau und Bestätigung wiederhergestellt."
+  },
+  "Dinheiro": {
+    "en": "Cash",
+    "es": "Efectivo",
+    "fr": "Espèces",
+    "de": "Bargeld"
+  },
+  "Disponível: {0}": {
+    "en": "Available: {0}",
+    "es": "Disponible: {0}",
+    "fr": "Disponible : {0}",
+    "de": "Verfügbar: {0}"
+  },
+  "Divida a tarefa em até 30 etapas. A conclusão das etapas é independente da tarefa principal.": {
+    "en": "Split the task into up to 30 steps. Step completion is independent from the main task.",
+    "es": "Divide la tarea en hasta 30 pasos. Completar los pasos es independiente de la tarea principal.",
+    "fr": "Divisez la tâche en 30 étapes maximum. La réalisation des étapes est indépendante de la tâche principale.",
+    "de": "Teile die Aufgabe in bis zu 30 Schritte auf. Schritte und Hauptaufgabe werden unabhängig abgeschlossen."
+  },
+  "Editar conta": {
+    "en": "Edit account",
+    "es": "Editar cuenta",
+    "fr": "Modifier le compte",
+    "de": "Konto bearbeiten"
+  },
+  "Editar conta: {0}": {
+    "en": "Edit account: {0}",
+    "es": "Editar cuenta: {0}",
+    "fr": "Modifier le compte : {0}",
+    "de": "Konto bearbeiten: {0}"
+  },
+  "Editar transferência: {0}": {
+    "en": "Edit transfer: {0}",
+    "es": "Editar transferencia: {0}",
+    "fr": "Modifier le virement : {0}",
+    "de": "Überweisung bearbeiten: {0}"
+  },
+  "Escolha contas diferentes, valor positivo e uma data entre o início das contas e hoje.": {
+    "en": "Choose different accounts, a positive amount, and a date between the accounts’ opening dates and today.",
+    "es": "Elige cuentas diferentes, un importe positivo y una fecha entre el inicio de las cuentas y hoy.",
+    "fr": "Choisissez des comptes différents, un montant positif et une date entre leur ouverture et aujourd’hui.",
+    "de": "Wähle verschiedene Konten, einen positiven Betrag und ein Datum zwischen Kontoeröffnung und heute."
+  },
+  "Escolha no máximo três prioridades para cada dia.": {
+    "en": "Choose at most three priorities for each day.",
+    "es": "Elige como máximo tres prioridades para cada día.",
+    "fr": "Choisissez au plus trois priorités par jour.",
+    "de": "Wähle höchstens drei Prioritäten pro Tag."
+  },
+  "Excluir transferência: {0}": {
+    "en": "Delete transfer: {0}",
+    "es": "Eliminar transferencia: {0}",
+    "fr": "Supprimer le virement : {0}",
+    "de": "Überweisung löschen: {0}"
+  },
+  "Excluir transferência?": {
+    "en": "Delete transfer?",
+    "es": "¿Eliminar transferencia?",
+    "fr": "Supprimer le virement ?",
+    "de": "Überweisung löschen?"
+  },
+  "Exportar com senha": {
+    "en": "Export with password",
+    "es": "Exportar con contraseña",
+    "fr": "Exporter avec mot de passe",
+    "de": "Mit Passwort exportieren"
+  },
+  "Gastos frequentes": {
+    "en": "Frequent expenses",
+    "es": "Gastos frecuentes",
+    "fr": "Dépenses fréquentes",
+    "de": "Häufige Ausgaben"
+  },
+  "Inclui despesas pagas e previstas, com parcelas. Os avisos aparecem no app a partir de 80% e 100% do limite. Não são notificações do sistema.": {
+    "en": "Includes paid and planned expenses and installments. In-app warnings appear at 80% and 100% of the limit. These are not system notifications.",
+    "es": "Incluye gastos pagados, previstos y cuotas. Los avisos aparecen en la app al llegar al 80% y 100% del límite. No son notificaciones del sistema.",
+    "fr": "Inclut dépenses payées, prévues et échéances. Des alertes dans l’app apparaissent à 80 % et 100 % du plafond. Ce ne sont pas des notifications système.",
+    "de": "Enthält bezahlte und geplante Ausgaben sowie Raten. Hinweise in der App erscheinen ab 80 % und 100 % des Limits. Es sind keine Systembenachrichtigungen."
+  },
+  "Informe a senha do backup.": {
+    "en": "Enter the backup password.",
+    "es": "Introduce la contraseña de la copia.",
+    "fr": "Saisissez le mot de passe de la sauvegarde.",
+    "de": "Gib das Backup-Passwort ein."
+  },
+  "Informe limites positivos ou deixe o campo vazio para remover.": {
+    "en": "Enter positive limits or leave a field empty to remove it.",
+    "es": "Introduce límites positivos o deja un campo vacío para quitarlo.",
+    "fr": "Saisissez des plafonds positifs ou laissez un champ vide pour le supprimer.",
+    "de": "Gib positive Limits ein oder lasse ein Feld zum Entfernen leer."
+  },
+  "Informe nome, saldo inicial e uma data válida.": {
+    "en": "Enter a name, opening balance, and valid date.",
+    "es": "Introduce un nombre, saldo inicial y fecha válida.",
+    "fr": "Saisissez un nom, un solde initial et une date valide.",
+    "de": "Gib einen Namen, Anfangssaldo und ein gültiges Datum ein."
+  },
+  "Informe o saldo antes das movimentações vinculadas a partir dessa data. Não inclua novamente valores já registrados. Alterar o saldo inicial recalcula o histórico da conta.": {
+    "en": "Enter the balance before linked transactions from this date. Do not include recorded amounts twice. Changing the opening balance recalculates the account history.",
+    "es": "Introduce el saldo anterior a los movimientos vinculados desde esa fecha. No dupliques importes registrados. Cambiar el saldo inicial recalcula el historial de la cuenta.",
+    "fr": "Saisissez le solde avant les opérations liées à partir de cette date. Ne comptez pas deux fois les montants enregistrés. Modifier le solde initial recalcule l’historique du compte.",
+    "de": "Gib den Saldo vor den verknüpften Buchungen ab diesem Datum ein. Zähle erfasste Beträge nicht doppelt. Änderungen des Anfangssaldos berechnen den Kontoverlauf neu."
+  },
+  "Limite atingido ou ultrapassado": {
+    "en": "Limit reached or exceeded",
+    "es": "Límite alcanzado o superado",
+    "fr": "Plafond atteint ou dépassé",
+    "de": "Limit erreicht oder überschritten"
+  },
+  "Limite de {0}": {
+    "en": "Limit for {0}",
+    "es": "Límite de {0}",
+    "fr": "Plafond de {0}",
+    "de": "Limit für {0}"
+  },
+  "Limite: {0}": {
+    "en": "Limit: {0}",
+    "es": "Límite: {0}",
+    "fr": "Plafond : {0}",
+    "de": "Limit: {0}"
+  },
+  "Maiores gastos confirmados": {
+    "en": "Largest confirmed expenses",
+    "es": "Mayores gastos confirmados",
+    "fr": "Dépenses confirmées les plus élevées",
+    "de": "Größte bestätigte Ausgaben"
+  },
+  "Nenhuma categoria ultrapassou um limite definido.": {
+    "en": "No category exceeded a defined limit.",
+    "es": "Ninguna categoría superó un límite definido.",
+    "fr": "Aucune catégorie n’a dépassé un plafond défini.",
+    "de": "Keine Kategorie hat ein festgelegtes Limit überschritten."
+  },
+  "Nenhuma despesa confirmada neste mês.": {
+    "en": "No confirmed expenses this month.",
+    "es": "No hay gastos confirmados este mes.",
+    "fr": "Aucune dépense confirmée ce mois-ci.",
+    "de": "Keine bestätigten Ausgaben in diesem Monat."
+  },
+  "Nenhuma transferência neste mês.": {
+    "en": "No transfers this month.",
+    "es": "No hay transferencias este mes.",
+    "fr": "Aucun virement ce mois-ci.",
+    "de": "Keine Überweisungen in diesem Monat."
+  },
+  "Nome da conta": {
+    "en": "Account name",
+    "es": "Nombre de la cuenta",
+    "fr": "Nom du compte",
+    "de": "Kontoname"
+  },
+  "Nova conta": {
+    "en": "New account",
+    "es": "Nueva cuenta",
+    "fr": "Nouveau compte",
+    "de": "Neues Konto"
+  },
+  "Nova etapa": {
+    "en": "New step",
+    "es": "Nuevo paso",
+    "fr": "Nouvelle étape",
+    "de": "Neuer Schritt"
+  },
+  "Nova transferência": {
+    "en": "New transfer",
+    "es": "Nueva transferencia",
+    "fr": "Nouveau virement",
+    "de": "Neue Überweisung"
+  },
+  "Não foi possível processar o backup.": {
+    "en": "Could not process the backup.",
+    "es": "No se pudo procesar la copia.",
+    "fr": "Impossible de traiter la sauvegarde.",
+    "de": "Das Backup konnte nicht verarbeitet werden."
+  },
+  "O arquivo deve ter no máximo 20 MB.": {
+    "en": "The file must be no larger than 20 MB.",
+    "es": "El archivo no debe superar 20 MB.",
+    "fr": "Le fichier ne doit pas dépasser 20 Mo.",
+    "de": "Die Datei darf höchstens 20 MB groß sein."
+  },
+  "O arquivo será criptografado com AES-256-GCM. Use uma senha de pelo menos 12 caracteres e guarde-a: não é possível recuperá-la pelo app.": {
+    "en": "The file will be encrypted with AES-256-GCM. Use a password of at least 12 characters and keep it safe: the app cannot recover it.",
+    "es": "El archivo se cifrará con AES-256-GCM. Usa una contraseña de al menos 12 caracteres y guárdala: la app no puede recuperarla.",
+    "fr": "Le fichier sera chiffré avec AES-256-GCM. Utilisez un mot de passe d’au moins 12 caractères et conservez-le : l’app ne peut pas le récupérer.",
+    "de": "Die Datei wird mit AES-256-GCM verschlüsselt. Verwende ein Passwort mit mindestens 12 Zeichen und bewahre es auf: Die App kann es nicht wiederherstellen."
+  },
+  "O backup contém contas inválidas.": {
+    "en": "The backup contains invalid accounts.",
+    "es": "La copia contiene cuentas no válidas.",
+    "fr": "La sauvegarde contient des comptes invalides.",
+    "de": "Das Backup enthält ungültige Konten."
+  },
+  "O backup contém limites por categoria inválidos.": {
+    "en": "The backup contains invalid category limits.",
+    "es": "La copia contiene límites por categoría no válidos.",
+    "fr": "La sauvegarde contient des plafonds de catégorie invalides.",
+    "de": "Das Backup enthält ungültige Kategorielimits."
+  },
+  "O backup contém prioridades diárias inválidas.": {
+    "en": "The backup contains invalid daily priorities.",
+    "es": "La copia contiene prioridades diarias no válidas.",
+    "fr": "La sauvegarde contient des priorités quotidiennes invalides.",
+    "de": "Das Backup enthält ungültige Tagesprioritäten."
+  },
+  "O backup contém subtarefas inválidas.": {
+    "en": "The backup contains invalid subtasks.",
+    "es": "La copia contiene subtareas no válidas.",
+    "fr": "La sauvegarde contient des sous-tâches invalides.",
+    "de": "Das Backup enthält ungültige Teilaufgaben."
+  },
+  "O backup contém transferências inválidas.": {
+    "en": "The backup contains invalid transfers.",
+    "es": "La copia contiene transferencias no válidas.",
+    "fr": "La sauvegarde contient des virements invalides.",
+    "de": "Das Backup enthält ungültige Überweisungen."
+  },
+  "O backup contém uma conta de pagamento inválida.": {
+    "en": "The backup contains an invalid payment account.",
+    "es": "La copia contiene una cuenta de pago no válida.",
+    "fr": "La sauvegarde contient un compte de paiement invalide.",
+    "de": "Das Backup enthält ein ungültiges Zahlungskonto."
+  },
+  "O backup contém uma conta inválida.": {
+    "en": "The backup contains an invalid account.",
+    "es": "La copia contiene una cuenta no válida.",
+    "fr": "La sauvegarde contient un compte invalide.",
+    "de": "Das Backup enthält ein ungültiges Konto."
+  },
+  "O backup contém uma transferência inválida.": {
+    "en": "The backup contains an invalid transfer.",
+    "es": "La copia contiene una transferencia no válida.",
+    "fr": "La sauvegarde contient un virement invalide.",
+    "de": "Das Backup enthält eine ungültige Überweisung."
+  },
+  "O backup protegido deve ter no máximo 12 MB antes da criptografia.": {
+    "en": "A protected backup must be at most 12 MB before encryption.",
+    "es": "La copia protegida no debe superar 12 MB antes del cifrado.",
+    "fr": "Une sauvegarde protégée ne doit pas dépasser 12 Mo avant chiffrement.",
+    "de": "Ein geschütztes Backup darf vor der Verschlüsselung höchstens 12 MB groß sein."
+  },
+  "O backup protegido é inválido.": {
+    "en": "The protected backup is invalid.",
+    "es": "La copia protegida no es válida.",
+    "fr": "La sauvegarde protégée est invalide.",
+    "de": "Das geschützte Backup ist ungültig."
+  },
+  "Orçamento por categoria": {
+    "en": "Category budgets",
+    "es": "Presupuestos por categoría",
+    "fr": "Budgets par catégorie",
+    "de": "Kategoriebudgets"
+  },
+  "Os saldos das duas contas serão recalculados. Receitas e despesas não serão alteradas.": {
+    "en": "Both account balances will be recalculated. Income and expenses will stay unchanged.",
+    "es": "Se recalcularán los saldos de ambas cuentas. Los ingresos y gastos no cambiarán.",
+    "fr": "Les soldes des deux comptes seront recalculés. Revenus et dépenses resteront inchangés.",
+    "de": "Beide Kontosalden werden neu berechnet. Einnahmen und Ausgaben bleiben unverändert."
+  },
+  "Os saldos usam o valor inicial e os registros confirmados desde essa data. Não consultamos bancos. Valores pendentes não alteram o saldo.": {
+    "en": "Balances use the opening amount and confirmed records since that date. We do not query banks. Pending amounts do not change balances.",
+    "es": "Los saldos usan el importe inicial y registros confirmados desde esa fecha. No consultamos bancos. Los importes pendientes no cambian el saldo.",
+    "fr": "Les soldes utilisent le montant initial et les opérations confirmées depuis cette date. Nous ne consultons pas les banques. Les montants en attente ne changent pas le solde.",
+    "de": "Salden basieren auf dem Anfangsbetrag und bestätigten Einträgen ab diesem Datum. Es erfolgt keine Bankabfrage. Ausstehende Beträge ändern den Saldo nicht."
+  },
+  "Poupança": {
+    "en": "Savings",
+    "es": "Ahorro",
+    "fr": "Épargne",
+    "de": "Sparkonto"
+  },
+  "Priorizar hoje: {0}": {
+    "en": "Prioritize today: {0}",
+    "es": "Priorizar hoy: {0}",
+    "fr": "Prioriser aujourd’hui : {0}",
+    "de": "Heute priorisieren: {0}"
+  },
+  "Processando backup…": {
+    "en": "Processing backup…",
+    "es": "Procesando copia…",
+    "fr": "Traitement de la sauvegarde…",
+    "de": "Backup wird verarbeitet…"
+  },
+  "Prévia: {0} tarefas, {1} movimentações, {2} contas, {3} transferências e {4} metas. Moeda: {5}. Os dados atuais serão substituídos somente ao confirmar.": {
+    "en": "Preview: {0} tasks, {1} transactions, {2} accounts, {3} transfers, and {4} goals. Currency: {5}. Current data is replaced only after confirmation.",
+    "es": "Vista previa: {0} tareas, {1} movimientos, {2} cuentas, {3} transferencias y {4} metas. Moneda: {5}. Los datos actuales solo se sustituyen al confirmar.",
+    "fr": "Aperçu : {0} tâches, {1} opérations, {2} comptes, {3} virements et {4} objectifs. Devise : {5}. Les données actuelles ne sont remplacées qu’après confirmation.",
+    "de": "Vorschau: {0} Aufgaben, {1} Buchungen, {2} Konten, {3} Überweisungen und {4} Ziele. Währung: {5}. Aktuelle Daten werden erst nach Bestätigung ersetzt."
+  },
+  "Reativar conta": {
+    "en": "Reactivate account",
+    "es": "Reactivar cuenta",
+    "fr": "Réactiver le compte",
+    "de": "Konto reaktivieren"
+  },
+  "Reativar conta?": {
+    "en": "Reactivate account?",
+    "es": "¿Reactivar cuenta?",
+    "fr": "Réactiver le compte ?",
+    "de": "Konto reaktivieren?"
+  },
+  "Receitas e despesas confirmadas pela data registrada. Transferências e saldos iniciais ficam fora do resultado mensal. O mês atual pode estar incompleto.": {
+    "en": "Income and expenses confirmed by their recorded date. Transfers and opening balances are excluded from the monthly result. The current month may be incomplete.",
+    "es": "Ingresos y gastos confirmados por la fecha registrada. Las transferencias y saldos iniciales se excluyen del resultado mensual. El mes actual puede estar incompleto.",
+    "fr": "Revenus et dépenses confirmés selon leur date enregistrée. Virements et soldes initiaux sont exclus du résultat mensuel. Le mois en cours peut être incomplet.",
+    "de": "Einnahmen und Ausgaben nach ihrem erfassten Datum. Überweisungen und Anfangssalden gehören nicht zum Monatsergebnis. Der laufende Monat kann unvollständig sein."
+  },
+  "Relatório": {
+    "en": "Report",
+    "es": "Informe",
+    "fr": "Rapport",
+    "de": "Bericht"
+  },
+  "Relatório mensal": {
+    "en": "Monthly report",
+    "es": "Informe mensual",
+    "fr": "Rapport mensuel",
+    "de": "Monatsbericht"
+  },
+  "Remover etapa: {0}": {
+    "en": "Remove step: {0}",
+    "es": "Quitar paso: {0}",
+    "fr": "Supprimer l’étape : {0}",
+    "de": "Schritt entfernen: {0}"
+  },
+  "Resultado do mês": {
+    "en": "Monthly result",
+    "es": "Resultado del mes",
+    "fr": "Résultat du mois",
+    "de": "Monatsergebnis"
+  },
+  "Retirar prioridade: {0}": {
+    "en": "Remove priority: {0}",
+    "es": "Quitar prioridad: {0}",
+    "fr": "Retirer la priorité : {0}",
+    "de": "Priorität entfernen: {0}"
+  },
+  "Saldo inicial ({0})": {
+    "en": "Opening balance ({0})",
+    "es": "Saldo inicial ({0})",
+    "fr": "Solde initial ({0})",
+    "de": "Anfangssaldo ({0})"
+  },
+  "Saldo inicial em {0}: {1}": {
+    "en": "Opening balance on {0}: {1}",
+    "es": "Saldo inicial del {0}: {1}",
+    "fr": "Solde initial au {0} : {1}",
+    "de": "Anfangssaldo am {0}: {1}"
+  },
+  "Saldo registrado até {0}": {
+    "en": "Recorded balance through {0}",
+    "es": "Saldo registrado hasta {0}",
+    "fr": "Solde enregistré jusqu’au {0}",
+    "de": "Erfasster Saldo bis {0}"
+  },
+  "Salvar conta": {
+    "en": "Save account",
+    "es": "Guardar cuenta",
+    "fr": "Enregistrer le compte",
+    "de": "Konto speichern"
+  },
+  "Salvar limites": {
+    "en": "Save limits",
+    "es": "Guardar límites",
+    "fr": "Enregistrer les plafonds",
+    "de": "Limits speichern"
+  },
+  "Salvar transferência": {
+    "en": "Save transfer",
+    "es": "Guardar transferencia",
+    "fr": "Enregistrer le virement",
+    "de": "Überweisung speichern"
+  },
+  "Sem conta": {
+    "en": "No account",
+    "es": "Sin cuenta",
+    "fr": "Sans compte",
+    "de": "Ohne Konto"
+  },
+  "Sem limite": {
+    "en": "No limit",
+    "es": "Sin límite",
+    "fr": "Sans plafond",
+    "de": "Ohne Limit"
+  },
+  "Sem registros no mês anterior para comparar.": {
+    "en": "No records in the previous month to compare.",
+    "es": "No hay registros del mes anterior para comparar.",
+    "fr": "Aucune donnée du mois précédent à comparer.",
+    "de": "Keine Einträge im Vormonat zum Vergleich."
+  },
+  "Senha do backup": {
+    "en": "Backup password",
+    "es": "Contraseña de la copia",
+    "fr": "Mot de passe de la sauvegarde",
+    "de": "Backup-Passwort"
+  },
+  "Senha incorreta ou backup alterado. Seus dados não foram modificados.": {
+    "en": "Incorrect password or modified backup. Your data has not changed.",
+    "es": "Contraseña incorrecta o copia modificada. Tus datos no han cambiado.",
+    "fr": "Mot de passe incorrect ou sauvegarde modifiée. Vos données n’ont pas changé.",
+    "de": "Falsches Passwort oder verändertes Backup. Deine Daten wurden nicht geändert."
+  },
+  "Subtarefas": {
+    "en": "Subtasks",
+    "es": "Subtareas",
+    "fr": "Sous-tâches",
+    "de": "Teilaufgaben"
+  },
+  "Tipo de conta": {
+    "en": "Account type",
+    "es": "Tipo de cuenta",
+    "fr": "Type de compte",
+    "de": "Kontotyp"
+  },
+  "Toque na estrela de uma tarefa para escolher até três prioridades para hoje. Suas outras tarefas continuam na agenda.": {
+    "en": "Tap a task’s star to choose up to three priorities for today. Other tasks stay in your calendar.",
+    "es": "Toca la estrella de una tarea para elegir hasta tres prioridades para hoy. Las demás tareas siguen en tu agenda.",
+    "fr": "Touchez l’étoile d’une tâche pour choisir jusqu’à trois priorités aujourd’hui. Les autres tâches restent dans votre agenda.",
+    "de": "Tippe auf den Stern einer Aufgabe, um bis zu drei Tagesprioritäten zu wählen. Andere Aufgaben bleiben im Kalender."
+  },
+  "Total das contas, incluindo arquivadas": {
+    "en": "Account total, including archived accounts",
+    "es": "Total de cuentas, incluidas las archivadas",
+    "fr": "Total des comptes, y compris archivés",
+    "de": "Gesamtsaldo einschließlich archivierter Konten"
+  },
+  "Transferência entre contas": {
+    "en": "Transfer between accounts",
+    "es": "Transferencia entre cuentas",
+    "fr": "Virement entre comptes",
+    "de": "Überweisung zwischen Konten"
+  },
+  "Transferência salva.": {
+    "en": "Transfer saved.",
+    "es": "Transferencia guardada.",
+    "fr": "Virement enregistré.",
+    "de": "Überweisung gespeichert."
+  },
+  "Transferências entre contas": {
+    "en": "Account transfers",
+    "es": "Transferencias entre cuentas",
+    "fr": "Virements entre comptes",
+    "de": "Überweisungen zwischen Konten"
+  },
+  "Transferências movimentam as contas e não entram em receitas, despesas ou orçamentos.": {
+    "en": "Transfers move money between accounts and do not count as income, expenses, or budget spending.",
+    "es": "Las transferencias mueven dinero entre cuentas y no cuentan como ingresos, gastos o consumo del presupuesto.",
+    "fr": "Les virements déplacent l’argent entre comptes sans compter comme revenus, dépenses ou consommation du budget.",
+    "de": "Überweisungen verschieben Geld zwischen Konten und zählen nicht als Einnahmen, Ausgaben oder Budgetverbrauch."
+  },
+  "Três prioridades do dia": {
+    "en": "Three priorities for today",
+    "es": "Tres prioridades para hoy",
+    "fr": "Trois priorités du jour",
+    "de": "Drei Tagesprioritäten"
+  },
+  "Use uma senha de 12 a 256 caracteres.": {
+    "en": "Use a password between 12 and 256 characters.",
+    "es": "Usa una contraseña de 12 a 256 caracteres.",
+    "fr": "Utilisez un mot de passe de 12 à 256 caractères.",
+    "de": "Verwende ein Passwort mit 12 bis 256 Zeichen."
+  },
+  "Uso do limite de {0}": {
+    "en": "Limit usage for {0}",
+    "es": "Uso del límite de {0}",
+    "fr": "Utilisation du plafond de {0}",
+    "de": "Limitnutzung für {0}"
+  },
+  "Valor da transferência ({0})": {
+    "en": "Transfer amount ({0})",
+    "es": "Importe de la transferencia ({0})",
+    "fr": "Montant du virement ({0})",
+    "de": "Überweisungsbetrag ({0})"
+  },
+  "Vincule a movimentação a uma conta válida e use uma data igual ou posterior ao saldo inicial.": {
+    "en": "Link the transaction to a valid account and use a date on or after its opening balance date.",
+    "es": "Vincula el movimiento a una cuenta válida y usa una fecha igual o posterior a su saldo inicial.",
+    "fr": "Liez l’opération à un compte valide et utilisez une date égale ou postérieure au solde initial.",
+    "de": "Verknüpfe die Buchung mit einem gültigen Konto und verwende ein Datum ab dem Anfangssaldo."
+  },
+  "Você gastou {0} a mais.": {
+    "en": "You spent {0} more.",
+    "es": "Gastaste {0} más.",
+    "fr": "Vous avez dépensé {0} de plus.",
+    "de": "Du hast {0} mehr ausgegeben."
+  },
+  "Você gastou {0} a menos.": {
+    "en": "You spent {0} less.",
+    "es": "Gastaste {0} menos.",
+    "fr": "Vous avez dépensé {0} de moins.",
+    "de": "Du hast {0} weniger ausgegeben."
+  },
+  "{0} ({1})": {
+    "en": "{0} ({1})",
+    "es": "{0} ({1})",
+    "fr": "{0} ({1})",
+    "de": "{0} ({1})"
+  },
+  "{0} movimentações estão sem conta. Edite cada registro para vinculá-lo; o histórico foi preservado.": {
+    "en": "{0} transactions have no account. Edit each record to link it; your history is preserved.",
+    "es": "{0} movimientos no tienen cuenta. Edita cada registro para vincularlo; el historial se conserva.",
+    "fr": "{0} opérations sont sans compte. Modifiez chaque opération pour la lier ; l’historique est conservé.",
+    "de": "{0} Buchungen haben kein Konto. Bearbeite jeden Eintrag zum Verknüpfen; der Verlauf bleibt erhalten."
+  },
+  "{0}/{1} etapas": {
+    "en": "{0}/{1} steps",
+    "es": "{0}/{1} pasos",
+    "fr": "{0}/{1} étapes",
+    "de": "{0}/{1} Schritte"
+  },
+  "Versão 1.2 · Uso pessoal": {
+    "en": "Version 1.2 · Personal use",
+    "es": "Versión 1.2 · Uso personal",
+    "fr": "Version 1.2 · Usage personnel",
+    "de": "Version 1.2 · Persönliche Nutzung"
+  },
+  "Versão 1.2 · Feito para uma vida mais leve.": {
+    "en": "Version 1.2 · Made for a lighter life.",
+    "es": "Versión 1.2 · Para una vida más ligera.",
+    "fr": "Version 1.2 · Pour une vie plus légère.",
+    "de": "Version 1.2 · Für ein leichteres Leben."
   }
 };

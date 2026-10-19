@@ -53,6 +53,8 @@ export interface Task {
   completed: boolean;
   reminderMinutes?: number;
   recurrenceId?: string;
+  subtasks?: { id: string; title: string; completed: boolean }[];
+  focusDate?: string;
 }
 export interface Transaction {
   id: string;
@@ -65,12 +67,20 @@ export interface Transaction {
   notes: string;
   reminderMinutes?: number;
   recurrenceId?: string;
+  accountId?: string;
   installment?: { cardId: string; purchaseId: string; index: number; count: number; purchasedOn: string };
+}
+export interface WalletAccount {
+  id: string; name: string; kind: "bank" | "cash" | "savings"; openingCents: number; openingDate: string; archived?: boolean;
+}
+export interface Transfer {
+  id: string; fromAccountId: string; toAccountId: string; amountCents: number; date: string; notes: string;
 }
 export interface CreditCard {
   id: string;
   name: string;
   limitCents: number;
+  paymentAccountId?: string;
   closingDay: number;
   dueDay: number;
   reminderDays?: number;
@@ -92,7 +102,7 @@ export type Recurrence = {
   nextIndex: number;
   active: boolean;
 } & (
-  | { kind: "task"; template: Omit<Task, "id" | "date" | "completed" | "recurrenceId"> }
+  | { kind: "task"; template: Omit<Task, "id" | "date" | "completed" | "recurrenceId" | "focusDate"> }
   | { kind: "transaction"; template: Omit<Transaction, "id" | "date" | "paid" | "recurrenceId" | "installment"> }
 );
 export interface AppData {
@@ -110,6 +120,9 @@ export interface AppData {
   recurrences?: Recurrence[];
   goals?: FinancialGoal[];
   openingBalances?: Record<string, number>;
+  accounts?: WalletAccount[];
+  transfers?: Transfer[];
+  categoryBudgets?: Record<string, Record<string, number>>;
 }
 
 export const freshData = (): AppData => ({
@@ -200,8 +213,50 @@ const validCents = (value: unknown): value is number =>
 const object = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
-function planningFields(value: Record<string, unknown>, ids: Set<string>) {
+function finance12Fields(value: Record<string, unknown>, ids: Set<string>) {
+  const result: Pick<AppData, "accounts" | "transfers" | "categoryBudgets"> = {};
+  if (value.accounts !== undefined) {
+    if (!Array.isArray(value.accounts) || value.accounts.length > 100) throw new Error(tr("O backup contém contas inválidas."));
+    result.accounts = value.accounts.map(a => {
+      if (!object(a) || !validText(a.id, 60) || ids.has(a.id) || !validText(a.name, 60) || !["bank", "cash", "savings"].includes(String(a.kind)) ||
+        typeof a.openingCents !== "number" || !Number.isSafeInteger(a.openingCents) || Math.abs(a.openingCents) > 100_000_000_000 || !validDate(a.openingDate) ||
+        (a.archived !== undefined && typeof a.archived !== "boolean")) throw new Error(tr("O backup contém uma conta inválida."));
+      ids.add(a.id);
+      return { id: a.id, name: a.name, kind: a.kind as WalletAccount["kind"], openingCents: a.openingCents, openingDate: a.openingDate, ...(a.archived !== undefined ? { archived: a.archived } : {}) };
+    });
+  }
+  const accounts = new Map(result.accounts?.map(a => [a.id, a]));
+  if (value.transfers !== undefined) {
+    if (!Array.isArray(value.transfers) || value.transfers.length > 10000) throw new Error(tr("O backup contém transferências inválidas."));
+    result.transfers = value.transfers.map(t => {
+      if (!object(t) || !validText(t.id, 100) || ids.has(t.id) || !validCents(t.amountCents) || !validDate(t.date) || !validText(t.notes, 1000, true) ||
+        typeof t.fromAccountId !== "string" || typeof t.toAccountId !== "string" || t.fromAccountId === t.toAccountId ||
+        !accounts.has(t.fromAccountId) || !accounts.has(t.toAccountId) || t.date < accounts.get(t.fromAccountId)!.openingDate || t.date < accounts.get(t.toAccountId)!.openingDate)
+        throw new Error(tr("O backup contém uma transferência inválida."));
+      ids.add(t.id);
+      return { id: t.id, fromAccountId: t.fromAccountId, toAccountId: t.toAccountId, amountCents: t.amountCents, date: t.date, notes: t.notes };
+    });
+  }
+  for (const t of value.transactions as Record<string, unknown>[]) {
+    if (t.accountId !== undefined && (typeof t.accountId !== "string" || !accounts.has(t.accountId) || String(t.date) < accounts.get(t.accountId)!.openingDate))
+      throw new Error(tr("Vincule a movimentação a uma conta válida e use uma data igual ou posterior ao saldo inicial."));
+  }
+  if (value.categoryBudgets !== undefined) {
+    if (!object(value.categoryBudgets) || Object.keys(value.categoryBudgets).length > 1000) throw new Error(tr("O backup contém limites por categoria inválidos."));
+    result.categoryBudgets = {};
+    for (const [month, limits] of Object.entries(value.categoryBudgets)) {
+      if (!validDate(`${month}-01`) || !object(limits) || Object.entries(limits).some(([category, amount]) => !EXPENSE_CATEGORIES.includes(category as never) || !validCents(amount)))
+        throw new Error(tr("O backup contém limites por categoria inválidos."));
+      result.categoryBudgets[month] = { ...limits } as Record<string, number>;
+    }
+  }
+  return result;
+}
+
+function planningFields(value: Record<string, unknown>, ids: Set<string>, accounts: WalletAccount[] = []) {
   const result: Pick<AppData, "cards" | "recurrences" | "goals" | "openingBalances"> = {};
+  let templateId = "template"; let templateIndex = 0;
+  while (accounts.some(a=>a.id===templateId)) templateId = `template${++templateIndex}`;
   if (value.goals !== undefined) {
     if (!Array.isArray(value.goals) || value.goals.length > 100) throw new Error(tr("O backup contém metas inválidas."));
     result.goals = value.goals.map(goal => {
@@ -233,8 +288,10 @@ function planningFields(value: Record<string, unknown>, ids: Set<string>) {
         (card.reminderDays !== undefined && ![0, 1, 3].includes(Number(card.reminderDays))) ||
         (card.reminderDays !== undefined && typeof card.reminderDays !== "number") ||
         (card.archived !== undefined && typeof card.archived !== "boolean")) throw new Error(tr("O backup contém um cartão inválido."));
+      if (card.paymentAccountId !== undefined && (typeof card.paymentAccountId !== "string" || !accounts.some(a => a.id === card.paymentAccountId))) throw new Error(tr("O backup contém uma conta de pagamento inválida."));
       ids.add(card.id);
       return { id: card.id, name: card.name, limitCents: card.limitCents, closingDay: Number(card.closingDay), dueDay: Number(card.dueDay),
+        ...(card.paymentAccountId !== undefined ? { paymentAccountId: card.paymentAccountId as string } : {}),
         ...(card.reminderDays !== undefined ? { reminderDays: Number(card.reminderDays) } : {}),
         ...(card.archived !== undefined ? { archived: card.archived } : {}) };
     });
@@ -250,10 +307,10 @@ function planningFields(value: Record<string, unknown>, ids: Set<string>) {
       const base = { id: series.id, frequency: series.frequency as Frequency, anchorDate: series.anchorDate, active: series.active, nextIndex: Number(series.nextIndex) };
       if (series.kind === "task") {
         const valid = validateData({ ...freshData(), tasks: [{ ...series.template, id: "template", date: series.anchorDate, completed: false, recurrenceId: undefined }] }).tasks[0];
-        const { id: _id, date: _date, completed: _completed, recurrenceId: _recurrence, ...template } = valid;
+        const { id: _id, date: _date, completed: _completed, recurrenceId: _recurrence, focusDate: _focus, ...template } = valid;
         return { ...base, kind: "task" as const, template };
       }
-      const valid = validateData({ ...freshData(), transactions: [{ ...series.template, id: "template", date: series.anchorDate, paid: false, recurrenceId: undefined, installment: undefined }] }).transactions[0];
+      const valid = validateData({ ...freshData(), accounts, transactions: [{ ...series.template, id: templateId, date: series.anchorDate, paid: false, recurrenceId: undefined, installment: undefined }] }).transactions[0];
       const { id: _id, date: _date, paid: _paid, recurrenceId: _recurrence, installment: _installment, ...template } = valid;
       return { ...base, kind: "transaction" as const, template };
     });
@@ -319,8 +376,19 @@ export function validateData(value: unknown): AppData {
       typeof task.completed !== "boolean"
     )
       throw new Error(tr("O backup contém uma tarefa inválida."));
+    if (task.focusDate !== undefined && !validDate(task.focusDate)) throw new Error(tr("O backup contém prioridades diárias inválidas."));
+    if (task.subtasks !== undefined) {
+      if (!Array.isArray(task.subtasks) || task.subtasks.length > 30) throw new Error(tr("O backup contém subtarefas inválidas."));
+      const childIds = new Set<string>();
+      for (const child of task.subtasks) {
+        if (!object(child) || !validText(child.id, 60) || childIds.has(child.id) || !validText(child.title, 120) || typeof child.completed !== "boolean") throw new Error(tr("O backup contém subtarefas inválidas."));
+        childIds.add(child.id);
+      }
+    }
     ids.add(task.id);
   }
+  const focusCounts = new Map<string, number>();
+  for (const task of value.tasks) if (task.focusDate) { const count = (focusCounts.get(task.focusDate) ?? 0) + 1; if (count > 3) throw new Error(tr("Escolha no máximo três prioridades para cada dia.")); focusCounts.set(task.focusDate, count); }
   for (const transaction of value.transactions) {
     if (
       !object(transaction) ||
@@ -347,7 +415,8 @@ export function validateData(value: unknown): AppData {
   }
   // Copy only known fields; imported files cannot inject unexpected state.
   // Copy only known fields; imported files cannot inject unexpected state.
-  const planning = planningFields(value, ids);
+  const finance12 = finance12Fields(value, ids);
+  const planning = planningFields(value, ids, finance12.accounts);
   return {
     schemaVersion: 1,
     ...(value.language !== undefined ? { language: value.language as Language } : {}),
@@ -358,6 +427,7 @@ export function validateData(value: unknown): AppData {
     demoBudgetMonth: (value.demoBudgetMonth as string | null) ?? null,
     budgets,
     ...planning,
+    ...finance12,
     tasks: value.tasks.map((t) => ({
       id: t.id,
       title: t.title,
@@ -367,6 +437,8 @@ export function validateData(value: unknown): AppData {
       category: t.category,
       priority: t.priority,
       completed: t.completed,
+      ...(t.subtasks !== undefined ? { subtasks: t.subtasks.map((child: { id: string; title: string; completed: boolean }) => ({ id: child.id, title: child.title, completed: child.completed })) } : {}),
+      ...(t.focusDate !== undefined ? { focusDate: t.focusDate } : {}),
       ...(t.reminderMinutes !== undefined ? { reminderMinutes: t.reminderMinutes } : {}),
       ...(t.recurrenceId !== undefined ? { recurrenceId: t.recurrenceId } : {}),
     })),
@@ -376,6 +448,7 @@ export function validateData(value: unknown): AppData {
       notes: t.notes,
       date: t.date,
       amountCents: t.amountCents,
+      ...(t.accountId !== undefined ? { accountId: t.accountId } : {}),
       type: t.type,
       category: t.category,
       paid: t.paid,

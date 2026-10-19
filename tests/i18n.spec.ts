@@ -18,7 +18,7 @@ const saved = async (page: import("@playwright/test").Page) => page.evaluate(() 
 
 test("all five catalogs cover messages and placeholders; backups preserve valid language without rewriting legacy data", () => {
   expect(LANGUAGES.map(l => l.id)).toEqual(["en", "pt-BR", "es", "fr", "de"]);
-  for (const filename of ["src/currency.ts", "src/features/CurrencySettings.tsx", "src/App.tsx", "src/features/FinancialPlanning.tsx", "src/features/PlanningPanels.tsx", "src/domain.ts", "src/planning.ts", "src/mobile/platform.ts"]) {
+  for (const filename of ["src/backup-crypto.ts", "src/features/FinanceTools.tsx", "src/features/TaskTools.tsx", "src/features/BackupPasswordForm.tsx", "src/currency.ts", "src/features/CurrencySettings.tsx", "src/App.tsx", "src/features/FinancialPlanning.tsx", "src/features/PlanningPanels.tsx", "src/domain.ts", "src/planning.ts", "src/mobile/platform.ts"]) {
     const source = readFileSync(filename, "utf8");
     for (const call of source.matchAll(/\btr\(\s*("(?:\\.|[^"\\])*")/g)) {
       const key = JSON.parse(call[1]).trim();

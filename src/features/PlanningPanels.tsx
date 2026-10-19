@@ -1,9 +1,10 @@
+import { AccountSelect } from "./FinanceTools";
 import { currencySymbol, parseCurrencyAmount } from "../currency";
 import { t as tr, recordText } from "../i18n/core";
 import { useState } from "react";
 import { CreditCard as CardIcon, Plus, Pencil, Repeat2, Bell, Archive, Check } from "lucide-react";
 import { FREQUENCIES, dateKey, prettyDate, money, amountInput, validDate, randomId, EXPENSE_CATEGORIES } from "../domain";
-import type { AppData, CreditCard, Recurrence } from "../domain";
+import type { AppData, CreditCard, Recurrence, WalletAccount } from "../domain";
 import { cardSummary, dateInMonth, recurrenceDate } from "../planning";
 
 export interface PurchaseInput { cardId: string; description: string; amountCents: number; count: number; date: string; category: string; notes: string }
@@ -47,18 +48,21 @@ export function CardsPanel({ data, month, onNew, onEdit, onArchive, onPurchase, 
   </section>;
 }
 
-export function CardForm({ item, onSave, onClose }: { item?: CreditCard; onSave: (card: CreditCard) => boolean; onClose: () => void }) {
+export function CardForm({ item, accounts, onSave, onClose }: { item?: CreditCard; accounts: WalletAccount[]; onSave: (card: CreditCard) => boolean; onClose: () => void }) {
+  const [paymentAccountId,setPaymentAccountId] = useState(item?.paymentAccountId ?? "");
   const [name, setName] = useState(item?.name ?? ""), [limit, setLimit] = useState(item ? amountInput(item.limitCents) : "");
   const [closing, setClosing] = useState(String(item?.closingDay ?? 25)), [due, setDue] = useState(String(item?.dueDay ?? 5));
   const [reminder, setReminder] = useState(item?.reminderDays ?? -1), [error, setError] = useState("");
   return <form onSubmit={event => {
     event.preventDefault(); const cents = parseCurrencyAmount(limit, item?.limitCents);
     if (!name.trim() || !cents || ![closing, due].every(v => /^\d+$/.test(v) && Number(v) >= 1 && Number(v) <= 31)) { setError(tr("Informe um nome, limite maior que zero e dias de 1 a 31.")); return; }
-    if (onSave({ ...item, id: item?.id ?? randomId(), name: name.trim(), limitCents: cents, closingDay: Number(closing), dueDay: Number(due), reminderDays: reminder >= 0 ? reminder : undefined })) onClose();
+    if (onSave({ ...item, id: item?.id ?? randomId(), name: name.trim(), limitCents: cents, paymentAccountId: paymentAccountId || undefined, closingDay: Number(closing), dueDay: Number(due), reminderDays: reminder >= 0 ? reminder : undefined })) onClose();
   }}>
     <label>{tr("Nome do cartão")}<input required maxLength={60} placeholder={tr("Ex.: Meu cartão principal")} value={name} onChange={e => setName(e.target.value)} /></label>
     <label>{tr("Limite do cartão ({0})", currencySymbol())}<input required inputMode="decimal" placeholder={tr("Ex.: 5.000,00")} value={limit} onChange={e => setLimit(e.target.value)} /></label>
     <div className="form-grid"><label>{tr("Dia de fechamento")}<input type="number" min={1} max={31} required value={closing} onChange={e => setClosing(e.target.value)} /></label><label>{tr("Dia de vencimento")}<input type="number" min={1} max={31} required value={due} onChange={e => setDue(e.target.value)} /></label></div>
+    <AccountSelect accounts={accounts} value={paymentAccountId} onChange={setPaymentAccountId}/>
+    <p className="form-hint">{tr("A conta escolhida será usada ao marcar uma fatura como paga. Parcelas já pagas mantêm sua conta original.")}</p>
     <label>{tr("Lembrete da fatura")}<select value={reminder} onChange={e => setReminder(Number(e.target.value))}><option value={-1}>{tr("Sem lembrete")}</option><option value={0}>{tr("No vencimento, às 9h")}</option><option value={1}>{tr("1 dia antes, às 9h")}</option><option value={3}>{tr("3 dias antes, às 9h")}</option></select></label>
     <p className="form-hint">{tr("Compras no dia do fechamento ou depois entram na próxima fatura. Dias 29, 30 e 31 são ajustados para o último dia de meses menores. Mudanças nos dias valem para novas compras.")}</p>
     {error && <p className="form-error" role="alert">{error}</p>}<div className="modal-footer"><button className="button secondary" type="button" onClick={onClose}>{tr("Cancelar")}</button><button className="button primary" type="submit">{item ? tr("Salvar cartão") : tr("Cadastrar cartão")}</button></div>
