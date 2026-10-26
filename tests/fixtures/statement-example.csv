@@ -1,0 +1,6 @@
+Date;Description;Amount;ID;Currency
+2026-10-26;Salary;3500.00;example-salary;BRL
+2026-10-26;Groceries;-145.90;example-groceries;BRL
+2026-10-26;Coffee;-12.50;example-coffee;BRL
+2026-10-26;Transfer to savings;-500.00;example-transfer;BRL
+2026-10-27;Internet;-99.90;example-internet;BRL

@@ -1,4 +1,4 @@
-# DailyAPP 1.2 — personal use
+# DailyAPP 1.3 — personal use
 
 ## Downloads
 
@@ -10,7 +10,9 @@
 
 If DailyAPP is already installed on your Android phone, export a backup from Settings and install the new APK without uninstalling the app. [Check the APK's SHA-256 hash](downloads/DailyAPP-1.2-pessoal.apk.sha256).
 
-**Version 1.2.0, build 8:** accounts and wallets, internal transfers, category budgets, monthly reports, quick expense templates, subtasks, three daily priorities, and password-protected backups. Existing tasks, finances, languages, and currency settings are preserved. See the [guide to each feature](#what-each-feature-does).
+**Version 1.3.0, build 9:** local CSV/OFX statement imports with review and duplicate checks, plus a calendar combining tasks, income, bills, and installments. Version 1.2 accounts, budgets, reports, daily focus, and protected backups remain available. Existing records, languages, and currency settings are preserved. See the [guide to each feature](#what-each-feature-does).
+
+The links above point to the verified 1.2 release while the 1.3 installers are being prepared.
 
 A multilingual app for tasks, scheduling, and personal finances. English is the default, with Portuguese, Spanish, French, and German available in Settings. Its React interface is packaged with Capacitor into apps installed on your phone. Screens, fonts, and icons are included in the installation; local operation does not require hosting, Netlify, or Supabase.
 
@@ -20,19 +22,27 @@ To open the mobile interface directly on a computer, generate `artifacts/index.h
 
 ## App screenshots
 
-Screenshots of **version 1.2, build 8**, captured from the actual mobile interface with fictional data.
+Screenshots of **version 1.3, build 9**, captured from the actual mobile interface with fictional data.
+
+| Integrated calendar | Finances on the selected day |
+| --- | --- |
+| <img src="docs/screenshots/agenda.png" alt="DailyAPP 1.3: calendar combining task and financial indicators, with filters" width="280"> | <img src="docs/screenshots/agenda-financas.png" alt="DailyAPP 1.3: bills for the selected day with direct payment confirmation" width="280"> |
+
+| Statement options and mapping | Review before import |
+| --- | --- |
+| <img src="docs/screenshots/importar.png" alt="DailyAPP 1.3: statement currency, wallet, CSV date order and column mapping" width="280"> | <img src="docs/screenshots/extrato.png" alt="DailyAPP 1.3: reviewed statement rows with possible duplicates unchecked" width="280"> |
 
 | Accounts and transfers | Category budgets | Monthly report |
 | --- | --- | --- |
-| <img src="docs/screenshots/contas.png" alt="DailyAPP 1.2: account total and recorded bank balance" width="250"> | <img src="docs/screenshots/limites.png" alt="DailyAPP 1.2: spending limits and progress for each expense category" width="250"> | <img src="docs/screenshots/relatorio.png" alt="DailyAPP 1.2: confirmed monthly results and comparison with the previous month" width="250"> |
+| <img src="docs/screenshots/contas.png" alt="DailyAPP 1.3: account total and recorded bank balance" width="250"> | <img src="docs/screenshots/limites.png" alt="DailyAPP 1.3: spending limits and progress for each expense category" width="250"> | <img src="docs/screenshots/relatorio.png" alt="DailyAPP 1.3: confirmed monthly results and comparison with the previous month" width="250"> |
 
 | Three daily priorities | Task steps | Protected backup |
 | --- | --- | --- |
-| <img src="docs/screenshots/prioridades.png" alt="DailyAPP 1.2: up to three chosen priorities on Today" width="250"> | <img src="docs/screenshots/etapas.png" alt="DailyAPP 1.2: task form with an editable checklist of subtasks" width="250"> | <img src="docs/screenshots/backup.png" alt="DailyAPP 1.2: password and confirmation fields for an encrypted backup" width="250"> |
+| <img src="docs/screenshots/prioridades.png" alt="DailyAPP 1.3: up to three chosen priorities on Today" width="250"> | <img src="docs/screenshots/etapas.png" alt="DailyAPP 1.3: task form with an editable checklist of subtasks" width="250"> | <img src="docs/screenshots/backup.png" alt="DailyAPP 1.3: password and confirmation fields for an encrypted backup" width="250"> |
 
 | Today in USD | Finances in USD | Currency settings |
 | --- | --- | --- |
-| <img src="docs/screenshots/hoje-usd.png" alt="DailyAPP 1.2: Today with monthly totals converted to USD" width="250"> | <img src="docs/screenshots/financas-usd.png" alt="DailyAPP 1.2: income, expenses, and balance converted to USD" width="250"> | <img src="docs/screenshots/moeda.png" alt="DailyAPP 1.2: currency selector and saved manual exchange rate" width="250"> |
+| <img src="docs/screenshots/hoje-usd.png" alt="DailyAPP 1.3: Today with monthly totals converted to USD" width="250"> | <img src="docs/screenshots/financas-usd.png" alt="DailyAPP 1.3: income, expenses, and balance converted to USD" width="250"> | <img src="docs/screenshots/moeda.png" alt="DailyAPP 1.3: currency selector and saved manual exchange rate" width="250"> |
 
 These examples use fictional data and an explicitly labeled manual rate of **0.20 USD per BRL**. Changing the language selects USD for English, BRL for Portuguese, and EUR for Spanish, French, and German. Sample rates are 0.20 USD and 0.18 EUR per BRL; they are illustrative, not current market quotes.
 
@@ -42,7 +52,7 @@ English interface with a manual BRL override:
 | --- | --- | --- |
 | <img src="docs/screenshots/hoje.png" alt="DailyAPP: daily overview, tasks, and monthly balance" width="250"> | <img src="docs/screenshots/tarefas.png" alt="DailyAPP: task list with times and categories" width="250"> | <img src="docs/screenshots/financas.png" alt="DailyAPP: income, expenses, balance, and spending by category" width="250"> |
 
-Mobile screenshots captured from the current app in Chromium at a 390 × 900 viewport, using **Explore example**. Expand a language below to see the same screens in that language. Run `npm run screenshots` to regenerate all 24 captures: fifteen language views, three currency examples, and six version 1.2 feature views after installing the dependencies and the Playwright browser. To generate only one language, set `DAILYAPP_SCREENSHOT_LANGUAGES` to `en`, `pt-BR`, `es`, `fr`, or `de`.
+Mobile screenshots captured from the current app in Chromium at a 390 × 900 viewport, using **Explore example**. Expand a language below to see the same screens in that language. Run `npm run screenshots` to regenerate all 28 captures: fifteen language views, three currency examples, six earlier feature views, and four version 1.3 views after installing the dependencies and the Playwright browser. To generate only one language, set `DAILYAPP_SCREENSHOT_LANGUAGES` to `en`, `pt-BR`, `es`, `fr`, or `de`.
 
 <details>
 <summary>Português</summary>
@@ -88,7 +98,8 @@ Mobile screenshots captured from the current app in Chromium at a 390 × 900 vie
 - First-use setup with an optional name and budget, plus a quick guide in Settings.
 - Create, edit, complete, and delete tasks with dates, times, categories, priorities, and up to 30 checklist steps.
 - Pick up to three daily priorities and complete them directly on Today.
-- Monthly calendar with tasks for the selected day.
+- Integrated monthly calendar with tasks, income, bills, and installments, view filters, pending-only mode, and direct payment confirmation.
+- Local CSV/OFX statement imports with column mapping, original-currency selection, duplicate checks, category/status review, and an explicit final import.
 - Today screen with pending bills, income, and installments, including overdue items and the next seven days.
 - Income, expenses, confirmed or planned amounts, history, categories, and monthly budgets.
 - Bank, cash, and savings accounts with dated opening balances, linked transactions, and internal transfers.
@@ -162,7 +173,11 @@ The guide uses the default English interface. Change the language in **Settings 
 
 | Feature | Purpose and how to use it |
 | --- | --- |
-| Calendar | Browse months and tap a date to see its tasks. **Today** returns to the current day. The calendar lists tasks; bills and installments appear on Today and in Finances. |
+| Calendar | Browse months and tap a date to see tasks, income, bills, and card installments together. **Today** returns to the current date. Financial events use each record’s registered date; card installments appear on their due dates. |
+| Calendar filters | Show Tasks and finances, Tasks only, or Finances only. **Pending only** hides completed tasks and confirmed transactions. Indicators, counts, and the selected-day list respect the same filters. These view filters do not modify records. |
+| Finances for the day | Shows the filtered day’s income and expense totals, including confirmed and planned amounts. Internal account transfers are excluded. Tap a description to edit the existing record. |
+| Pay or receive in Calendar | Confirms the existing transaction; no extra income or expense is created. To undo, edit its status. Confirmation keeps its registered date. |
+| Add transaction on this day | Opens a new transaction with the selected date filled in. If you change an existing transaction’s date, Calendar follows its new date/month after saving. |
 | New task | Enter a title, date, optional time, category, priority, and notes. When creating a task from Calendar, the selected date is filled in automatically. |
 | Subtasks | In a task form, add up to 30 named steps, mark them individually, or remove them. The task list shows the completed-step count. Completing all steps does not automatically complete the parent task; completing the parent does not change its steps. Future occurrences of a recurring task start with their steps unchecked. |
 | Daily priority | The star adds or removes a task from Today’s three priorities. This is separate from the task’s normal priority and scheduled date. A fourth selection is refused until one of the three is removed. |
@@ -185,6 +200,26 @@ The guide uses the default English interface. Change the language in **Settings 
 | Expenses by category | Compares paid and planned spending across categories. |
 | Repeat transaction | Schedules recurring income and bills daily, weekly, monthly, or yearly. Future occurrences start as planned and require manual confirmation. |
 | Edit and delete | The pencil edits a transaction and the trash icon asks for confirmation. For installment purchases, deleting an installment removes **the entire purchase and all its installments, including paid ones**; the confirmation explains this. |
+
+### Finances → Import statement
+
+| Step or feature | Purpose and how to use it |
+| --- | --- |
+| Choose a file | Tap **Import statement** in Finances. Select a CSV with headers or a bank/card OFX for one account, up to 5 MB and 5,000 entries. The file is processed on the device and is not uploaded to a server. PDF statements and images are not supported. |
+| CSV format | Automatic, semicolon, comma, and tab delimiters are supported, including quoted fields and multiline descriptions. UTF-8/BOM, Windows-1252, and BOM-marked UTF-16 are decoded locally. Every data row must have the same column count as its header. |
+| Column mapping | Confirm the date, description, and signed amount columns, or choose separate positive debit/credit columns. The amount column takes precedence. Type and identifier are optional; do not assign the same column twice. Common headers in the five app languages are suggested automatically, and you can map other headers manually. |
+| Dates and numbers | Choose day/month/year or month/day/year, plus the decimal separator. ISO dates work with either order. Dot/comma grouping and valid groups of spaces are accepted. Invalid dates, zero amounts, conflicting types, or malformed rows show an error before any data is saved. |
+| OFX | Bank and credit-card SGML/XML statements are accepted with one account, a supported currency, and a transaction list. Posted dates are preserved without timezone conversion. Multi-account, investment, and entity-declaring files are rejected. Imported card rows become ordinary transactions; manage card purchases and installment schedules separately in Cards. |
+| Currency and account | Choose the file’s **original currency**, independently of the app display currency. OFX currency is fixed by the file; a CSV currency column must contain one supported code on every row and match your choice. BRL needs no quote; another currency needs a saved quote in Settings. Choose an active wallet or leave entries unassigned. Dates before the selected wallet’s opening date are rejected. |
+| Review | Inspect descriptions, dates, original amounts, converted amounts, income/expense direction, and selected totals. Choose rows, categories, and whether each entry is already paid/received. Future-dated entries start as Planned. Review pages contain 25 rows. Cancel or go back without changing your existing records. |
+| Already imported | Stable hashed identifiers prevent adding an already imported source entry again, including after editing its saved description/category/amount or restoring a current backup. OFX identifiers are scoped to the source account; CSV identifiers/fingerprints use the chosen wallet. Entries without source IDs use a content fingerprint and occurrence number. |
+| Possible duplicates | Matching date, type, amount, normalized description, and compatible account links flag possible duplicates in current records or the file. These begin unchecked; select only after review. This is a conservative check, not a guarantee of detecting every duplicate. It does not overwrite or reconcile an existing planned transaction automatically. |
+| Transfers and card payments | OFX transfer types and some description patterns begin unchecked. Review all rows: the app cannot infer every transfer or card payment. Record transfers between your own accounts under **Accounts → New transfer**. A card payment may already be represented by installments; importing it as another expense would count it twice. |
+| Confirm import | Adds only the selected rows as one validated batch and preserves existing records. Validation, capacity, or storage failure leaves the previous data intact. You can edit other fields later in Finances. |
+
+The import uses the **saved current/manual exchange rate**, not a historical bank rate. The review shows its date and the original amount. Saved transactions keep integer BRL cents and an opaque import marker; the original statement, source account number, foreign amount, and rate history are not retained. Keep the original file if you need that audit trail. Changes to later display rates do not rewrite imported BRL cents.
+
+Try the fictional [CSV example](tests/fixtures/statement-example.csv) or [OFX example](tests/fixtures/statement-example.ofx). For the CSV, choose a **period decimal separator**. The examples are in BRL and include a transfer that should remain unchecked.
 
 ### Finances → Accounts
 
@@ -292,7 +327,7 @@ In Android Studio, select a phone/emulator and run the project. To generate the 
 npm run mobile:personal
 ```
 
-The installer is saved to `artifacts/DailyAPP-1.2-pessoal.apk`. It uses a Release build with application and WebView debugging disabled. It preserves the previous APK's development certificate to support updates to the personal installation, with `versionCode` 8 and version name `1.2.0`. Keep that local key when building future updates. Play Store publication requires a dedicated distribution key. `npm run mobile:apk` remains available to generate a debug APK.
+The installer is saved to `artifacts/DailyAPP-1.3-pessoal.apk`. It uses a Release build with application and WebView debugging disabled. It preserves the previous APK's development certificate to support updates to the personal installation, with `versionCode` 9 and version name `1.3.0`. Keep that local key when building future updates. Play Store publication requires a dedicated distribution key. `npm run mobile:apk` remains available to generate a debug APK.
 
 ## iPhone
 
@@ -313,7 +348,7 @@ npm run build:mobile
 npm test
 ```
 
-All **104 tests** passed using Playwright and Chromium. They cover account balances and transfer conservation, linked card payments without duplicates, category thresholds, monthly reports, quick expense creation, subtasks and three-priority limits, protected backups without Web Crypto SubtleCrypto, incorrect passwords, tamper detection, canceling restoration, and automatic language/currency switching, cancellation of stale requests, safe conversion after closing an amount form, actual currency conversion, inverse amount inputs, quote failures, cached and manual rates, balance forecasts, goals, bills on Today, tasks, finances, local data, backups, storage failures, dates, navigation, first use, existing-data upgrades, all five languages, accessibility, and offline use of the mobile interface. Native plugin contracts are simulated: browser tests do not replace testing on a phone, especially for the keyboard, file picker, and sharing.
+All **127 tests** passed using Playwright and Chromium. They cover CSV/OFX parsing, encodings and amount/date formats, explicit currency conversion, duplicate checks and stable import markers, atomic import/storage failures, integrated calendar filters and direct confirmation, and account balances and transfer conservation, linked card payments without duplicates, category thresholds, monthly reports, quick expense creation, subtasks and three-priority limits, protected backups without Web Crypto SubtleCrypto, incorrect passwords, tamper detection, canceling restoration, and automatic language/currency switching, cancellation of stale requests, safe conversion after closing an amount form, actual currency conversion, inverse amount inputs, quote failures, cached and manual rates, balance forecasts, goals, bills on Today, tasks, finances, local data, backups, storage failures, dates, navigation, first use, existing-data upgrades, all five languages, accessibility, and offline use of the mobile interface. Native plugin contracts are simulated: browser tests do not replace testing on a phone, especially for the keyboard, file picker, and sharing.
 
 Test servers use ports 5174 (local workspace), 5175 (mocked accounts from the earlier implementation), and 5176 (mobile app interface). In the cloud environment, the available browser is `/usr/bin/chromium`; on other machines, run `npx playwright install chromium` once.
 
@@ -327,7 +362,7 @@ Protected exports use **AES-256-GCM** with authenticated encryption and **PBKDF2
 
 The encrypted file protects the **exported backup**. Local storage is not an encrypted vault. There is no password recovery, automatic cloud backup, biometric lock, or encryption of the app’s live database. Plain JSON exports remain available and readable.
 
-Version 1.0/1.1 backups remain accepted; version 1.2 fields are optional, and existing data is not reassigned or rewritten at startup. Use version 1.2 or later to retain the new fields when restoring a 1.2 backup.
+Version 1.0/1.1/1.2 backups remain accepted. New fields are optional, and existing data is not reassigned or rewritten at startup. Version 1.3 includes hashed statement identifiers in backups; restore with 1.3 or later to retain reimport detection. Recurring future transactions do not inherit a source import marker.
 
 The current mobile version does not connect to banks, require login, or synchronize devices automatically. The earlier account implementation is preserved in `src/cloud/` for a future stage if requested; it is not included in the mobile package.
 
@@ -343,6 +378,7 @@ src/App.tsx           Tasks, calendar, finances, and settings
 src/domain.ts         Types, validation, and calculations
 src/finance-tools.ts  Account balances, category budgets, reports, and templates
 src/backup-crypto.ts  Authenticated password-protected backup format
+src/statement-import.ts CSV/OFX parsing, review, currency conversion, and duplicate checks
 src/features/         Planning, account/report panels, task steps, and backup forms
 src/i18n/             Five-language catalogs, locale formatting, and saved language preference
 src/currency.ts       BRL-based conversion, quote validation, online rates, and inverse inputs

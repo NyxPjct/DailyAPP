@@ -51,7 +51,7 @@ export function repeatingTask(data: AppData, task: Task, frequency: Frequency, t
 
 export function repeatingTransaction(data: AppData, transaction: Transaction, frequency: Frequency, today = dateKey()): AppData {
   if ((data.recurrences?.filter(s => s.active).length ?? 0) >= 100 || (data.recurrences?.length ?? 0) >= 1000) throw new Error(tr("Limite de repetições atingido. Exporte um backup antes de reorganizar suas rotinas."));
-  const { id: _id, date: _date, paid: _paid, recurrenceId: _series, installment: _part, ...template } = transaction;
+  const { id: _id, date: _date, paid: _paid, recurrenceId: _series, installment: _part, statementKey: _statement, ...template } = transaction;
   const series: Recurrence = { id: randomId(), kind: "transaction", frequency, anchorDate: transaction.date, nextIndex: 1, active: true, template };
   return materializeRecurrences({ ...data, transactions: [...data.transactions, { ...transaction, recurrenceId: series.id }], recurrences: [...(data.recurrences ?? []), series] }, today);
 }

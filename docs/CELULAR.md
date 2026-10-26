@@ -1,8 +1,8 @@
-# DailyAPP 1.2 para uso pessoal
+# DailyAPP 1.3 para uso pessoal
 
 ## O que esta versão entrega
 
-A versão 1.2.0, código 8, acrescenta contas, transferências, orçamentos por categoria, relatórios mensais, gastos rápidos, subtarefas, prioridades diárias e backup com senha.
+A versão 1.3.0, código 9, acrescenta importação local de extratos CSV/OFX com revisão e verificação de duplicados, além da agenda com tarefas, receitas, contas e parcelas. Os recursos da 1.2 continuam disponíveis. Os downloads abaixo apontam para a versão anterior verificada enquanto os novos pacotes são preparados.
 
 O aplicativo abre em inglês por padrão. Para trocar, abra **Settings → App language** e selecione **Português**, **Español**, **Français** ou **Deutsch**. Telas, categorias, formulários, ajuda, datas, números e lembretes acompanham a escolha. Os dados digitados são preservados no idioma original, e a troca de idioma também muda a moeda: inglês usa USD, português usa BRL e espanhol, francês e alemão usam EUR. Uma cotação salva é aplicada sem internet. Se faltar uma taxa, o idioma muda e os valores permanecem na moeda anterior até conseguir uma cotação; o app mostra um aviso. A conversão aguarda o fechamento de formulários abertos. Em **Settings → App currency**, você pode escolher outra moeda manualmente, até a próxima troca de idioma. BRL, USD, EUR, GBP, CAD e AUD estão disponíveis, com conversão por cotação salva, atualização online ou taxa manual. O histórico permanece em centavos de BRL; campos novos aceitam a moeda escolhida. Sem internet, usa a última taxa salva. A data e a origem da cotação são exibidas. O idioma fica salvo e entra no backup; arquivos antigos mantêm a preferência atual. As capturas do README mostram inglês e os outros quatro idiomas.
 
@@ -14,11 +14,11 @@ As pastas `android/` e `ios/` são projetos nativos completos do Capacitor. A in
 
 O APK pessoal está disponível para [download direto no GitHub](https://github.com/NyxPjct/DailyAPP/raw/refs/heads/main/downloads/DailyAPP-1.2-pessoal.apk). As [Releases](https://github.com/NyxPjct/DailyAPP/releases) reúnem os instaladores publicados.
 
-Obtenha `artifacts/DailyAPP-1.2-pessoal.apk`, transfira-o para o celular Android e abra o arquivo. O sistema pode pedir autorização para instalar arquivos recebidos pelo aplicativo que está abrindo o APK. Depois da instalação, abra **DailyAPP** pela lista de aplicativos.
+Obtenha `artifacts/DailyAPP-1.3-pessoal.apk`, transfira-o para o celular Android e abra o arquivo. O sistema pode pedir autorização para instalar arquivos recebidos pelo aplicativo que está abrindo o APK. Depois da instalação, abra **DailyAPP** pela lista de aplicativos.
 
 Requer Android 7 ou superior e uma WebView atualizada. O pacote pessoal usa o build **Release**, com depuração da aplicação e da WebView desativadas, mas conserva o certificado de desenvolvimento da instalação anterior. É uma distribuição pessoal; a publicação na Play Store terá uma configuração própria de assinatura.
 
-Se instalou o APK de teste anterior desta sessão, exporte um backup em Ajustes e abra o novo APK **sem desinstalar o DailyAPP**. O identificador `com.nyxpjct.dailyapp` e o certificado foram mantidos; o código da versão passa para 8, com nome 1.2.0. Isso permite atualizar preservando os dados. O formato local também foi mantido. A instalação sobre a versão anterior ainda deve ser confirmada em um aparelho real.
+Se instalou o APK de teste anterior desta sessão, exporte um backup em Ajustes e abra o novo APK **sem desinstalar o DailyAPP**. O identificador `com.nyxpjct.dailyapp` e o certificado foram mantidos; o código da versão passa para 9, com nome 1.3.0. Isso permite atualizar preservando os dados. O formato local também foi mantido. A instalação sobre a versão anterior ainda deve ser confirmada em um aparelho real.
 
 Para gerar futuras atualizações compatíveis, preserve a chave local de desenvolvimento em `.cache/android-user/debug.keystore`. Ela fica fora do Git e do ZIP de código. Compilar em uma máquina com uma chave diferente cria uma assinatura diferente; nesse caso, a atualização pode ser recusada pelo Android. Desinstalar ou limpar os dados pode apagar os registros; restaure um backup se precisar fazer isso.
 
@@ -63,7 +63,7 @@ Para compilar novamente usando o Mac do GitHub Actions:
 
 1. Salve suas alterações no repositório do GitHub. O código desta versão já está enviado.
 2. No GitHub, abra **Actions → iPhone - pacote pessoal sem assinatura → Run workflow**. Escolha a branch com o código atualizado.
-3. Aguarde a compilação e baixe o artefato **DailyAPP-iPhone-sem-assinatura** no final da execução. Extraia `DailyAPP-1.2-sem-assinatura.ipa` do ZIP.
+3. Aguarde a compilação e baixe o artefato **DailyAPP-iPhone-sem-assinatura** no final da execução. Extraia `DailyAPP-1.3-sem-assinatura.ipa` do ZIP.
 4. Assine o novo IPA para seu iPhone usando as instruções acima.
 
 O workflow `ios-personal.yml` é manual e usa permissões de leitura do repositório. O workflow `personal-release.yml` também é disparado por tags `personal-v*` e usa permissão de escrita para publicar os arquivos em uma Release. Ambos usam Xcode 26.3 no runner `macos-15`, dispensam certificados Apple no GitHub e não enviam o aplicativo às lojas. A disponibilidade de minutos macOS depende da sua conta GitHub. A compilação de lançamento iOS foi concluída na [execução de publicação da versão 1.2](https://github.com/NyxPjct/DailyAPP/actions/runs/39260367195); a assinatura e a instalação pessoal ainda precisam ser confirmadas no aparelho.
@@ -88,6 +88,16 @@ Não é preciso uma conta Apple Developer paga para usar o simulador. Uma equipe
 Esta máquina cloud é Linux: não possui Xcode e não gera um IPA assinado. O IPA desta versão foi compilado no runner macOS do GitHub. Para assinar e executar diretamente pelo Xcode, use o Mac e sua equipe pessoal. Confira teclado, importação e compartilhamento no aparelho.
 
 O manifesto `ios/App/App/PrivacyInfo.xcprivacy` está registrado no target e declara o acesso a timestamps de arquivos exigido pelo plugin Filesystem. O backup usa o cache privado e o seletor de compartilhamento do sistema. O app não solicita acesso amplo à pasta de documentos, câmera ou localização.
+
+## Usar os recursos da versão 1.3
+
+Em **Finanças → Importar extrato**, escolha CSV com cabeçalho ou OFX bancário/de cartão de uma conta, até 5 MB e 5.000 lançamentos. O processamento é local. No CSV, confirme as colunas de data, descrição e valor, ou débito/crédito separados, a ordem da data e o separador decimal. O CSV de exemplo usa ponto decimal. Valores com agrupamento válido por espaços também são aceitos.
+
+Escolha a moeda original do arquivo e, opcionalmente, uma conta ativa. OFX usa a moeda declarada no arquivo; CSV com coluna de moeda exige um código suportado único em todas as linhas. BRL não precisa de cotação; outra moeda usa uma taxa salva em Ajustes. A taxa é atual/manual, não histórica do banco. O app guarda centavos em BRL e um marcador de importação; guarde o extrato original para consultar os valores estrangeiros e a origem depois.
+
+Toque em **Revisar lançamentos**, confira os totais e escolha categorias/status. Datas futuras começam previstas. Itens já importados ficam bloqueados; possíveis duplicados e possíveis transferências/pagamentos de fatura começam desmarcados. A identificação é conservadora e não reconhece todos os casos. Transferências entre suas contas devem ser registradas em Contas; faturas podem já estar representadas pelas parcelas. O app não substitui um lançamento previsto automaticamente. Confirme somente os itens desejados: a importação acrescenta registros e preserva o histórico. Cancelar, arquivo inválido ou falha de armazenamento não altera os dados anteriores.
+
+Em **Agenda**, escolha tarefas e finanças, apenas tarefas ou apenas finanças; **Somente pendentes** filtra os mesmos itens nos indicadores e na lista do dia. Receitas, contas e parcelas aparecem na data registrada. **Pagar/Receber** confirma o registro existente sem duplicar valores. O total do dia inclui os itens confirmados e previstos do filtro, sem transferências internas. **Adicionar movimentação neste dia** preenche a data escolhida. Ao editar a data de uma movimentação, a agenda acompanha o novo dia/mês.
 
 ## Usar os novos recursos da versão 1.2
 

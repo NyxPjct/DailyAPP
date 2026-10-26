@@ -46,7 +46,7 @@ try {
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.clock.setFixedTime(new Date("2026-10-19T15:00:00Z"));
+  await page.clock.setFixedTime(new Date("2026-10-26T15:00:00Z"));
   await page.goto(`http://127.0.0.1:${server.address().port}`, {
     waitUntil: "networkidle",
   });
@@ -121,9 +121,9 @@ try {
       ];
       data.transactions = data.transactions.map(t => ({ ...t, accountId: "example-bank" }));
       data.transactions.push({ id: "previous-month", description: "September expenses", amountCents: 240000, type: "expense", date: "2026-09-19", category: "Outros", paid: true, notes: "" });
-      data.transfers = [{ id: "example-transfer", fromAccountId: "example-bank", toAccountId: "example-savings", amountCents: 50000, date: "2026-10-19", notes: "Monthly savings" }];
+      data.transfers = [{ id: "example-transfer", fromAccountId: "example-bank", toAccountId: "example-savings", amountCents: 50000, date: "2026-10-26", notes: "Monthly savings" }];
       data.categoryBudgets = { "2026-10": { Alimentação: 50000, Moradia: 120000, Transporte: 20000, Saúde: 20000 } };
-      data.tasks = data.tasks.map((t,index) => ({ ...t, ...(index < 3 ? { focusDate: "2026-10-19" } : {}) }));
+      data.tasks = data.tasks.map((t,index) => ({ ...t, ...(index < 3 ? { focusDate: "2026-10-26" } : {}) }));
       data.tasks[0].subtasks = [{ id: "step-1", title: "Choose the three main outcomes", completed: true }, { id: "step-2", title: "Reserve time in the calendar", completed: false }];
       localStorage.setItem("dailyapp.v1", JSON.stringify(data));
     });
@@ -149,11 +149,34 @@ try {
     await page.getByRole("button",{name:"Password-protected backup",exact:true}).click();
     await page.screenshot({ animations: "disabled", path:new URL("backup.png",target).pathname});
 
+    await page.getByRole("button",{name:"Cancel",exact:true}).click();
+    await page.evaluate(()=>{
+      const data=JSON.parse(localStorage.getItem("dailyapp.v1"));
+      data.transactions.push({id:"calendar-phone",description:"Phone bill",amountCents:8500,type:"expense",date:"2026-10-26",category:"Outros",paid:false,notes:"",accountId:"example-bank"});
+      localStorage.setItem("dailyapp.v1",JSON.stringify(data));
+    });
+    await page.reload({waitUntil:"networkidle"});
+    await page.getByRole("button",{name:"My calendar",exact:true}).click();
+    await page.locator(".calendar-panel").evaluate(element=>window.scrollBy({top:element.getBoundingClientRect().top-85}));
+    await page.screenshot({animations:"disabled",path:new URL("agenda.png",target).pathname});
+    await page.locator(".calendar-day-money").evaluate(element=>window.scrollBy({top:element.getBoundingClientRect().top-85}));
+    await page.screenshot({animations:"disabled",path:new URL("agenda-financas.png",target).pathname});
+    await page.getByRole("button",{name:"My finances",exact:true}).click();
+    await page.getByRole("button",{name:"Import statement",exact:true}).click();
+    await page.getByLabel("Statement file",{exact:true}).setInputFiles({name:"example-statement.csv",mimeType:"text/csv",buffer:Buffer.from("Date;Description;Amount;Currency\n2026-10-26;Phone bill;-85.00;BRL\n2026-10-26;Groceries;-145.90;BRL\n2026-10-26;Transfer to savings;-500.00;BRL\n")});
+    await page.getByLabel("Decimal separator",{exact:true}).selectOption(".");
+    await page.getByLabel("Transaction account",{exact:true}).selectOption("example-bank");
+    await page.screenshot({animations:"disabled",path:new URL("importar.png",target).pathname});
+    await page.getByRole("button",{name:"Review entries",exact:true}).click();
+    await expect(page.getByLabel("Import entry 1",{exact:true})).not.toBeChecked();
+    await expect(page.getByLabel("Import entry 3",{exact:true})).not.toBeChecked();
+    await page.screenshot({animations:"disabled",path:new URL("extrato.png",target).pathname});
+
   }
   expect(errors).toEqual([]);
   await context.close();
   }
-  console.log("Capturas da interface móvel nos cinco idiomas, conversão e recursos 1.2: docs/screenshots/");
+  console.log("Capturas da interface móvel nos cinco idiomas, conversão e recursos 1.3: docs/screenshots/");
 } finally {
   await browser?.close();
   await new Promise((resolve) => server.close(resolve));

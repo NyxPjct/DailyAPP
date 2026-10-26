@@ -4811,5 +4811,617 @@ export const messages: Record<string, Record<ForeignLanguage, string>> = {
     "es": "Versión 1.2 · Para una vida más ligera.",
     "fr": "Version 1.2 · Pour une vie plus légère.",
     "de": "Version 1.2 · Für ein leichteres Leben."
+  },
+  "A descrição deve ter de 1 a 120 caracteres.": {
+    "en": "Descriptions must have 1–120 characters.",
+    "es": "La descripción debe tener de 1 a 120 caracteres.",
+    "fr": "La description doit comporter de 1 à 120 caractères.",
+    "de": "Die Beschreibung muss 1 bis 120 Zeichen enthalten."
+  },
+  "A moeda do OFX não é suportada.": {
+    "en": "The OFX currency is not supported.",
+    "es": "La moneda del OFX no es compatible.",
+    "fr": "La devise du fichier OFX n’est pas prise en charge.",
+    "de": "Die OFX-Währung wird nicht unterstützt."
+  },
+  "Adicionar movimentação neste dia": {
+    "en": "Add transaction on this day",
+    "es": "Añadir movimiento este día",
+    "fr": "Ajouter une opération ce jour",
+    "de": "Buchung an diesem Tag hinzufügen"
+  },
+  "Anterior": {
+    "en": "Previous",
+    "es": "Anterior",
+    "fr": "Précédente",
+    "de": "Zurück"
+  },
+  "Arquivo do extrato": {
+    "en": "Statement file",
+    "es": "Archivo del extracto",
+    "fr": "Fichier du relevé",
+    "de": "Kontoauszugsdatei"
+  },
+  "As linhas do CSV precisam ter o mesmo número de colunas do cabeçalho.": {
+    "en": "CSV rows must have the same number of columns as the header.",
+    "es": "Las filas del CSV deben tener tantas columnas como la cabecera.",
+    "fr": "Les lignes CSV doivent avoir autant de colonnes que l’en-tête.",
+    "de": "CSV-Zeilen müssen so viele Spalten wie die Kopfzeile haben."
+  },
+  "Automático": {
+    "en": "Automatic",
+    "es": "Automático",
+    "fr": "Automatique",
+    "de": "Automatisch"
+  },
+  "CSV com cabeçalho ou OFX de uma conta. Até 5 MB e 5.000 lançamentos.": {
+    "en": "CSV with headers or OFX for one account. Up to 5 MB and 5,000 entries.",
+    "es": "CSV con cabecera u OFX de una cuenta. Hasta 5 MB y 5.000 movimientos.",
+    "fr": "CSV avec en-tête ou OFX d’un compte. Jusqu’à 5 Mo et 5 000 opérations.",
+    "de": "CSV mit Kopfzeile oder OFX für ein Konto. Bis zu 5 MB und 5.000 Buchungen."
+  },
+  "Categoria do lançamento {0}": {
+    "en": "Category for entry {0}",
+    "es": "Categoría del movimiento {0}",
+    "fr": "Catégorie de l’opération {0}",
+    "de": "Kategorie für Buchung {0}"
+  },
+  "Coluna de crédito": {
+    "en": "Credit column",
+    "es": "Columna de crédito",
+    "fr": "Colonne de crédit",
+    "de": "Gutschriftspalte"
+  },
+  "Coluna de data": {
+    "en": "Date column",
+    "es": "Columna de fecha",
+    "fr": "Colonne de date",
+    "de": "Datumsspalte"
+  },
+  "Coluna de descrição": {
+    "en": "Description column",
+    "es": "Columna de descripción",
+    "fr": "Colonne de description",
+    "de": "Beschreibungsspalte"
+  },
+  "Coluna de débito": {
+    "en": "Debit column",
+    "es": "Columna de débito",
+    "fr": "Colonne de débit",
+    "de": "Belastungsspalte"
+  },
+  "Coluna de identificador": {
+    "en": "Identifier column",
+    "es": "Columna de identificador",
+    "fr": "Colonne d’identifiant",
+    "de": "Kennungsspalte"
+  },
+  "Coluna de tipo": {
+    "en": "Type column",
+    "es": "Columna de tipo",
+    "fr": "Colonne de type",
+    "de": "Typspalte"
+  },
+  "Coluna de valor": {
+    "en": "Amount column",
+    "es": "Columna de importe",
+    "fr": "Colonne de montant",
+    "de": "Betragsspalte"
+  },
+  "Colunas do arquivo": {
+    "en": "File columns",
+    "es": "Columnas del archivo",
+    "fr": "Colonnes du fichier",
+    "de": "Dateispalten"
+  },
+  "Confira antes de adicionar ao seu histórico.": {
+    "en": "Review before adding to your history.",
+    "es": "Revisa antes de añadir al historial.",
+    "fr": "Vérifiez avant d’ajouter à votre historique.",
+    "de": "Vor dem Hinzufügen zum Verlauf prüfen."
+  },
+  "Confira se é transferência ou pagamento de fatura.": {
+    "en": "Check whether this is a transfer or card bill payment.",
+    "es": "Comprueba si es una transferencia o un pago de tarjeta.",
+    "fr": "Vérifiez s’il s’agit d’un virement ou du paiement d’un relevé de carte.",
+    "de": "Prüfe, ob dies eine Überweisung oder Kreditkartenabrechnung ist."
+  },
+  "Confirmar movimentação: {0}": {
+    "en": "Confirm transaction: {0}",
+    "es": "Confirmar movimiento: {0}",
+    "fr": "Confirmer l’opération : {0}",
+    "de": "Buchung bestätigen: {0}"
+  },
+  "Cotação de importação: 1 BRL = {0} {1} · {2}. Não é uma taxa histórica do banco.": {
+    "en": "Import rate: 1 BRL = {0} {1} · {2}. This is not the bank’s historical rate.",
+    "es": "Tipo de importación: 1 BRL = {0} {1} · {2}. No es el tipo histórico del banco.",
+    "fr": "Taux d’importation : 1 BRL = {0} {1} · {2}. Ce n’est pas le taux historique de la banque.",
+    "de": "Importkurs: 1 BRL = {0} {1} · {2}. Dies ist kein historischer Bankkurs."
+  },
+  "Data inválida. Confira a ordem de dia e mês.": {
+    "en": "Invalid date. Check the day/month order.",
+    "es": "Fecha no válida. Revisa el orden de día y mes.",
+    "fr": "Date incorrecte. Vérifiez l’ordre du jour et du mois.",
+    "de": "Ungültiges Datum. Prüfe die Reihenfolge von Tag und Monat."
+  },
+  "Datas futuras começam como previstas. Você pode ajustar as categorias e o status agora, e editar os demais campos depois em Finanças.": {
+    "en": "Future dates start as planned. Adjust categories and status now; edit other fields later in Finances.",
+    "es": "Las fechas futuras empiezan como previstas. Ajusta categorías y estado ahora; edita los demás campos después en Finanzas.",
+    "fr": "Les dates futures commencent comme prévues. Ajustez les catégories et le statut ici ; modifiez les autres champs ensuite dans Finances.",
+    "de": "Zukünftige Daten beginnen als geplant. Passe Kategorien und Status hier an; andere Felder kannst du später unter Finanzen bearbeiten."
+  },
+  "Desmarcar todos": {
+    "en": "Deselect all",
+    "es": "Desmarcar todos",
+    "fr": "Tout désélectionner",
+    "de": "Alle abwählen"
+  },
+  "Despesas: {0}": {
+    "en": "Expenses: {0}",
+    "es": "Gastos: {0}",
+    "fr": "Dépenses : {0}",
+    "de": "Ausgaben: {0}"
+  },
+  "Dia / mês / ano": {
+    "en": "Day / month / year",
+    "es": "Día / mes / año",
+    "fr": "Jour / mois / année",
+    "de": "Tag / Monat / Jahr"
+  },
+  "Duplicados identificados ficam bloqueados. Possíveis duplicados, transferências e pagamentos de fatura começam desmarcados. Confira antes de selecionar: uma fatura pode já estar representada pelas parcelas.": {
+    "en": "Known imports are blocked. Possible duplicates, transfers, and card payments start unchecked. Review before selecting: installments may already represent a card bill.",
+    "es": "Los movimientos ya importados se bloquean. Posibles duplicados, transferencias y pagos de tarjeta empiezan desmarcados. Revisa: las cuotas pueden representar ya la factura.",
+    "fr": "Les opérations déjà importées sont bloquées. Les doublons possibles, virements et paiements de carte sont décochés. Vérifiez : les échéances peuvent déjà représenter le relevé.",
+    "de": "Bereits importierte Buchungen sind gesperrt. Mögliche Duplikate, Überweisungen und Kartenzahlungen sind abgewählt. Prüfe sie: Raten können die Kartenabrechnung bereits abbilden."
+  },
+  "Escolha a moeda original do arquivo. Os valores serão convertidos para BRL pela cotação salva, sem alterar os registros existentes.": {
+    "en": "Choose the file’s original currency. Amounts convert to BRL using the saved rate; existing records stay unchanged.",
+    "es": "Elige la moneda original del archivo. Los importes se convierten a BRL con el tipo guardado, sin modificar registros existentes.",
+    "fr": "Choisissez la devise d’origine du fichier. Les montants sont convertis en BRL au taux enregistré, sans modifier les données existantes.",
+    "de": "Wähle die Originalwährung der Datei. Beträge werden mit dem gespeicherten Kurs in BRL umgerechnet; bestehende Einträge bleiben erhalten."
+  },
+  "Escolha um arquivo CSV ou OFX.": {
+    "en": "Choose a CSV or OFX file.",
+    "es": "Elige un archivo CSV u OFX.",
+    "fr": "Choisissez un fichier CSV ou OFX.",
+    "de": "Wähle eine CSV- oder OFX-Datei."
+  },
+  "Escolha um separador CSV válido.": {
+    "en": "Choose a valid CSV delimiter.",
+    "es": "Elige un separador CSV válido.",
+    "fr": "Choisissez un séparateur CSV valide.",
+    "de": "Wähle ein gültiges CSV-Trennzeichen."
+  },
+  "Escolha uma conta ativa para importar.": {
+    "en": "Choose an active account for the import.",
+    "es": "Elige una cuenta activa para importar.",
+    "fr": "Choisissez un compte actif pour l’importation.",
+    "de": "Wähle ein aktives Konto für den Import."
+  },
+  "Escolher outro arquivo": {
+    "en": "Choose another file",
+    "es": "Elegir otro archivo",
+    "fr": "Choisir un autre fichier",
+    "de": "Andere Datei wählen"
+  },
+  "Finanças do dia": {
+    "en": "Finances for the day",
+    "es": "Finanzas del día",
+    "fr": "Finances du jour",
+    "de": "Finanzen des Tages"
+  },
+  "Há lançamentos anteriores ao saldo inicial da conta. Ajuste a conta ou importe sem vínculo.": {
+    "en": "Some entries precede the account’s opening balance. Adjust the account or import without an account.",
+    "es": "Hay movimientos anteriores al saldo inicial de la cuenta. Ajusta la cuenta o importa sin vincularla.",
+    "fr": "Certaines opérations précèdent le solde initial du compte. Ajustez le compte ou importez sans compte.",
+    "de": "Einige Buchungen liegen vor dem Anfangssaldo. Passe das Konto an oder importiere ohne Kontozuordnung."
+  },
+  "Há um possível duplicado novo. Reabra a revisão antes de importar.": {
+    "en": "A new possible duplicate appeared. Reopen the review before importing.",
+    "es": "Apareció un nuevo posible duplicado. Vuelve a abrir la revisión antes de importar.",
+    "fr": "Un nouveau doublon possible est apparu. Rouvrez la vérification avant d’importer.",
+    "de": "Ein neues mögliches Duplikat ist aufgetaucht. Öffne die Prüfung vor dem Import erneut."
+  },
+  "Importar extrato": {
+    "en": "Import statement",
+    "es": "Importar extracto",
+    "fr": "Importer un relevé",
+    "de": "Kontoauszug importieren"
+  },
+  "Importar lançamento {0}": {
+    "en": "Import entry {0}",
+    "es": "Importar movimiento {0}",
+    "fr": "Importer l’opération {0}",
+    "de": "Buchung {0} importieren"
+  },
+  "Importar {0} lançamentos": {
+    "en": "Import {0} entries",
+    "es": "Importar {0} movimientos",
+    "fr": "Importer {0} opérations",
+    "de": "{0} Buchungen importieren"
+  },
+  "Importe no máximo 5.000 lançamentos por arquivo.": {
+    "en": "Import at most 5,000 entries per file.",
+    "es": "Importa como máximo 5.000 movimientos por archivo.",
+    "fr": "Importez au maximum 5 000 opérations par fichier.",
+    "de": "Importiere höchstens 5.000 Buchungen pro Datei."
+  },
+  "Já importado: não será adicionado novamente.": {
+    "en": "Already imported: will not be added again.",
+    "es": "Ya importado: no se añadirá de nuevo.",
+    "fr": "Déjà importé : ne sera pas ajouté à nouveau.",
+    "de": "Bereits importiert: wird nicht erneut hinzugefügt."
+  },
+  "Lançamentos com valor zero não podem ser importados.": {
+    "en": "Zero-amount entries cannot be imported.",
+    "es": "No se pueden importar movimientos con importe cero.",
+    "fr": "Les opérations à montant nul ne peuvent pas être importées.",
+    "de": "Buchungen mit Betrag null können nicht importiert werden."
+  },
+  "Lendo extrato…": {
+    "en": "Reading statement…",
+    "es": "Leyendo extracto…",
+    "fr": "Lecture du relevé…",
+    "de": "Kontoauszug wird gelesen…"
+  },
+  "Linha {0}: {1}": {
+    "en": "Row {0}: {1}",
+    "es": "Fila {0}: {1}",
+    "fr": "Ligne {0} : {1}",
+    "de": "Zeile {0}: {1}"
+  },
+  "Mapeie data, descrição e valor, ou as colunas de débito e crédito, sem repetir colunas.": {
+    "en": "Map date, description, and amount, or separate debit/credit columns, without reusing columns.",
+    "es": "Asigna fecha, descripción e importe, o débito y crédito separados, sin repetir columnas.",
+    "fr": "Associez date, description et montant, ou débit/crédit séparés, sans réutiliser de colonne.",
+    "de": "Ordne Datum, Beschreibung und Betrag oder separate Soll-/Habenspalten zu, ohne Spalten doppelt zu verwenden."
+  },
+  "Moeda do extrato": {
+    "en": "Statement currency",
+    "es": "Moneda del extracto",
+    "fr": "Devise du relevé",
+    "de": "Währung des Kontoauszugs"
+  },
+  "Moeda do extrato: {0}": {
+    "en": "Statement currency: {0}",
+    "es": "Moneda del extracto: {0}",
+    "fr": "Devise du relevé : {0}",
+    "de": "Auszugswährung: {0}"
+  },
+  "Mostrar na agenda": {
+    "en": "Show in calendar",
+    "es": "Mostrar en la agenda",
+    "fr": "Afficher dans l’agenda",
+    "de": "Im Kalender anzeigen"
+  },
+  "Mês / dia / ano": {
+    "en": "Month / day / year",
+    "es": "Mes / día / año",
+    "fr": "Mois / jour / année",
+    "de": "Monat / Tag / Jahr"
+  },
+  "Nenhuma movimentação neste filtro para este dia.": {
+    "en": "No transactions for this day and filter.",
+    "es": "No hay movimientos para este día y filtro.",
+    "fr": "Aucune opération pour ce jour et ce filtre.",
+    "de": "Keine Buchungen für diesen Tag und Filter."
+  },
+  "Nenhuma tarefa neste filtro para este dia.": {
+    "en": "No tasks for this day and filter.",
+    "es": "No hay tareas para este día y filtro.",
+    "fr": "Aucune tâche pour ce jour et ce filtre.",
+    "de": "Keine Aufgaben für diesen Tag und Filter."
+  },
+  "Não usar": {
+    "en": "Do not use",
+    "es": "No usar",
+    "fr": "Ne pas utiliser",
+    "de": "Nicht verwenden"
+  },
+  "O CSV contém aspas inválidas.": {
+    "en": "The CSV contains invalid quotation marks.",
+    "es": "El CSV contiene comillas no válidas.",
+    "fr": "Le CSV contient des guillemets incorrects.",
+    "de": "Die CSV-Datei enthält ungültige Anführungszeichen."
+  },
+  "O CSV deve usar uma única moeda suportada, indicada em todas as linhas.": {
+    "en": "The CSV must use one supported currency, specified on every row.",
+    "es": "El CSV debe usar una sola moneda compatible, indicada en todas las filas.",
+    "fr": "Le CSV doit utiliser une seule devise prise en charge, indiquée sur chaque ligne.",
+    "de": "Die CSV muss genau eine unterstützte Währung verwenden, die in jeder Zeile angegeben ist."
+  },
+  "O CSV precisa de cabeçalho e pelo menos um lançamento.": {
+    "en": "The CSV needs headers and at least one entry.",
+    "es": "El CSV necesita cabecera y al menos un movimiento.",
+    "fr": "Le CSV doit contenir un en-tête et au moins une opération.",
+    "de": "Die CSV benötigt eine Kopfzeile und mindestens eine Buchung."
+  },
+  "O CSV tem colunas demais.": {
+    "en": "The CSV has too many columns.",
+    "es": "El CSV tiene demasiadas columnas.",
+    "fr": "Le CSV contient trop de colonnes.",
+    "de": "Die CSV enthält zu viele Spalten."
+  },
+  "O OFX precisa conter de 1 a 5.000 lançamentos válidos.": {
+    "en": "The OFX must contain 1–5,000 valid entries.",
+    "es": "El OFX debe contener de 1 a 5.000 movimientos válidos.",
+    "fr": "Le fichier OFX doit contenir de 1 à 5 000 opérations valides.",
+    "de": "Die OFX-Datei muss 1 bis 5.000 gültige Buchungen enthalten."
+  },
+  "O arquivo OFX é inválido.": {
+    "en": "The OFX file is invalid.",
+    "es": "El archivo OFX no es válido.",
+    "fr": "Le fichier OFX est incorrect.",
+    "de": "Die OFX-Datei ist ungültig."
+  },
+  "O arquivo fica neste dispositivo. Revise os lançamentos antes de confirmar; seus registros atuais serão preservados.": {
+    "en": "The file stays on this device. Review entries before confirming; existing records are preserved.",
+    "es": "El archivo permanece en este dispositivo. Revisa antes de confirmar; los registros existentes se conservan.",
+    "fr": "Le fichier reste sur cet appareil. Vérifiez avant de confirmer ; vos données existantes sont conservées.",
+    "de": "Die Datei bleibt auf diesem Gerät. Prüfe die Buchungen vor dem Bestätigen; bestehende Einträge bleiben erhalten."
+  },
+  "O backup contém um identificador de extrato inválido.": {
+    "en": "The backup contains an invalid statement identifier.",
+    "es": "La copia contiene un identificador de extracto no válido.",
+    "fr": "La sauvegarde contient un identifiant de relevé incorrect.",
+    "de": "Die Sicherung enthält eine ungültige Auszugskennung."
+  },
+  "O extrato deve ter no máximo 5 MB.": {
+    "en": "The statement must be 5 MB or smaller.",
+    "es": "El extracto debe tener como máximo 5 MB.",
+    "fr": "Le relevé ne doit pas dépasser 5 Mo.",
+    "de": "Der Kontoauszug darf höchstens 5 MB groß sein."
+  },
+  "O identificador do lançamento é longo demais.": {
+    "en": "The entry identifier is too long.",
+    "es": "El identificador del movimiento es demasiado largo.",
+    "fr": "L’identifiant de l’opération est trop long.",
+    "de": "Die Buchungskennung ist zu lang."
+  },
+  "O tipo de receita conflita com o valor negativo.": {
+    "en": "The income type conflicts with the negative amount.",
+    "es": "El tipo de ingreso contradice el importe negativo.",
+    "fr": "Le type de revenu est incompatible avec le montant négatif.",
+    "de": "Der Einnahmetyp widerspricht dem negativen Betrag."
+  },
+  "O valor convertido está fora dos limites do app.": {
+    "en": "The converted amount exceeds the app’s limits.",
+    "es": "El importe convertido supera los límites de la app.",
+    "fr": "Le montant converti dépasse les limites de l’application.",
+    "de": "Der umgerechnete Betrag überschreitet die App-Grenzen."
+  },
+  "Ordem da data": {
+    "en": "Date order",
+    "es": "Orden de la fecha",
+    "fr": "Ordre de la date",
+    "de": "Datumsreihenfolge"
+  },
+  "Original: {0}": {
+    "en": "Original: {0}",
+    "es": "Original: {0}",
+    "fr": "Original : {0}",
+    "de": "Original: {0}"
+  },
+  "Ponto e vírgula": {
+    "en": "Semicolon",
+    "es": "Punto y coma",
+    "fr": "Point-virgule",
+    "de": "Semikolon"
+  },
+  "Ponto: 1,234.56": {
+    "en": "Period: 1,234.56",
+    "es": "Punto: 1,234.56",
+    "fr": "Point : 1,234.56",
+    "de": "Punkt: 1,234.56"
+  },
+  "Possível duplicado: confira os registros existentes.": {
+    "en": "Possible duplicate: check existing records.",
+    "es": "Posible duplicado: revisa los registros existentes.",
+    "fr": "Doublon possible : vérifiez les données existantes.",
+    "de": "Mögliches Duplikat: Prüfe bestehende Einträge."
+  },
+  "Próxima": {
+    "en": "Next",
+    "es": "Siguiente",
+    "fr": "Suivante",
+    "de": "Weiter"
+  },
+  "Página {0} de {1}": {
+    "en": "Page {0} of {1}",
+    "es": "Página {0} de {1}",
+    "fr": "Page {0} sur {1}",
+    "de": "Seite {0} von {1}"
+  },
+  "Receitas, contas e parcelas aparecem pela data registrada. Confirmar não cria outro lançamento. Transferências internas não entram nos totais do dia.": {
+    "en": "Income, bills, and installments appear on their recorded dates. Confirming creates no extra entry. Internal transfers are excluded from daily totals.",
+    "es": "Ingresos, facturas y cuotas aparecen en su fecha registrada. Confirmar no crea otro movimiento. Las transferencias internas se excluyen de los totales diarios.",
+    "fr": "Revenus, factures et échéances apparaissent à leur date enregistrée. Confirmer ne crée pas de doublon. Les virements internes sont exclus des totaux du jour.",
+    "de": "Einnahmen, Rechnungen und Raten erscheinen am erfassten Datum. Bestätigen erstellt keine weitere Buchung. Interne Überweisungen sind nicht in den Tagessummen enthalten."
+  },
+  "Receitas: {0}": {
+    "en": "Income: {0}",
+    "es": "Ingresos: {0}",
+    "fr": "Revenus : {0}",
+    "de": "Einnahmen: {0}"
+  },
+  "Revisar lançamentos": {
+    "en": "Review entries",
+    "es": "Revisar movimientos",
+    "fr": "Vérifier les opérations",
+    "de": "Buchungen prüfen"
+  },
+  "Salve uma cotação para essa moeda em Ajustes antes de importar.": {
+    "en": "Save an exchange rate for this currency in Settings before importing.",
+    "es": "Guarda un tipo de cambio para esta moneda en Ajustes antes de importar.",
+    "fr": "Enregistrez un taux pour cette devise dans Réglages avant d’importer.",
+    "de": "Speichere vor dem Import einen Wechselkurs für diese Währung in den Einstellungen."
+  },
+  "Selecionar novos lançamentos": {
+    "en": "Select new entries",
+    "es": "Seleccionar movimientos nuevos",
+    "fr": "Sélectionner les nouvelles opérations",
+    "de": "Neue Buchungen auswählen"
+  },
+  "Selecione pelo menos um lançamento para importar.": {
+    "en": "Select at least one entry to import.",
+    "es": "Selecciona al menos un movimiento para importar.",
+    "fr": "Sélectionnez au moins une opération à importer.",
+    "de": "Wähle mindestens eine Buchung zum Importieren aus."
+  },
+  "Separador CSV": {
+    "en": "CSV delimiter",
+    "es": "Separador CSV",
+    "fr": "Séparateur CSV",
+    "de": "CSV-Trennzeichen"
+  },
+  "Separador decimal": {
+    "en": "Decimal separator",
+    "es": "Separador decimal",
+    "fr": "Séparateur décimal",
+    "de": "Dezimaltrennzeichen"
+  },
+  "Somente finanças": {
+    "en": "Finances only",
+    "es": "Solo finanzas",
+    "fr": "Finances uniquement",
+    "de": "Nur Finanzen"
+  },
+  "Somente pendentes": {
+    "en": "Pending only",
+    "es": "Solo pendientes",
+    "fr": "En attente uniquement",
+    "de": "Nur offene"
+  },
+  "Somente tarefas": {
+    "en": "Tasks only",
+    "es": "Solo tareas",
+    "fr": "Tâches uniquement",
+    "de": "Nur Aufgaben"
+  },
+  "Tabulação": {
+    "en": "Tab",
+    "es": "Tabulación",
+    "fr": "Tabulation",
+    "de": "Tabulator"
+  },
+  "Tarefas e finanças": {
+    "en": "Tasks and finances",
+    "es": "Tareas y finanzas",
+    "fr": "Tâches et finances",
+    "de": "Aufgaben und Finanzen"
+  },
+  "Tipo desconhecido. Confira a coluna de receita e despesa.": {
+    "en": "Unknown type. Check the income/expense column.",
+    "es": "Tipo desconocido. Revisa la columna de ingreso y gasto.",
+    "fr": "Type inconnu. Vérifiez la colonne de revenu et de dépense.",
+    "de": "Unbekannter Typ. Prüfe die Einnahmen-/Ausgabenspalte."
+  },
+  "Totais deste filtro, incluindo valores confirmados e previstos.": {
+    "en": "Totals for this filter, including confirmed and planned amounts.",
+    "es": "Totales de este filtro, incluidos importes confirmados y previstos.",
+    "fr": "Totaux de ce filtre, montants confirmés et prévus inclus.",
+    "de": "Summen dieses Filters einschließlich bestätigter und geplanter Beträge."
+  },
+  "Um lançamento já foi importado. Reabra a revisão para atualizar a lista.": {
+    "en": "An entry was already imported. Reopen the review to update the list.",
+    "es": "Un movimiento ya fue importado. Vuelve a abrir la revisión para actualizar la lista.",
+    "fr": "Une opération a déjà été importée. Rouvrez la vérification pour actualiser la liste.",
+    "de": "Eine Buchung wurde bereits importiert. Öffne die Prüfung erneut, um die Liste zu aktualisieren."
+  },
+  "Use a moeda indicada pelo extrato.": {
+    "en": "Use the currency specified in the statement.",
+    "es": "Usa la moneda indicada en el extracto.",
+    "fr": "Utilisez la devise indiquée dans le relevé.",
+    "de": "Verwende die im Auszug angegebene Währung."
+  },
+  "Use apenas débito ou crédito positivo em cada linha.": {
+    "en": "Use only a positive debit or credit on each row.",
+    "es": "Usa solo un débito o crédito positivo por fila.",
+    "fr": "Utilisez uniquement un débit ou un crédit positif par ligne.",
+    "de": "Verwende je Zeile nur eine positive Belastung oder Gutschrift."
+  },
+  "Use um OFX bancário ou de cartão com apenas uma conta.": {
+    "en": "Use a bank or card OFX containing one account.",
+    "es": "Usa un OFX bancario o de tarjeta con una sola cuenta.",
+    "fr": "Utilisez un OFX bancaire ou de carte contenant un seul compte.",
+    "de": "Verwende eine Bank- oder Karten-OFX mit genau einem Konto."
+  },
+  "Use uma coluna de valor com sinal, ou débito e crédito separados. O tipo é opcional; sem ele, negativo é despesa e positivo é receita. Datas ISO são aceitas em qualquer ordem.": {
+    "en": "Use a signed amount column or separate debit/credit columns. Type is optional: otherwise negative means expense and positive means income. ISO dates work with either order.",
+    "es": "Usa un importe con signo o débito/crédito separados. El tipo es opcional: sin él, negativo es gasto y positivo es ingreso. Las fechas ISO funcionan con ambos órdenes.",
+    "fr": "Utilisez un montant signé ou des colonnes débit/crédit séparées. Le type est facultatif : sinon, négatif signifie dépense et positif revenu. Les dates ISO fonctionnent dans les deux ordres.",
+    "de": "Verwende einen vorzeichenbehafteten Betrag oder getrennte Soll-/Habenspalten. Der Typ ist optional: Sonst bedeutet negativ Ausgabe und positiv Einnahme. ISO-Daten funktionieren in beiden Reihenfolgen."
+  },
+  "Valor inválido. Confira o separador decimal.": {
+    "en": "Invalid amount. Check the decimal separator.",
+    "es": "Importe no válido. Revisa el separador decimal.",
+    "fr": "Montant incorrect. Vérifiez le séparateur décimal.",
+    "de": "Ungültiger Betrag. Prüfe das Dezimaltrennzeichen."
+  },
+  "Vencida": {
+    "en": "Overdue",
+    "es": "Vencido",
+    "fr": "En retard",
+    "de": "Überfällig"
+  },
+  "Ver primeiras linhas do arquivo": {
+    "en": "View the first file rows",
+    "es": "Ver las primeras filas del archivo",
+    "fr": "Voir les premières lignes du fichier",
+    "de": "Erste Dateizeilen anzeigen"
+  },
+  "Versão 1.3 · Feito para uma vida mais leve.": {
+    "en": "Version 1.3 · Made for a lighter life.",
+    "es": "Versión 1.3 · Para una vida más ligera.",
+    "fr": "Version 1.3 · Pour une vie plus légère.",
+    "de": "Version 1.3 · Für ein leichteres Leben."
+  },
+  "Versão 1.3 · Uso pessoal": {
+    "en": "Version 1.3 · Personal use",
+    "es": "Versión 1.3 · Uso personal",
+    "fr": "Version 1.3 · Usage personnel",
+    "de": "Version 1.3 · Persönliche Nutzung"
+  },
+  "Voltar às opções": {
+    "en": "Back to options",
+    "es": "Volver a las opciones",
+    "fr": "Retour aux options",
+    "de": "Zurück zu den Optionen"
+  },
+  "Vírgula": {
+    "en": "Comma",
+    "es": "Coma",
+    "fr": "Virgule",
+    "de": "Komma"
+  },
+  "Vírgula: 1.234,56": {
+    "en": "Comma: 1.234,56",
+    "es": "Coma: 1.234,56",
+    "fr": "Virgule : 1.234,56",
+    "de": "Komma: 1.234,56"
+  },
+  "{0} de {1} lançamentos selecionados": {
+    "en": "{0} of {1} entries selected",
+    "es": "{0} de {1} movimientos seleccionados",
+    "fr": "{0} opérations sélectionnées sur {1}",
+    "de": "{0} von {1} Buchungen ausgewählt"
+  },
+  "{0} lançamentos importados. O histórico anterior foi preservado.": {
+    "en": "{0} entries imported. Previous history is preserved.",
+    "es": "{0} movimientos importados. El historial anterior se conserva.",
+    "fr": "{0} opérations importées. L’historique précédent est conservé.",
+    "de": "{0} Buchungen importiert. Der bisherige Verlauf bleibt erhalten."
+  },
+  "{0}, {1} tarefas, {2} movimentações": {
+    "en": "{0}, {1} tasks, {2} transactions",
+    "es": "{0}, {1} tareas, {2} movimientos",
+    "fr": "{0}, {1} tâches, {2} opérations",
+    "de": "{0}, {1} Aufgaben, {2} Buchungen"
+  },
+  "Importar lançamento": {
+    "en": "Import entry",
+    "es": "Importar movimiento",
+    "fr": "Importer l’opération",
+    "de": "Buchung importieren"
   }
 };

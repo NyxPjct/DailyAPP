@@ -1,3 +1,6 @@
+import { UnifiedCalendar } from "./features/UnifiedCalendar";
+import { StatementImport } from "./features/StatementImport";
+import { applyStatementImport } from "./statement-import";
 import { AccountSelect, AccountsPanel, AccountForm, TransferForm, CategoryBudgetsPanel, CategoryBudgetForm, ReportPanel, QuickExpenses } from "./features/FinanceTools";
 import { DailyFocus, SubtaskEditor } from "./features/TaskTools";
 import { BackupPasswordForm } from "./features/BackupPasswordForm";
@@ -57,7 +60,6 @@ import {
   freshData,
   randomId,
   dateKey,
-  parseDate,
   monthKey,
   shiftMonth,
   monthLabel,
@@ -105,7 +107,8 @@ function introductionDone() {
 }
 type Editor =
   | { kind: "task"; item?: Task; date?: string }
-  | { kind: "transaction"; item?: Transaction; preset?: Transaction; type?: Transaction["type"] }
+  | { kind: "transaction"; item?: Transaction; preset?: Transaction; type?: Transaction["type"]; date?: string }
+  | { kind: "statement-import" }
   | { kind: "account"; item?: WalletAccount }
   | { kind: "transfer"; item?: Transfer }
   | { kind: "category-budgets" }
@@ -705,6 +708,7 @@ function TaskForm({
 }
 
 function TransactionForm({
+  date,
   item,
   preset,
   accounts,
@@ -713,6 +717,7 @@ function TransactionForm({
   onClose,
   recurrenceFrequency,
 }: {
+  date?: string;
   item?: Transaction;
   preset?: Transaction;
   accounts: WalletAccount[];
@@ -730,7 +735,7 @@ function TransactionForm({
   const [amount, setAmount] = useState(
     source ? amountInput(source.amountCents) : "",
   );
-  const [day, setDay] = useState(item?.date ?? dateKey());
+  const [day, setDay] = useState(item?.date ?? date ?? dateKey());
   const [category, setCategory] = useState(
     source?.category ?? (type === "income" ? "Salário" : "Alimentação"),
   );
@@ -1073,10 +1078,7 @@ const navItems = [
   const categoryCount = new Set(
     totals.entries.filter((t) => t.type === "expense").map((t) => t.category),
   ).size;
-  const hasData = data.tasks.length > 0 || data.transactions.length > 0 || !!data.cards?.length || !!data.recurrences?.length || !!data.goals?.length || !!Object.keys(data.openingBalances ?? {}).length;
-  const selectedTasks = sortTasks(
-    data.tasks.filter((t) => t.date === selectedDate),
-  );
+  const hasData = data.tasks.length > 0 || data.transactions.length > 0 || !!data.cards?.length || !!data.recurrences?.length || !!data.goals?.length || !!data.accounts?.length || !!data.transfers?.length || !!Object.keys(data.categoryBudgets ?? {}).length || !!Object.keys(data.openingBalances ?? {}).length;
   const visibleTasks = sortTasks(
     data.tasks.filter(
       (t) =>
@@ -1303,6 +1305,7 @@ const navItems = [
     if (ok && transaction.reminderMinutes !== undefined) void activateReminders();
     if (ok) {
       setMonth(transaction.date.slice(0, 7));
+      if (view === "calendar") setSelectedDate(transaction.date);
       setFinanceTab("summary");
       setToast(
         exists ? tr("Movimentação atualizada.") : tr("Movimentação registrada."),
@@ -2099,119 +2102,11 @@ const navItems = [
             </>
           )}
 
-          {view === "calendar" && (
-            <div className="agenda-grid">
-              <section className="panel calendar-panel">
-                <div className="calendar-toolbar">
-                  <MonthControl month={month} onChange={changeMonth} />
-                  <button
-                    className="button secondary compact"
-                    onClick={resetMonth}
-                  >{tr("Hoje")}</button>
-                </div>
-                <div className="calendar-weekdays">
-                  {Array.from({ length: 7 }, (_, index) => new Date(2026, 0, 4 + index, 12).toLocaleDateString(getLocale(), { weekday: "short" }).replace(/\.$/, "").toLocaleUpperCase(getLocale())).map(
-                    (day, index) => <span key={index}>{day}</span>,
-                  )}
-                </div>
-                <div className="calendar-grid">
-                  {Array.from({ length: 42 }, (_, i) => {
-                    const first = parseDate(`${month}-01`);
-                    const day = new Date(
-                      first.getFullYear(),
-                      first.getMonth(),
-                      i - first.getDay() + 1,
-                    );
-                    const key = dateKey(day);
-                    const tasks = data.tasks.filter((t) => t.date === key);
-                    const outside = !key.startsWith(month);
-                    return (
-                      <button
-                        key={key}
-                        aria-label={tr("{0}, {1} tarefas", day.toLocaleDateString(getLocale(), { day: "numeric", month: "long" }), tasks.length)}
-                        aria-pressed={key === selectedDate}
-                        className={`calendar-day ${outside ? "outside-month" : ""} ${key === today ? "is-today" : ""} ${key === selectedDate ? "is-selected" : ""}`}
-                        onClick={() => {
-                          setSelectedDate(key);
-                          if (outside) setMonth(key.slice(0, 7));
-                        }}
-                      >
-                        <span className="day-number">{day.getDate()}</span>
-                        <div className="calendar-task-labels">
-                          {tasks.slice(0, 2).map((t) => (
-                            <span
-                              key={t.id}
-                              className={t.completed ? "done" : ""}
-                            >
-                              <i />
-                              {recordText(t.id, t.title)}
-                            </span>
-                          ))}
-                          {tasks.length > 2 && (
-                            <small>+{tasks.length - 2}{tr(" tarefas")}</small>
-                          )}
-                        </div>
-                        <div className="calendar-dots">
-                          {tasks.slice(0, 3).map((t) => (
-                            <i
-                              key={t.id}
-                              className={t.completed ? "done" : ""}
-                            />
-                          ))}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="calendar-legend">
-                  <span>
-                    <i className="legend-dot income-dot" />{tr("Tarefa pendente")}</span>
-                  <span>
-                    <i className="legend-dot completed-dot" />{tr("Concluída")}</span>
-                </div>
-              </section>
-              <section className="panel agenda-day-panel">
-                <div className="panel-heading">
-                  <div className="section-icon sage">
-                    <CalendarDays size={19} />
-                  </div>
-                  <div>
-                    <h2>
-                      {parseDate(selectedDate).toLocaleDateString(getLocale(), {
-                        day: "numeric",
-                        month: "long",
-                      })}
-                    </h2>
-                    <p>
-                      {parseDate(selectedDate).toLocaleDateString(getLocale(), {
-                        weekday: "long",
-                      })}
-                    </p>
-                  </div>
-                </div>
-                {selectedTasks.length ? (
-                  <div className="task-list">
-                    {selectedTasks.map((t) => taskRow(t))}
-                  </div>
-                ) : (
-                  <Empty
-                    title={tr("Um dia de possibilidades")}
-                    text={tr("Selecione um dia e adicione seus compromissos.")}
-                  />
-                )}
-                <button
-                  className="panel-add"
-                  onClick={() =>
-                    setEditor({ kind: "task", date: selectedDate })
-                  }
-                >
-                  <Plus size={16} />{tr("Adicionar neste dia")}</button>
-              </section>
-            </div>
-          )}
+          {view === "calendar" && <UnifiedCalendar data={data} month={month} today={today} selectedDate={selectedDate} monthControl={<MonthControl month={month} onChange={changeMonth}/>} onToday={resetMonth} onDate={date=>{setSelectedDate(date);setMonth(date.slice(0,7));}} renderTask={taskRow} onNewTask={()=>setEditor({kind:"task",date:selectedDate})} onNewTransaction={()=>setEditor({kind:"transaction",date:selectedDate})} onEditTransaction={item=>setEditor({kind:"transaction",item})} onSettle={settleTransaction}/>}
 
           {view === "finance" && (
             <>
+              <button className="button secondary statement-launch" onClick={()=>setEditor({kind:"statement-import"})}><Upload size={16}/>{tr("Importar extrato")}</button>
               <div className="finance-subnav" role="group" aria-label={tr("Visão financeira")}><button aria-pressed={financeTab === "summary"} className={financeTab === "summary" ? "selected" : ""} onClick={() => setFinanceTab("summary")}>{tr("Resumo")}</button><button aria-pressed={financeTab === "cards"} className={financeTab === "cards" ? "selected" : ""} onClick={() => setFinanceTab("cards")}>{tr("Cartões e parcelas")}</button><button aria-pressed={financeTab === "accounts"} className={financeTab === "accounts" ? "selected" : ""} onClick={()=>setFinanceTab("accounts")}>{tr("Contas")}</button><button aria-pressed={financeTab === "reports"} className={financeTab === "reports" ? "selected" : ""} onClick={()=>setFinanceTab("reports")}>{tr("Relatório")}</button><button aria-pressed={financeTab === "planning"} className={financeTab === "planning" ? "selected" : ""} onClick={() => setFinanceTab("planning")}>{tr("Planejamento")}</button></div>
               <div className="section-toolbar">
                 <h2>{financeTab === "cards" ? tr("Suas faturas") : financeTab === "planning" ? tr("Seu planejamento") : tr("Seu resumo financeiro")}</h2>
@@ -2691,7 +2586,7 @@ const navItems = [
                   <CheckCheck size={20} />
                 </span>
                 <strong>{tr("DailyAPP")}</strong>
-                <span>{mobileApp ? tr("Versão 1.2 · Uso pessoal") : tr("Versão 1.2 · Feito para uma vida mais leve.")}</span>
+                <span>{mobileApp ? tr("Versão 1.3 · Uso pessoal") : tr("Versão 1.3 · Feito para uma vida mais leve.")}</span>
               </div>
             </div>
           )}
@@ -2728,6 +2623,7 @@ const navItems = [
       )}
       {editor?.kind === "transaction" && (
         <TransactionForm
+          date={editor.date}
           item={editor.item}
           type={editor.type}
           preset={editor.preset}
@@ -2754,6 +2650,7 @@ const navItems = [
           onClose={() => setEditor(null)}
         />
       )}
+      {editor?.kind === "statement-import" && <Modal title={tr("Importar extrato")} subtitle={tr("Confira antes de adicionar ao seu histórico.")} onClose={()=>setEditor(null)}><StatementImport data={data} onClose={()=>setEditor(null)} onImport={drafts=>{try{const next=applyStatementImport(dataRef.current,drafts);if(!save(next))return false;setToast(tr("{0} lançamentos importados. O histórico anterior foi preservado.",drafts.filter(d=>d.selected).length));return true;}catch(error){setToast((error as Error).message);return false;}}}/></Modal>}
       {editor?.kind === "goal" && <Modal title={editor.item ? tr("Atualizar meta") : tr("Nova meta")} subtitle={tr("Um objetivo claro, no seu ritmo.")} onClose={() => setEditor(null)}><GoalForm item={editor.item} today={today} onSave={saveGoal} onClose={() => setEditor(null)} /></Modal>}
       {editor?.kind === "opening" && <Modal title={tr("Saldo inicial do mês")} subtitle={monthLabel(month)} onClose={() => setEditor(null)}><OpeningBalanceForm month={month} amount={data.openingBalances?.[month]} onSave={saveOpening} onClear={() => saveOpening()} onClose={() => setEditor(null)} /></Modal>}
       {editor?.kind === "card" && <Modal title={editor.item ? tr("Editar cartão") : tr("Novo cartão")} subtitle={tr("Cadastre somente o nome e os dias da fatura.")} onClose={() => setEditor(null)}><CardForm item={editor.item} accounts={data.accounts??[]} onSave={saveCard} onClose={() => setEditor(null)} /></Modal>}
