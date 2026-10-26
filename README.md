@@ -2,17 +2,15 @@
 
 ## Downloads
 
-- **Android:** [Download APK 1.2](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.2.0/DailyAPP-1.2-pessoal.apk) — open the file on your phone to install it. Requires Android 7 or later.
-- **iPhone:** [Download unsigned IPA 1.2](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.2.0/DailyAPP-1.2-sem-assinatura.ipa) — requires iOS 15.4 or later and personal signing before installation. On Windows, follow the [AltServer/AltStore instructions (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal). Opening the IPA alone will not install it.
-- **Computer:** [Download the index.html preview](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.2.0/DailyAPP-index.zip) — extract the ZIP and open `index.html` in Chrome or Edge.
+- **Android:** [Download APK 1.3](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.3.0/DailyAPP-1.3-pessoal.apk) — open the file on your phone to install it. Requires Android 7 or later.
+- **iPhone:** [Download unsigned IPA 1.3](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.3.0/DailyAPP-1.3-sem-assinatura.ipa) — requires iOS 15.4 or later and personal signing before installation. On Windows, follow the [AltServer/AltStore instructions (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal). Opening the IPA alone will not install it.
+- **Computer:** [Download the index.html preview](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.3.0/DailyAPP-index.zip) — extract the ZIP and open `index.html` in Chrome or Edge.
 
-[Open the Release with the files and SHA-256 hashes](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.2.0). All three files were downloaded and checked after publication.
+[Open the Release with the files and SHA-256 hashes](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.3.0). All three files were downloaded and checked after publication.
 
-If DailyAPP is already installed on your Android phone, export a backup from Settings and install the new APK without uninstalling the app. [Check the APK's SHA-256 hash](downloads/DailyAPP-1.2-pessoal.apk.sha256).
+If DailyAPP is already installed on your Android phone, export a backup from Settings and install the new APK without uninstalling the app. [Check the APK's SHA-256 hash](downloads/DailyAPP-1.3-pessoal.apk.sha256).
 
 **Version 1.3.0, build 9:** local CSV/OFX statement imports with review and duplicate checks, plus a calendar combining tasks, income, bills, and installments. Version 1.2 accounts, budgets, reports, daily focus, and protected backups remain available. Existing records, languages, and currency settings are preserved. See the [guide to each feature](#what-each-feature-does).
-
-The links above point to the verified 1.2 release while the 1.3 installers are being prepared.
 
 A multilingual app for tasks, scheduling, and personal finances. English is the default, with Portuguese, Spanish, French, and German available in Settings. Its React interface is packaged with Capacitor into apps installed on your phone. Screens, fonts, and icons are included in the installation; local operation does not require hosting, Netlify, or Supabase.
 
@@ -339,7 +337,7 @@ npm run mobile:ios
 
 In Xcode, select the **App** project, configure your team under **Signing & Capabilities**, and run it in the simulator or on a connected iPhone. The project uses Swift Package Manager and includes the privacy manifest required by the filesystem plugin. The app requires iOS 15.4 or later.
 
-The unsigned IPA is built and published through [.github/workflows/personal-release.yml](.github/workflows/personal-release.yml), using Xcode 26.3 on the `macos-15` runner. The [release build completed successfully](https://github.com/NyxPjct/DailyAPP/actions/runs/39260367195). Its 22 bundled interface files were compared with the Android package, and all download hashes were checked. The result is an IPA **without personal signing**. Signing and installation instructions are in the [mobile guide (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal); installation and operation on a real iPhone still need to be confirmed. The [ios-personal.yml](.github/workflows/ios-personal.yml) workflow also supports generating a build artifact manually, without creating a Release.
+The unsigned IPA is built and published through [.github/workflows/personal-release.yml](.github/workflows/personal-release.yml), using Xcode 26.3 on the `macos-15` runner. The [release build completed successfully](https://github.com/NyxPjct/DailyAPP/actions/runs/40332345755). Its 22 bundled interface files were compared with the Android package, and all download hashes were checked. The result is an IPA **without personal signing**. Signing and installation instructions are in the [mobile guide (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal); installation and operation on a real iPhone still need to be confirmed. The [ios-personal.yml](.github/workflows/ios-personal.yml) workflow also supports generating a build artifact manually, without creating a Release.
 
 ## Verification
 

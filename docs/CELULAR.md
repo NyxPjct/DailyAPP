@@ -2,7 +2,7 @@
 
 ## O que esta versão entrega
 
-A versão 1.3.0, código 9, acrescenta importação local de extratos CSV/OFX com revisão e verificação de duplicados, além da agenda com tarefas, receitas, contas e parcelas. Os recursos da 1.2 continuam disponíveis. Os downloads abaixo apontam para a versão anterior verificada enquanto os novos pacotes são preparados.
+A versão 1.3.0, código 9, acrescenta importação local de extratos CSV/OFX com revisão e verificação de duplicados, além da agenda com tarefas, receitas, contas e parcelas. Os recursos da 1.2 continuam disponíveis.
 
 O aplicativo abre em inglês por padrão. Para trocar, abra **Settings → App language** e selecione **Português**, **Español**, **Français** ou **Deutsch**. Telas, categorias, formulários, ajuda, datas, números e lembretes acompanham a escolha. Os dados digitados são preservados no idioma original, e a troca de idioma também muda a moeda: inglês usa USD, português usa BRL e espanhol, francês e alemão usam EUR. Uma cotação salva é aplicada sem internet. Se faltar uma taxa, o idioma muda e os valores permanecem na moeda anterior até conseguir uma cotação; o app mostra um aviso. A conversão aguarda o fechamento de formulários abertos. Em **Settings → App currency**, você pode escolher outra moeda manualmente, até a próxima troca de idioma. BRL, USD, EUR, GBP, CAD e AUD estão disponíveis, com conversão por cotação salva, atualização online ou taxa manual. O histórico permanece em centavos de BRL; campos novos aceitam a moeda escolhida. Sem internet, usa a última taxa salva. A data e a origem da cotação são exibidas. O idioma fica salvo e entra no backup; arquivos antigos mantêm a preferência atual. As capturas do README mostram inglês e os outros quatro idiomas.
 
@@ -12,7 +12,7 @@ As pastas `android/` e `ios/` são projetos nativos completos do Capacitor. A in
 
 ## Instalar no Android
 
-O APK pessoal está disponível para [download direto no GitHub](https://github.com/NyxPjct/DailyAPP/raw/refs/heads/main/downloads/DailyAPP-1.2-pessoal.apk). As [Releases](https://github.com/NyxPjct/DailyAPP/releases) reúnem os instaladores publicados.
+O APK pessoal está disponível para [download direto no GitHub](https://github.com/NyxPjct/DailyAPP/raw/refs/heads/main/downloads/DailyAPP-1.3-pessoal.apk). As [Releases](https://github.com/NyxPjct/DailyAPP/releases) reúnem os instaladores publicados.
 
 Obtenha `artifacts/DailyAPP-1.3-pessoal.apk`, transfira-o para o celular Android e abra o arquivo. O sistema pode pedir autorização para instalar arquivos recebidos pelo aplicativo que está abrindo o APK. Depois da instalação, abra **DailyAPP** pela lista de aplicativos.
 
@@ -43,7 +43,7 @@ No Windows, você pode compilar no Android Studio ou, depois de `npm run mobile:
 
 ## Experimentar no computador
 
-Baixe a [prévia para computador](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.2.0/DailyAPP-index.zip) ou use `artifacts/index.html` / `artifacts/DailyAPP-index.zip` e abra `index.html` no Chrome ou Edge. O arquivo já contém a interface e seus recursos. Para atualizá-lo no projeto:
+Baixe a [prévia para computador](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.3.0/DailyAPP-index.zip) ou use `artifacts/index.html` / `artifacts/DailyAPP-index.zip` e abra `index.html` no Chrome ou Edge. O arquivo já contém a interface e seus recursos. Para atualizá-lo no projeto:
 
 ```bash
 npm run preview:computer
@@ -53,7 +53,7 @@ Esse comando preserva o build nativo em `dist/mobile`. Os dados ficam no navegad
 
 ## iPhone sem Mac pessoal
 
-Baixe [DailyAPP-1.2-sem-assinatura.ipa](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.2.0/DailyAPP-1.2-sem-assinatura.ipa) da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.2.0). O pacote foi compilado com Xcode 26.3 no GitHub Actions para arm64, iOS 15.4 ou superior, versão 1.2.0 (código 8). Seu SHA-256, integridade do ZIP, manifesto de privacidade, plugin de notificações e os 22 arquivos da interface foram conferidos após o download. Ele ainda precisa de assinatura pessoal; não instala sozinho.
+Baixe [DailyAPP-1.3-sem-assinatura.ipa](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.3.0/DailyAPP-1.3-sem-assinatura.ipa) da [release pessoal](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.3.0). O pacote foi compilado com Xcode 26.3 no GitHub Actions para arm64, iOS 15.4 ou superior, versão 1.3.0 (código 9). Seu SHA-256, integridade do ZIP, manifesto de privacidade, plugin de notificações e os 22 arquivos da interface foram conferidos após o download. Ele ainda precisa de assinatura pessoal; não instala sozinho.
 
 No Windows, instale o **AltServer** pelo site oficial [altstore.io](https://altstore.io), siga as instruções oficiais para instalar o AltStore no seu próprio iPhone e importe o IPA nele. Forneça sua conta Apple apenas nas ferramentas oficiais do seu computador/aparelho.
 
@@ -66,7 +66,7 @@ Para compilar novamente usando o Mac do GitHub Actions:
 3. Aguarde a compilação e baixe o artefato **DailyAPP-iPhone-sem-assinatura** no final da execução. Extraia `DailyAPP-1.3-sem-assinatura.ipa` do ZIP.
 4. Assine o novo IPA para seu iPhone usando as instruções acima.
 
-O workflow `ios-personal.yml` é manual e usa permissões de leitura do repositório. O workflow `personal-release.yml` também é disparado por tags `personal-v*` e usa permissão de escrita para publicar os arquivos em uma Release. Ambos usam Xcode 26.3 no runner `macos-15`, dispensam certificados Apple no GitHub e não enviam o aplicativo às lojas. A disponibilidade de minutos macOS depende da sua conta GitHub. A compilação de lançamento iOS foi concluída na [execução de publicação da versão 1.2](https://github.com/NyxPjct/DailyAPP/actions/runs/39260367195); a assinatura e a instalação pessoal ainda precisam ser confirmadas no aparelho.
+O workflow `ios-personal.yml` é manual e usa permissões de leitura do repositório. O workflow `personal-release.yml` também é disparado por tags `personal-v*` e usa permissão de escrita para publicar os arquivos em uma Release. Ambos usam Xcode 26.3 no runner `macos-15`, dispensam certificados Apple no GitHub e não enviam o aplicativo às lojas. A disponibilidade de minutos macOS depende da sua conta GitHub. A compilação de lançamento iOS foi concluída na [execução de publicação da versão 1.3](https://github.com/NyxPjct/DailyAPP/actions/runs/40332345755); a assinatura e a instalação pessoal ainda precisam ser confirmadas no aparelho.
 
 ## iPhone com acesso a um Mac
 
