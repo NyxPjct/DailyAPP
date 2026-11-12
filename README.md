@@ -2,17 +2,15 @@
 
 ## Downloads
 
-- **Android:** [Download APK 1.3](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.3.0/DailyAPP-1.3-pessoal.apk) — open the file on your phone to install it. Requires Android 7 or later.
-- **iPhone:** [Download unsigned IPA 1.3](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.3.0/DailyAPP-1.3-sem-assinatura.ipa) — requires iOS 15.4 or later and personal signing before installation. On Windows, follow the [AltServer/AltStore instructions (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal). Opening the IPA alone will not install it.
-- **Computer:** [Download the index.html preview](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.3.0/DailyAPP-index.zip) — extract the ZIP and open `index.html` in Chrome or Edge.
+- **Android:** [Download APK 1.4](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.4.0/DailyAPP-1.4-pessoal.apk) — open the file on your phone to install it. Requires Android 7 or later. For an existing installation, follow the backup and migration steps below first.
+- **iPhone:** [Download unsigned IPA 1.4](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.4.0/DailyAPP-1.4-sem-assinatura.ipa) — requires iOS 15.4 or later and personal signing before installation. On Windows, follow the [AltServer/AltStore instructions (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal). Opening the IPA alone will not install it.
+- **Computer:** [Download the index.html preview](https://github.com/NyxPjct/DailyAPP/releases/download/personal-v1.4.0/DailyAPP-index.zip) — extract the ZIP and open `index.html` in Chrome or Edge.
 
-[Open the Release with the files and SHA-256 hashes](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.3.0). All three files were downloaded and checked after publication.
+[Open the Release with the files and SHA-256 hashes](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.4.0). All three files were downloaded and checked after publication.
 
-**Android migration to 1.4:** this release uses a new signing certificate because the earlier private key was unavailable in the recreated build environment. Export and verify your backup in the existing app **before uninstalling it**, then install 1.4 and restore the backup. The app identifier is unchanged, so Android cannot install this certificate over 1.3. Follow the [migration steps](docs/CELULAR.md#instalar-no-android). [Check the APK's SHA-256 hash](downloads/DailyAPP-1.3-pessoal.apk.sha256).
+**Android migration to 1.4:** this release uses a new signing certificate because the earlier private key was unavailable in the recreated build environment. Export and verify your backup in the existing app **before uninstalling it**, then install 1.4 and restore the backup. The app identifier is unchanged, so Android cannot install this certificate over 1.3. Follow the [migration steps](docs/CELULAR.md#instalar-no-android). [Check the APK's SHA-256 hash](downloads/DailyAPP-1.4-pessoal.apk.sha256).
 
 **Version 1.4.0, build 10:** explicitly match statement rows to planned income/expenses and confirm them without creating duplicate transactions, plus global search across tasks and finances. Existing import, calendar, accounts, budgets, reporting, language, currency, and backup features remain available.
-
-The download links above still point to verified version 1.3 while the version 1.4 installers are prepared.
 
 A multilingual app for tasks, scheduling, and personal finances. English is the default, with Portuguese, Spanish, French, and German available in Settings. Its React interface is packaged with Capacitor into apps installed on your phone. Screens, fonts, and icons are included in the installation; local operation does not require hosting, Netlify, or Supabase.
 
@@ -363,7 +361,7 @@ npm run mobile:ios
 
 In Xcode, select the **App** project, configure your team under **Signing & Capabilities**, and run it in the simulator or on a connected iPhone. The project uses Swift Package Manager and includes the privacy manifest required by the filesystem plugin. The app requires iOS 15.4 or later.
 
-The unsigned IPA is built and published through [.github/workflows/personal-release.yml](.github/workflows/personal-release.yml), using Xcode 26.3 on the `macos-15` runner. The [release build completed successfully](https://github.com/NyxPjct/DailyAPP/actions/runs/40332345755). Its 22 bundled interface files were compared with the Android package, and all download hashes were checked. The result is an IPA **without personal signing**. Signing and installation instructions are in the [mobile guide (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal); installation and operation on a real iPhone still need to be confirmed. The [ios-personal.yml](.github/workflows/ios-personal.yml) workflow also supports generating a build artifact manually, without creating a Release.
+The unsigned IPA is built and published through [.github/workflows/personal-release.yml](.github/workflows/personal-release.yml), using Xcode 26.3 on the `macos-15` runner. The [version 1.4 release build completed successfully](https://github.com/NyxPjct/DailyAPP/actions/runs/43252800861). Its 22 bundled interface files were compared with the Android package, and all download hashes were checked. The result is an IPA **without personal signing**. Signing and installation instructions are in the [mobile guide (Portuguese)](docs/CELULAR.md#iphone-sem-mac-pessoal); installation and operation on a real iPhone still need to be confirmed. The [ios-personal.yml](.github/workflows/ios-personal.yml) workflow also supports generating a build artifact manually, without creating a Release.
 
 ## Verification
 
