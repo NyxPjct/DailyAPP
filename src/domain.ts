@@ -69,6 +69,7 @@ export interface Transaction {
   recurrenceId?: string;
   accountId?: string;
   statementKey?: string;
+  statementKeys?: string[];
   installment?: { cardId: string; purchaseId: string; index: number; count: number; purchasedOn: string };
 }
 export interface WalletAccount {
@@ -104,7 +105,7 @@ export type Recurrence = {
   active: boolean;
 } & (
   | { kind: "task"; template: Omit<Task, "id" | "date" | "completed" | "recurrenceId" | "focusDate"> }
-  | { kind: "transaction"; template: Omit<Transaction, "id" | "date" | "paid" | "recurrenceId" | "installment" | "statementKey"> }
+  | { kind: "transaction"; template: Omit<Transaction, "id" | "date" | "paid" | "recurrenceId" | "installment" | "statementKey" | "statementKeys"> }
 );
 export interface AppData {
   schemaVersion: 1;
@@ -312,7 +313,7 @@ function planningFields(value: Record<string, unknown>, ids: Set<string>, accoun
         return { ...base, kind: "task" as const, template };
       }
       const valid = validateData({ ...freshData(), accounts, transactions: [{ ...series.template, id: templateId, date: series.anchorDate, paid: false, recurrenceId: undefined, installment: undefined }] }).transactions[0];
-      const { id: _id, date: _date, paid: _paid, recurrenceId: _recurrence, installment: _installment, statementKey: _statement, ...template } = valid;
+      const { id: _id, date: _date, paid: _paid, recurrenceId: _recurrence, installment: _installment, statementKey: _statement, statementKeys: _statements, ...template } = valid;
       return { ...base, kind: "transaction" as const, template };
     });
   }
@@ -407,6 +408,7 @@ export function validateData(value: unknown): AppData {
     )
       throw new Error(tr("O backup contém uma movimentação inválida."));
     if (transaction.statementKey !== undefined && (typeof transaction.statementKey !== "string" || !/^[a-f0-9]{64}$/.test(transaction.statementKey))) throw new Error(tr("O backup contém um identificador de extrato inválido."));
+    if (transaction.statementKeys !== undefined && (!Array.isArray(transaction.statementKeys) || transaction.statementKeys.length>100 || transaction.statementKeys.some(k=>typeof k!=="string"||!/^[a-f0-9]{64}$/.test(k)) || new Set(transaction.statementKeys).size!==transaction.statementKeys.length)) throw new Error(tr("O backup contém um identificador de extrato inválido."));
     ids.add(transaction.id);
   }
   const budgets: Record<string, number> = {};
@@ -452,6 +454,7 @@ export function validateData(value: unknown): AppData {
       amountCents: t.amountCents,
       ...(t.accountId !== undefined ? { accountId: t.accountId } : {}),
       ...(t.statementKey !== undefined ? { statementKey: t.statementKey } : {}),
+      ...(t.statementKeys !== undefined ? { statementKeys: [...t.statementKeys] } : {}),
       type: t.type,
       category: t.category,
       paid: t.paid,

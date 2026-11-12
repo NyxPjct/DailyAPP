@@ -1,4 +1,4 @@
-# DailyAPP 1.3 — personal use
+# DailyAPP 1.4 — personal use
 
 ## Downloads
 
@@ -8,9 +8,11 @@
 
 [Open the Release with the files and SHA-256 hashes](https://github.com/NyxPjct/DailyAPP/releases/tag/personal-v1.3.0). All three files were downloaded and checked after publication.
 
-If DailyAPP is already installed on your Android phone, export a backup from Settings and install the new APK without uninstalling the app. [Check the APK's SHA-256 hash](downloads/DailyAPP-1.3-pessoal.apk.sha256).
+**Android migration to 1.4:** this release uses a new signing certificate because the earlier private key was unavailable in the recreated build environment. Export and verify your backup in the existing app **before uninstalling it**, then install 1.4 and restore the backup. The app identifier is unchanged, so Android cannot install this certificate over 1.3. Follow the [migration steps](docs/CELULAR.md#instalar-no-android). [Check the APK's SHA-256 hash](downloads/DailyAPP-1.3-pessoal.apk.sha256).
 
-**Version 1.3.0, build 9:** local CSV/OFX statement imports with review and duplicate checks, plus a calendar combining tasks, income, bills, and installments. Version 1.2 accounts, budgets, reports, daily focus, and protected backups remain available. Existing records, languages, and currency settings are preserved. See the [guide to each feature](#what-each-feature-does).
+**Version 1.4.0, build 10:** explicitly match statement rows to planned income/expenses and confirm them without creating duplicate transactions, plus global search across tasks and finances. Existing import, calendar, accounts, budgets, reporting, language, currency, and backup features remain available.
+
+The download links above still point to verified version 1.3 while the version 1.4 installers are prepared.
 
 A multilingual app for tasks, scheduling, and personal finances. English is the default, with Portuguese, Spanish, French, and German available in Settings. Its React interface is packaged with Capacitor into apps installed on your phone. Screens, fonts, and icons are included in the installation; local operation does not require hosting, Netlify, or Supabase.
 
@@ -20,27 +22,31 @@ To open the mobile interface directly on a computer, generate `artifacts/index.h
 
 ## App screenshots
 
-Screenshots of **version 1.3, build 9**, captured from the actual mobile interface with fictional data.
+Screenshots of **version 1.4, build 10**, captured from the actual mobile interface with fictional data.
+
+| Confirm an existing planned entry | Global search |
+| --- | --- |
+| <img src="docs/screenshots/conferencia.png" alt="DailyAPP 1.4: explicit choice of a planned transaction to confirm without creating a duplicate" width="280"> | <img src="docs/screenshots/busca.png" alt="DailyAPP 1.4: global search results for tasks, transactions, accounts, goals and transfers" width="280"> |
 
 | Integrated calendar | Finances on the selected day |
 | --- | --- |
-| <img src="docs/screenshots/agenda.png" alt="DailyAPP 1.3: calendar combining task and financial indicators, with filters" width="280"> | <img src="docs/screenshots/agenda-financas.png" alt="DailyAPP 1.3: bills for the selected day with direct payment confirmation" width="280"> |
+| <img src="docs/screenshots/agenda.png" alt="DailyAPP 1.4: calendar combining task and financial indicators, with filters" width="280"> | <img src="docs/screenshots/agenda-financas.png" alt="DailyAPP 1.4: bills for the selected day with direct payment confirmation" width="280"> |
 
 | Statement options and mapping | Review before import |
 | --- | --- |
-| <img src="docs/screenshots/importar.png" alt="DailyAPP 1.3: statement currency, wallet, CSV date order and column mapping" width="280"> | <img src="docs/screenshots/extrato.png" alt="DailyAPP 1.3: reviewed statement rows with possible duplicates unchecked" width="280"> |
+| <img src="docs/screenshots/importar.png" alt="DailyAPP 1.4: statement currency, wallet, CSV date order and column mapping" width="280"> | <img src="docs/screenshots/extrato.png" alt="DailyAPP 1.4: reviewed statement rows with possible duplicates unchecked" width="280"> |
 
 | Accounts and transfers | Category budgets | Monthly report |
 | --- | --- | --- |
-| <img src="docs/screenshots/contas.png" alt="DailyAPP 1.3: account total and recorded bank balance" width="250"> | <img src="docs/screenshots/limites.png" alt="DailyAPP 1.3: spending limits and progress for each expense category" width="250"> | <img src="docs/screenshots/relatorio.png" alt="DailyAPP 1.3: confirmed monthly results and comparison with the previous month" width="250"> |
+| <img src="docs/screenshots/contas.png" alt="DailyAPP 1.4: account total and recorded bank balance" width="250"> | <img src="docs/screenshots/limites.png" alt="DailyAPP 1.4: spending limits and progress for each expense category" width="250"> | <img src="docs/screenshots/relatorio.png" alt="DailyAPP 1.4: confirmed monthly results and comparison with the previous month" width="250"> |
 
 | Three daily priorities | Task steps | Protected backup |
 | --- | --- | --- |
-| <img src="docs/screenshots/prioridades.png" alt="DailyAPP 1.3: up to three chosen priorities on Today" width="250"> | <img src="docs/screenshots/etapas.png" alt="DailyAPP 1.3: task form with an editable checklist of subtasks" width="250"> | <img src="docs/screenshots/backup.png" alt="DailyAPP 1.3: password and confirmation fields for an encrypted backup" width="250"> |
+| <img src="docs/screenshots/prioridades.png" alt="DailyAPP 1.4: up to three chosen priorities on Today" width="250"> | <img src="docs/screenshots/etapas.png" alt="DailyAPP 1.4: task form with an editable checklist of subtasks" width="250"> | <img src="docs/screenshots/backup.png" alt="DailyAPP 1.4: password and confirmation fields for an encrypted backup" width="250"> |
 
 | Today in USD | Finances in USD | Currency settings |
 | --- | --- | --- |
-| <img src="docs/screenshots/hoje-usd.png" alt="DailyAPP 1.3: Today with monthly totals converted to USD" width="250"> | <img src="docs/screenshots/financas-usd.png" alt="DailyAPP 1.3: income, expenses, and balance converted to USD" width="250"> | <img src="docs/screenshots/moeda.png" alt="DailyAPP 1.3: currency selector and saved manual exchange rate" width="250"> |
+| <img src="docs/screenshots/hoje-usd.png" alt="DailyAPP 1.4: Today with monthly totals converted to USD" width="250"> | <img src="docs/screenshots/financas-usd.png" alt="DailyAPP 1.4: income, expenses, and balance converted to USD" width="250"> | <img src="docs/screenshots/moeda.png" alt="DailyAPP 1.4: currency selector and saved manual exchange rate" width="250"> |
 
 These examples use fictional data and an explicitly labeled manual rate of **0.20 USD per BRL**. Changing the language selects USD for English, BRL for Portuguese, and EUR for Spanish, French, and German. Sample rates are 0.20 USD and 0.18 EUR per BRL; they are illustrative, not current market quotes.
 
@@ -50,7 +56,7 @@ English interface with a manual BRL override:
 | --- | --- | --- |
 | <img src="docs/screenshots/hoje.png" alt="DailyAPP: daily overview, tasks, and monthly balance" width="250"> | <img src="docs/screenshots/tarefas.png" alt="DailyAPP: task list with times and categories" width="250"> | <img src="docs/screenshots/financas.png" alt="DailyAPP: income, expenses, balance, and spending by category" width="250"> |
 
-Mobile screenshots captured from the current app in Chromium at a 390 × 900 viewport, using **Explore example**. Expand a language below to see the same screens in that language. Run `npm run screenshots` to regenerate all 28 captures: fifteen language views, three currency examples, six earlier feature views, and four version 1.3 views after installing the dependencies and the Playwright browser. To generate only one language, set `DAILYAPP_SCREENSHOT_LANGUAGES` to `en`, `pt-BR`, `es`, `fr`, or `de`.
+Mobile screenshots captured from the current app in Chromium at a 390 × 900 viewport, using **Explore example**. Expand a language below to see the same screens in that language. Run `npm run screenshots` to regenerate all 30 captures: fifteen language views, three currency examples, ten earlier feature views, and two version 1.4 views after installing the dependencies and the Playwright browser. To generate only one language, set `DAILYAPP_SCREENSHOT_LANGUAGES` to `en`, `pt-BR`, `es`, `fr`, or `de`.
 
 <details>
 <summary>Português</summary>
@@ -98,6 +104,8 @@ Mobile screenshots captured from the current app in Chromium at a 390 × 900 vie
 - Pick up to three daily priorities and complete them directly on Today.
 - Integrated monthly calendar with tasks, income, bills, and installments, view filters, pending-only mode, and direct payment confirmation.
 - Local CSV/OFX statement imports with column mapping, original-currency selection, duplicate checks, category/status review, and an explicit final import.
+- Explicit confirmation of compatible planned transactions from statement rows, preserving original records, notes, categories, and links.
+- Global search across all months, including archived records, notes, task steps, categories, dates, and displayed amounts.
 - Today screen with pending bills, income, and installments, including overdue items and the next seven days.
 - Income, expenses, confirmed or planned amounts, history, categories, and monthly budgets.
 - Bank, cash, and savings accounts with dated opening balances, linked transactions, and internal transfers.
@@ -153,6 +161,19 @@ This is a current-rate estimate: it does not record historical purchase rates, e
 ## What each feature does
 
 The guide uses the default English interface. Change the language in **Settings → App language**. All app screens, buttons, categories, filters, dialogs, help, dates, number formatting, and local reminder text update to your selection. Changing the language also selects USD, BRL, or EUR; **Settings → App currency** allows a manual override. Your own names, task titles, transaction descriptions, and notes keep their original content.
+
+### Global search
+
+Tap the **Search** button in the top bar from any main screen, or press **Ctrl+K / Cmd+K** when no form or dialog is open. Enter at least two characters; the search is local and the query is not saved or included in backups.
+
+| Feature | Purpose and how to use it |
+| --- | --- |
+| Everything | Finds tasks, transactions, bank/cash/savings accounts, financial goals, cards, and internal transfers across all months. Archived records are included and labeled. |
+| Search terms | Matches names, descriptions, translated categories/status labels, ISO or displayed dates, displayed amounts, notes, and task-step titles. Accent and case differences are ignored. Multiple words must all match the same record. Your own text remains in its original language. |
+| Result type | Restricts results to tasks, transactions, accounts, goals, cards, or transfers. **Search notes only** restricts matching to the notes fields. |
+| Result count | Shows the total match count and up to 40 results. Refine the query or filters for larger lists. Exact and prefix title matches come first. |
+| Open record | Opens the existing record’s form. Transactions and transfers navigate to their recorded month. Canceling leaves data unchanged; editing uses the existing save/validation rules. |
+| Close | Close, Escape, or Android Back dismisses search. The shortcut does not replace an open form or discard an unsaved task. |
 
 ### Today
 
@@ -211,8 +232,13 @@ The guide uses the default English interface. Change the language in **Settings 
 | Currency and account | Choose the file’s **original currency**, independently of the app display currency. OFX currency is fixed by the file; a CSV currency column must contain one supported code on every row and match your choice. BRL needs no quote; another currency needs a saved quote in Settings. Choose an active wallet or leave entries unassigned. Dates before the selected wallet’s opening date are rejected. |
 | Review | Inspect descriptions, dates, original amounts, converted amounts, income/expense direction, and selected totals. Choose rows, categories, and whether each entry is already paid/received. Future-dated entries start as Planned. Review pages contain 25 rows. Cancel or go back without changing your existing records. |
 | Already imported | Stable hashed identifiers prevent adding an already imported source entry again, including after editing its saved description/category/amount or restoring a current backup. OFX identifiers are scoped to the source account; CSV identifiers/fingerprints use the chosen wallet. Entries without source IDs use a content fingerprint and occurrence number. |
-| Possible duplicates | Matching date, type, amount, normalized description, and compatible account links flag possible duplicates in current records or the file. These begin unchecked; select only after review. This is a conservative check, not a guarantee of detecting every duplicate. It does not overwrite or reconcile an existing planned transaction automatically. |
+| Possible duplicates | Matching date, type, amount, normalized description, and compatible account links flag possible duplicates in current records or the file. These begin unchecked; select only after review. This is a conservative check, not a guarantee of detecting every duplicate. It does not link anything automatically. Use the explicit planned-entry choice below when a compatible item is suggested. |
 | Transfers and card payments | OFX transfer types and some description patterns begin unchecked. Review all rows: the app cannot infer every transfer or card payment. Record transfers between your own accounts under **Accounts → New transfer**. A card payment may already be represented by installments; importing it as another expense would count it twice. |
+| Confirm a planned entry | A row with compatible planned records starts unchecked. In **Review entry**, explicitly choose **Confirm planned…** to update that existing record. The final button becomes **Confirm review** when any row uses this action. Default selection and bulk selection never choose a planned match. |
+| Matching rules | Suggestions require an unpaid record with the same income/expense direction and exact integer BRL amount, dates within seven days, and compatible active wallet links. Up to ten candidates are shown. A future-dated source row and flagged transfer/card-payment rows do not confirm planned entries. No partial-payment or fuzzy-amount matching is performed. |
+| Review the change | The preview shows the original description, old date, and statement date. Confirmation sets Paid/Received and uses the statement date. It preserves the record’s ID, description, amount, category, notes, reminders, recurrence, and installment links. A chosen source wallet is attached when compatible; otherwise its existing account link is retained. |
+| Safe batch | New rows and planned confirmations share one validated save. One planned record can be matched once per batch. If a chosen record changed, was paid elsewhere, disappeared, or became incompatible, the whole batch is rejected for review without partial changes. |
+| Reimports and backups | Both earlier and newly linked hashed source markers are retained, preventing a second import of either source after confirmation. A known imported planned item may be confirmed explicitly when an eligible actual statement date is available. Restore with 1.4 or later to retain multiple markers. |
 | Confirm import | Adds only the selected rows as one validated batch and preserves existing records. Validation, capacity, or storage failure leaves the previous data intact. You can edit other fields later in Finances. |
 
 The import uses the **saved current/manual exchange rate**, not a historical bank rate. The review shows its date and the original amount. Saved transactions keep integer BRL cents and an opaque import marker; the original statement, source account number, foreign amount, and rate history are not retained. Keep the original file if you need that audit trail. Changes to later display rates do not rewrite imported BRL cents.
@@ -294,7 +320,7 @@ The app schedules up to **60 upcoming notifications** and refreshes them when op
 
 ## Prepare the projects
 
-Requires Node.js 22.12 or later and npm.
+Requires Node.js 22.12 or later and npm. On a fresh Linux x86_64 cloud workspace, `python3 scripts/setup-android-cloud.py` installs pinned official JDK 21 and Android SDK archives in the ignored `.cache` directory, verifies their SHA-256 checksums, and configures proxy CA trust without changing the system installation. `scripts/build-android.py` reuses these paths automatically. Existing signing keys are never replaced by setup.
 
 ```bash
 npm ci
@@ -325,7 +351,7 @@ In Android Studio, select a phone/emulator and run the project. To generate the 
 npm run mobile:personal
 ```
 
-The installer is saved to `artifacts/DailyAPP-1.3-pessoal.apk`. It uses a Release build with application and WebView debugging disabled. It preserves the previous APK's development certificate to support updates to the personal installation, with `versionCode` 9 and version name `1.3.0`. Keep that local key when building future updates. Play Store publication requires a dedicated distribution key. `npm run mobile:apk` remains available to generate a debug APK.
+The installer is saved to `artifacts/DailyAPP-1.4-pessoal.apk`. It uses a Release build with application and WebView debugging disabled. It uses a new personal development certificate, with `versionCode` 10 and version name `1.4.0`. Export/verify a backup before uninstalling an earlier-certificate installation, then restore it in 1.4. Keep the new local signing key for subsequent compatible updates. Play Store publication requires a dedicated distribution key. `npm run mobile:apk` remains available to generate a debug APK.
 
 ## iPhone
 
@@ -346,7 +372,7 @@ npm run build:mobile
 npm test
 ```
 
-All **127 tests** passed using Playwright and Chromium. They cover CSV/OFX parsing, encodings and amount/date formats, explicit currency conversion, duplicate checks and stable import markers, atomic import/storage failures, integrated calendar filters and direct confirmation, and account balances and transfer conservation, linked card payments without duplicates, category thresholds, monthly reports, quick expense creation, subtasks and three-priority limits, protected backups without Web Crypto SubtleCrypto, incorrect passwords, tamper detection, canceling restoration, and automatic language/currency switching, cancellation of stale requests, safe conversion after closing an amount form, actual currency conversion, inverse amount inputs, quote failures, cached and manual rates, balance forecasts, goals, bills on Today, tasks, finances, local data, backups, storage failures, dates, navigation, first use, existing-data upgrades, all five languages, accessibility, and offline use of the mobile interface. Native plugin contracts are simulated: browser tests do not replace testing on a phone, especially for the keyboard, file picker, and sharing.
+**147 distinct tests have passed.** The full run passed 146 cases; one iOS navigation case timed out at 60 seconds and passed on its isolated rerun. Eight final UI checks also passed after the search date display was updated, including all five languages at 320 px offline. They cover CSV/OFX parsing, encodings and amount/date formats, explicit currency conversion, duplicate checks and stable import markers, atomic import/storage failures, integrated calendar filters and direct confirmation, and account balances and transfer conservation, linked card payments without duplicates, category thresholds, monthly reports, quick expense creation, subtasks and three-priority limits, protected backups without Web Crypto SubtleCrypto, incorrect passwords, tamper detection, canceling restoration, and automatic language/currency switching, cancellation of stale requests, safe conversion after closing an amount form, actual currency conversion, inverse amount inputs, quote failures, cached and manual rates, balance forecasts, goals, bills on Today, tasks, finances, local data, backups, storage failures, dates, navigation, first use, existing-data upgrades, all five languages, accessibility, and offline use of the mobile interface. Native plugin contracts are simulated: browser tests do not replace testing on a phone, especially for the keyboard, file picker, and sharing.
 
 Test servers use ports 5174 (local workspace), 5175 (mocked accounts from the earlier implementation), and 5176 (mobile app interface). In the cloud environment, the available browser is `/usr/bin/chromium`; on other machines, run `npx playwright install chromium` once.
 
@@ -360,7 +386,7 @@ Protected exports use **AES-256-GCM** with authenticated encryption and **PBKDF2
 
 The encrypted file protects the **exported backup**. Local storage is not an encrypted vault. There is no password recovery, automatic cloud backup, biometric lock, or encryption of the app’s live database. Plain JSON exports remain available and readable.
 
-Version 1.0/1.1/1.2 backups remain accepted. New fields are optional, and existing data is not reassigned or rewritten at startup. Version 1.3 includes hashed statement identifiers in backups; restore with 1.3 or later to retain reimport detection. Recurring future transactions do not inherit a source import marker.
+Version 1.0/1.1/1.2/1.3 backups remain accepted. New fields are optional, and existing data is not reassigned or rewritten at startup. Version 1.4 retains primary and additional hashed statement markers; restore with 1.4 or later to retain every source after reconciliation. Recurring future transactions do not inherit a source import marker.
 
 The current mobile version does not connect to banks, require login, or synchronize devices automatically. The earlier account implementation is preserved in `src/cloud/` for a future stage if requested; it is not included in the mobile package.
 
@@ -376,7 +402,9 @@ src/App.tsx           Tasks, calendar, finances, and settings
 src/domain.ts         Types, validation, and calculations
 src/finance-tools.ts  Account balances, category budgets, reports, and templates
 src/backup-crypto.ts  Authenticated password-protected backup format
-src/statement-import.ts CSV/OFX parsing, review, currency conversion, and duplicate checks
+src/statement-import.ts CSV/OFX parsing, atomic imports/reconciliation, and duplicate checks
+src/reconciliation.ts Strict planned-entry matching and source-marker handling
+src/global-search.ts  Local search across record types and notes
 src/features/         Planning, account/report panels, task steps, and backup forms
 src/i18n/             Five-language catalogs, locale formatting, and saved language preference
 src/currency.ts       BRL-based conversion, quote validation, online rates, and inverse inputs

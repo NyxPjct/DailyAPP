@@ -7,8 +7,8 @@ android {
         applicationId "com.nyxpjct.dailyapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
-        versionName "1.3.0"
+        versionCode 10
+        versionName "1.4.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -18,8 +18,8 @@ android {
     }
     buildTypes {
         release {
-            // Personal use: retain the existing test certificate so this APK
-            // can update that installation and preserve its private data.
+            // Personal use: sign with the local development certificate.
+            // A different certificate requires backup and reinstallation.
             signingConfig signingConfigs.debug
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

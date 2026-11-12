@@ -4,6 +4,7 @@ import type { AppData, Transaction } from "./domain";
 import { isCurrency, validRate } from "./currency";
 import type { Currency } from "./currency";
 import { t as tr } from "./i18n/core";
+import { canReconcile, reconciliationCandidates, reconciliationIndex, statementKeys, statementOwners } from "./reconciliation";
 
 export const STATEMENT_BYTES = 5 * 1024 * 1024;
 export const STATEMENT_ROWS = 5000;
@@ -11,7 +12,7 @@ export interface CsvMapping { date: number; description: number; amount: number;
 export interface CsvTable { headers: string[]; rows: string[][] }
 export interface StatementRow { line: number; date: string; description: string; signedCents: number; externalId?: string; scope: string; check: boolean }
 export interface Statement { format: "csv" | "ofx"; currency?: Currency; rows: StatementRow[] }
-export interface ImportDraft { transaction: Transaction; selected: boolean; duplicate: "known" | "possible" | null; check: boolean; allowDuplicate: boolean }
+export interface ImportDraft { transaction: Transaction; selected: boolean; duplicate: "known" | "possible" | null; check: boolean; allowDuplicate: boolean; matches?:Transaction[]; match?:Transaction }
 const hash = (value: unknown) => Array.from(sha256(new TextEncoder().encode(JSON.stringify(value))), b => b.toString(16).padStart(2, "0")).join("");
 
 export function decodeStatement(bytes: ArrayBuffer): string {
@@ -182,7 +183,8 @@ export function reviewStatement(statement:Statement,data:AppData,currency:Curren
   if (!validRate(rate)) throw new Error(tr("Salve uma cotação para essa moeda em Ajustes antes de importar."));
   const account=accountId?data.accounts?.find(a=>a.id===accountId&&!a.archived):undefined;
   if (accountId&&!account) throw new Error(tr("Escolha uma conta ativa para importar."));
-  const keys=new Set(data.transactions.map(t=>t.statementKey).filter(Boolean)), occurrences=new Map<string,number>(), existing=signatures(data.transactions), seen=new Set<string>();
+  const owners=statementOwners(data.transactions);
+  const keys=new Set(owners.keys()), occurrences=new Map<string,number>(), existing=signatures(data.transactions), seen=new Set<string>(), pending=reconciliationIndex(data);
   return statement.rows.map(row=>{
     if (account&&row.date<account.openingDate) throw new Error(tr("Há lançamentos anteriores ao saldo inicial da conta. Ajuste a conta ou importe sem vínculo."));
     const amountCents=Math.round(Math.abs(row.signedCents)/rate);
@@ -193,21 +195,32 @@ export function reviewStatement(statement:Statement,data:AppData,currency:Curren
     const transaction:Transaction={id:randomId(),date:row.date,description:row.description,amountCents,type:row.signedCents>0?"income":"expense",category:"Outros",paid:row.date<=dateKey(),notes:"",...(accountId?{accountId}:{}),statementKey};
     const duplicate=keys.has(statementKey)?"known":possible(existing,transaction)||seen.has(signature(transaction))?"possible":null;
     keys.add(statementKey);seen.add(signature(transaction));
-    return {transaction,duplicate,check:row.check,selected:!duplicate&&!row.check,allowDuplicate:false};
+    const matches=row.check?[]:reconciliationCandidates(data,transaction,pending).filter(target=>![...(owners.get(statementKey)??[])].some(id=>id!==target.id));
+    return {transaction,duplicate,check:row.check,selected:!duplicate&&!row.check&&!matches.length,allowDuplicate:false,...(matches.length?{matches}: {})};
   });
 }
 export function applyStatementImport(data:AppData,drafts:ImportDraft[]):AppData {
   const selected=drafts.filter(d=>d.selected);
   if (!selected.length) throw new Error(tr("Selecione pelo menos um lançamento para importar."));
-  if (data.transactions.length+selected.length>10000) throw new Error(tr("Limite de registros atingido. Exporte um backup antes de remover registros antigos."));
-  const keys=new Set(data.transactions.map(t=>t.statementKey).filter(Boolean));
+  if (data.transactions.length+selected.filter(d=>!d.match).length>10000) throw new Error(tr("Limite de registros atingido. Exporte um backup antes de remover registros antigos."));
+  const owners=statementOwners(data.transactions);
+  const keys=new Set(owners.keys()), usedKeys=new Set<string>(), matched=new Set<string>();
   const index=signatures(data.transactions), transactions=[...data.transactions];
   for (const draft of selected) {
     const t=draft.transaction;
+    if(draft.match){
+      const position=transactions.findIndex(e=>e.id===draft.match!.id),target=transactions[position];
+      if(draft.check||!t.statementKey||!target||matched.has(target.id)||!canReconcile(data,t,target)||JSON.stringify(target)!==JSON.stringify(draft.match))throw new Error(tr("O lançamento previsto mudou ou não é compatível. Reabra a revisão antes de confirmar."));
+      if(usedKeys.has(t.statementKey)||[...(owners.get(t.statementKey)??[])].some(id=>id!==target.id))throw new Error(tr("Um lançamento já foi importado. Reabra a revisão para atualizar a lista."));
+      const markers=[...new Set([...statementKeys(target),t.statementKey])];
+      transactions[position]={...target,paid:true,date:t.date,...(t.accountId?{accountId:t.accountId}:{}),statementKey:target.statementKey??t.statementKey,...(markers.length>1?{statementKeys:markers.filter(k=>k!==(target.statementKey??t.statementKey))}:{})};
+      const updated=transactions[position],key=signature(updated);if(!index.has(key))index.set(key,new Set());index.get(key)!.add(updated.accountId??"");
+      matched.add(target.id);usedKeys.add(t.statementKey);keys.add(t.statementKey);continue;
+    }
     if (draft.duplicate==="known"||!t.statementKey||keys.has(t.statementKey)) throw new Error(tr("Um lançamento já foi importado. Reabra a revisão para atualizar a lista."));
     if (possible(index,t)&&!draft.allowDuplicate) throw new Error(tr("Há um possível duplicado novo. Reabra a revisão antes de importar."));
     if (t.accountId&&!data.accounts?.some(a=>a.id===t.accountId&&!a.archived)) throw new Error(tr("Escolha uma conta ativa para importar."));
-    keys.add(t.statementKey);transactions.push(t);const key=signature(t);if(!index.has(key))index.set(key,new Set());index.get(key)!.add(t.accountId??"");
+    keys.add(t.statementKey);usedKeys.add(t.statementKey);transactions.push(t);const key=signature(t);if(!index.has(key))index.set(key,new Set());index.get(key)!.add(t.accountId??"");
   }
   return validateData({...data,transactions});
 }

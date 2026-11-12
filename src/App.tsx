@@ -1,3 +1,5 @@
+import { GlobalSearch } from "./features/GlobalSearch";
+import type { SearchResult } from "./global-search";
 import { UnifiedCalendar } from "./features/UnifiedCalendar";
 import { StatementImport } from "./features/StatementImport";
 import { applyStatementImport } from "./statement-import";
@@ -109,6 +111,7 @@ type Editor =
   | { kind: "task"; item?: Task; date?: string }
   | { kind: "transaction"; item?: Transaction; preset?: Transaction; type?: Transaction["type"]; date?: string }
   | { kind: "statement-import" }
+  | { kind: "search" }
   | { kind: "account"; item?: WalletAccount }
   | { kind: "transfer"; item?: Transfer }
   | { kind: "category-budgets" }
@@ -1005,6 +1008,10 @@ const navItems = [
   const [financeStatus, setFinanceStatus] = useState("Todos os status");
   const [financeSearch, setFinanceSearch] = useState("");
   const [financeTab, setFinanceTab] = useState<"summary" | "cards" | "planning" | "accounts" | "reports">("summary");
+  useEffect(()=>{
+    const shortcut=(event:KeyboardEvent)=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="k"&&!event.repeat&&!editor&&!confirm&&!welcomeOpen&&!helpOpen){event.preventDefault();setEditor({kind:"search"});}};
+    window.addEventListener("keydown",shortcut);return()=>window.removeEventListener("keydown",shortcut);
+  },[editor,confirm,welcomeOpen,helpOpen]);
   const [today, setToday] = useState(dateKey);
   const [refreshTick, setRefreshTick] = useState(0);
   const [reminders, setReminders] = useState<ReminderState>(initialReminderState);
@@ -1204,6 +1211,16 @@ const navItems = [
     setMobileMenu(false);
     window.scrollTo({ top: 0 });
     window.setTimeout(() => headingRef.current?.focus(), 0);
+  }
+  function openSearchResult(result:SearchResult) {
+    const navigate=(next:View)=>{setView(next);setMobileMenu(false);window.scrollTo({top:0});};
+    if(result.kind==="task"){const item=data.tasks.find(t=>t.id===result.id);if(item){navigate("tasks");setEditor({kind:"task",item});return;}}
+    if(result.kind==="transaction"){const item=data.transactions.find(t=>t.id===result.id);if(item){setMonth(item.date.slice(0,7));setFinanceTab("summary");navigate("finance");setEditor({kind:"transaction",item});return;}}
+    if(result.kind==="account"){const item=data.accounts?.find(t=>t.id===result.id);if(item){setFinanceTab("accounts");navigate("finance");setEditor({kind:"account",item});return;}}
+    if(result.kind==="goal"){const item=data.goals?.find(t=>t.id===result.id);if(item){setFinanceTab("planning");navigate("finance");setEditor({kind:"goal",item});return;}}
+    if(result.kind==="card"){const item=data.cards?.find(t=>t.id===result.id);if(item){setFinanceTab("cards");navigate("finance");setEditor({kind:"card",item});return;}}
+    if(result.kind==="transfer"){const item=data.transfers?.find(t=>t.id===result.id);if(item){setMonth(item.date.slice(0,7));setFinanceTab("accounts");navigate("finance");setEditor({kind:"transfer",item});return;}}
+    setToast(tr("O registro mudou. Atualize a pesquisa e tente novamente."));
   }
   function skipIntroduction() {
     try { localStorage.setItem(INTRO_KEY, "1"); } catch { /* This preference must not block access to the workspace. */ }
@@ -1724,6 +1741,7 @@ const navItems = [
                 : navItems.find((n) => n.id === view)?.label}
             </strong>
           </div>
+          <button className="button secondary global-search-launch" aria-label={tr("Busca geral")} onClick={()=>setEditor({kind:"search"})}><Search size={18}/><span>{tr("Buscar")}</span></button>
           <div className="topbar-date">
             <CalendarDays size={15} />
             <span>
@@ -2586,7 +2604,7 @@ const navItems = [
                   <CheckCheck size={20} />
                 </span>
                 <strong>{tr("DailyAPP")}</strong>
-                <span>{mobileApp ? tr("Versão 1.3 · Uso pessoal") : tr("Versão 1.3 · Feito para uma vida mais leve.")}</span>
+                <span>{mobileApp ? tr("Versão 1.4 · Uso pessoal") : tr("Versão 1.4 · Feito para uma vida mais leve.")}</span>
               </div>
             </div>
           )}
@@ -2650,7 +2668,8 @@ const navItems = [
           onClose={() => setEditor(null)}
         />
       )}
-      {editor?.kind === "statement-import" && <Modal title={tr("Importar extrato")} subtitle={tr("Confira antes de adicionar ao seu histórico.")} onClose={()=>setEditor(null)}><StatementImport data={data} onClose={()=>setEditor(null)} onImport={drafts=>{try{const next=applyStatementImport(dataRef.current,drafts);if(!save(next))return false;setToast(tr("{0} lançamentos importados. O histórico anterior foi preservado.",drafts.filter(d=>d.selected).length));return true;}catch(error){setToast((error as Error).message);return false;}}}/></Modal>}
+      {editor?.kind === "search" && <Modal key="global-search" title={tr("Busca geral")} subtitle={tr("Encontre registros de tarefas e finanças em um só lugar.")} onClose={()=>setEditor(null)}><GlobalSearch data={data} onOpen={openSearchResult}/></Modal>}
+      {editor?.kind === "statement-import" && <Modal title={tr("Importar extrato")} subtitle={tr("Confira antes de adicionar ao seu histórico.")} onClose={()=>setEditor(null)}><StatementImport data={data} onClose={()=>setEditor(null)} onImport={drafts=>{try{const next=applyStatementImport(dataRef.current,drafts);if(!save(next))return false;setToast(drafts.some(d=>d.selected&&d.match)?tr("{0} novos lançamentos e {1} previstos confirmados.",drafts.filter(d=>d.selected&&!d.match).length,drafts.filter(d=>d.selected&&d.match).length):tr("{0} lançamentos importados. O histórico anterior foi preservado.",drafts.filter(d=>d.selected).length));return true;}catch(error){setToast((error as Error).message);return false;}}}/></Modal>}
       {editor?.kind === "goal" && <Modal title={editor.item ? tr("Atualizar meta") : tr("Nova meta")} subtitle={tr("Um objetivo claro, no seu ritmo.")} onClose={() => setEditor(null)}><GoalForm item={editor.item} today={today} onSave={saveGoal} onClose={() => setEditor(null)} /></Modal>}
       {editor?.kind === "opening" && <Modal title={tr("Saldo inicial do mês")} subtitle={monthLabel(month)} onClose={() => setEditor(null)}><OpeningBalanceForm month={month} amount={data.openingBalances?.[month]} onSave={saveOpening} onClear={() => saveOpening()} onClose={() => setEditor(null)} /></Modal>}
       {editor?.kind === "card" && <Modal title={editor.item ? tr("Editar cartão") : tr("Novo cartão")} subtitle={tr("Cadastre somente o nome e os dias da fatura.")} onClose={() => setEditor(null)}><CardForm item={editor.item} accounts={data.accounts??[]} onSave={saveCard} onClose={() => setEditor(null)} /></Modal>}

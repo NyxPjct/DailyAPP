@@ -3,7 +3,7 @@ import { CURRENCIES } from "../currency";
 import type { Currency } from "../currency";
 import type { AppData } from "../domain";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, money, prettyDate } from "../domain";
-import { getLocale, t as tr } from "../i18n/core";
+import { getLocale, recordText, t as tr } from "../i18n/core";
 import { AccountSelect } from "./FinanceTools";
 import { csvCurrency, csvStatement, decodeStatement, guessMapping, readCsv, readOfx, reviewStatement, STATEMENT_BYTES } from "../statement-import";
 import type { CsvMapping, CsvTable, ImportDraft, Statement } from "../statement-import";
@@ -27,7 +27,7 @@ export function StatementImport({data,onImport,onClose}:{data:AppData;onImport:(
   const active=useRef(0);
   useEffect(()=>()=>{active.current++;},[]);
   const pageSize=25;
-  function reset(){active.current++;setText("");setFilename("");setTable(undefined);setStatement(undefined);setMapping(undefined);setDrafts(undefined);setReviewed(undefined);setError("");setBusy(false);setPage(0);}
+  function reset(){active.current++;setDelimiter("auto");setText("");setFilename("");setTable(undefined);setStatement(undefined);setMapping(undefined);setDrafts(undefined);setReviewed(undefined);setError("");setBusy(false);setPage(0);}
   async function load(file?:File){
     if(!file)return;reset();const request=active.current;setBusy(true);
     try {
@@ -35,7 +35,7 @@ export function StatementImport({data,onImport,onClose}:{data:AppData;onImport:(
       if(file.size>STATEMENT_BYTES)throw new Error(tr("O extrato deve ter no máximo 5 MB."));
       const content=decodeStatement(await file.arrayBuffer());if(request!==active.current)return;
       if(/\.ofx$/i.test(file.name)) {const parsed=readOfx(content);setStatement(parsed);setCurrency(parsed.currency!);}
-      else {const parsed=readCsv(content,delimiter);setTable(parsed);setMapping(guessMapping(parsed.headers));const originalCurrency=csvCurrency(parsed);if(originalCurrency)setCurrency(originalCurrency);}
+      else {const parsed=readCsv(content,"auto");setTable(parsed);setMapping(guessMapping(parsed.headers));const originalCurrency=csvCurrency(parsed);if(originalCurrency)setCurrency(originalCurrency);}
       setText(content);setFilename(file.name);
     }catch(error){if(request===active.current)setError((error as Error).message);}
     finally{if(request===active.current)setBusy(false);}
@@ -61,22 +61,23 @@ export function StatementImport({data,onImport,onClose}:{data:AppData;onImport:(
       <button className="button primary" onClick={()=>{try{const parsed=statement??csvStatement(table!,mapping!.amount>=0?{...mapping!,debit:-1,credit:-1}:mapping!,order,decimal);setDrafts(reviewStatement(parsed,data,currency,account||undefined));setReviewed(parsed);setPage(0);setError("");}catch(error){setError((error as Error).message);}}}>{tr("Revisar lançamentos")}</button>
     </>}
     {drafts&&<>
-      <div className="statement-summary"><strong>{tr("{0} de {1} lançamentos selecionados",selected.length,drafts.length)}</strong><span>{tr("Receitas: {0}",money(selected.filter(d=>d.transaction.type==="income").reduce((sum,d)=>sum+d.transaction.amountCents,0)))}</span><span>{tr("Despesas: {0}",money(selected.filter(d=>d.transaction.type==="expense").reduce((sum,d)=>sum+d.transaction.amountCents,0)))}</span><small>{tr("Moeda do extrato: {0}",currency)} · {account?data.accounts?.find(a=>a.id===account)?.name:tr("Sem conta")}</small></div>
+      <div className="statement-summary"><strong>{tr("{0} de {1} lançamentos selecionados",selected.length,drafts.length)}</strong><span>{tr("Novos: {0} · Previstos a confirmar: {1}",selected.filter(d=>!d.match).length,selected.filter(d=>!!d.match).length)}</span><span>{tr("Receitas: {0}",money(selected.filter(d=>d.transaction.type==="income").reduce((sum,d)=>sum+d.transaction.amountCents,0)))}</span><span>{tr("Despesas: {0}",money(selected.filter(d=>d.transaction.type==="expense").reduce((sum,d)=>sum+d.transaction.amountCents,0)))}</span><small>{tr("Moeda do extrato: {0}",currency)} · {account?data.accounts?.find(a=>a.id===account)?.name:tr("Sem conta")}</small></div>
       <p className="planning-warning">{tr("Duplicados identificados ficam bloqueados. Possíveis duplicados, transferências e pagamentos de fatura começam desmarcados. Confira antes de selecionar: uma fatura pode já estar representada pelas parcelas.")}</p>
-      <div className="statement-bulk"><button className="text-button" onClick={()=>setDrafts(drafts.map(d=>({...d,selected:!d.duplicate&&!d.check,allowDuplicate:false})))}>{tr("Selecionar novos lançamentos")}</button><button className="text-button" onClick={()=>setDrafts(drafts.map(d=>({...d,selected:false,allowDuplicate:false})))}>{tr("Desmarcar todos")}</button></div>
+      <div className="statement-bulk"><button className="text-button" onClick={()=>setDrafts(drafts.map(d=>({...d,selected:!d.duplicate&&!d.check&&!d.matches?.length,allowDuplicate:false,match:undefined})))}>{tr("Selecionar novos lançamentos")}</button><button className="text-button" onClick={()=>setDrafts(drafts.map(d=>({...d,selected:false,allowDuplicate:false})))}>{tr("Desmarcar todos")}</button></div>
       <ol className="statement-rows" start={page*pageSize+1}>{drafts.slice(page*pageSize,(page+1)*pageSize).map((draft,offset)=>{
         const index=page*pageSize+offset,t=draft.transaction;
         return <li key={t.id} className={draft.duplicate==="known"?"statement-known":""}>
-          <label className="statement-include"><input type="checkbox" aria-label={tr("Importar lançamento {0}",index+1)} checked={draft.selected} disabled={draft.duplicate==="known"} onChange={e=>update(index,{selected:e.target.checked,allowDuplicate:e.target.checked&&draft.duplicate==="possible"})}/><strong>{t.description}</strong></label>
+          <label className="statement-include"><input type="checkbox" aria-label={tr("Importar lançamento {0}",index+1)} checked={draft.selected} disabled={draft.duplicate==="known"&&!draft.match} onChange={e=>update(index,{selected:e.target.checked,allowDuplicate:e.target.checked&&draft.duplicate==="possible"})}/><strong>{t.description}</strong></label>
           <div className="statement-row-meta"><span>{prettyDate(t.date)} · {tr(t.type==="income"?"Receita":"Despesa")}</span><strong>{t.type==="expense"?"−":"+"}{money(t.amountCents)}</strong><small>{tr("Original: {0}",sourceAmount(reviewed!.rows[index].signedCents))}</small></div>
-          {draft.duplicate&&<p className="budget-alert">{draft.duplicate==="known"?tr("Já importado: não será adicionado novamente."):tr("Possível duplicado: confira os registros existentes.")}</p>}{draft.check&&<p className="budget-alert">{tr("Confira se é transferência ou pagamento de fatura.")}</p>}
-          <label>{tr("Categoria do lançamento {0}",index+1)}<select aria-label={tr("Categoria do lançamento {0}",index+1)} value={t.category} disabled={draft.duplicate==="known"} onChange={e=>update(index,{transaction:{...t,category:e.target.value}})}>{(t.type==="income"?INCOME_CATEGORIES:EXPENSE_CATEGORIES).map(c=><option key={c} value={c}>{tr(c)}</option>)}</select></label>
-          <label className="statement-paid"><input type="checkbox" checked={t.paid} disabled={draft.duplicate==="known"} onChange={e=>update(index,{transaction:{...t,paid:e.target.checked}})}/>{t.type==="income"?tr("Esta receita já foi recebida"):tr("Esta despesa já foi paga")}</label>
+          {!!draft.matches?.length&&<div className="reconcile-choice"><label>{tr("Conferir lançamento {0}",index+1)}<select aria-label={tr("Conferir lançamento {0}",index+1)} value={draft.match?.id??""} onChange={e=>{const match=draft.matches!.find(t=>t.id===e.target.value);update(index,{match,selected:!!match,transaction:{...t,paid:match?true:t.paid},allowDuplicate:false});}}><option value="">{tr("Criar novo lançamento, se selecionado")}</option>{draft.matches.map(candidate=><option key={candidate.id} value={candidate.id}>{tr("Confirmar previsto: {0} · {1} · {2} · {3}",recordText(candidate.id,candidate.description),prettyDate(candidate.date),money(candidate.amountCents),data.accounts?.find(a=>a.id===candidate.accountId)?.name??tr("Sem conta"))}</option>)}</select></label><p className="form-hint">{tr("Sugestões com o mesmo valor e tipo, até sete dias de diferença e contas compatíveis. Nada é vinculado automaticamente.")}</p>{draft.match&&<p className="reconcile-preview">{tr("Será confirmado: {0}. Data: {1} → {2}. Categoria, notas e identificação serão mantidas; nenhum novo lançamento será criado.",recordText(draft.match.id,draft.match.description),prettyDate(draft.match.date),prettyDate(t.date))}</p>}</div>}
+          {draft.duplicate&&!draft.match&&<p className="budget-alert">{draft.duplicate==="known"?tr("Já importado: não será adicionado novamente."):tr("Possível duplicado: confira os registros existentes.")}</p>}{draft.check&&<p className="budget-alert">{tr("Confira se é transferência ou pagamento de fatura.")}</p>}
+          <label>{tr("Categoria do lançamento {0}",index+1)}<select aria-label={tr("Categoria do lançamento {0}",index+1)} value={draft.match?.category??t.category} disabled={!!draft.match||draft.duplicate==="known"} onChange={e=>update(index,{transaction:{...t,category:e.target.value}})}>{(t.type==="income"?INCOME_CATEGORIES:EXPENSE_CATEGORIES).map(c=><option key={c} value={c}>{tr(c)}</option>)}</select></label>
+          <label className="statement-paid"><input type="checkbox" checked={t.paid} disabled={!!draft.match||draft.duplicate==="known"} onChange={e=>update(index,{transaction:{...t,paid:e.target.checked}})}/>{t.type==="income"?tr("Esta receita já foi recebida"):tr("Esta despesa já foi paga")}</label>
         </li>;
       })}</ol>
       {drafts.length>pageSize&&<div className="statement-pages"><button className="button secondary" disabled={page===0} onClick={()=>setPage(page-1)}>{tr("Anterior")}</button><span>{tr("Página {0} de {1}",page+1,Math.ceil(drafts.length/pageSize))}</span><button className="button secondary" disabled={(page+1)*pageSize>=drafts.length} onClick={()=>setPage(page+1)}>{tr("Próxima")}</button></div>}
       <p className="form-hint">{tr("Datas futuras começam como previstas. Você pode ajustar as categorias e o status agora, e editar os demais campos depois em Finanças.")}</p>
-      <div className="modal-footer"><button className="button secondary" onClick={()=>{setDrafts(undefined);setError("");}}>{tr("Voltar às opções")}</button><button className="button primary" disabled={!selected.length} onClick={()=>{if(onImport(drafts))onClose();}}>{selected.length===1?tr("Importar lançamento"):tr("Importar {0} lançamentos",selected.length)}</button></div>
+      <div className="modal-footer"><button className="button secondary" onClick={()=>{setDrafts(undefined);setError("");}}>{tr("Voltar às opções")}</button><button className="button primary" disabled={!selected.length} onClick={()=>{if(onImport(drafts))onClose();}}>{selected.some(d=>d.match)?tr("Confirmar revisão ({0})",selected.length):selected.length===1?tr("Importar lançamento"):tr("Importar {0} lançamentos",selected.length)}</button></div>
     </>}
     {error&&<p role="alert" className="form-error">{error}</p>}
     <div className="statement-bottom"><button className="button secondary" onClick={onClose}>{tr("Cancelar")}</button>{!!text&&!drafts&&<button className="text-button" onClick={reset}>{tr("Escolher outro arquivo")}</button>}</div>

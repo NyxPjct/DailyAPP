@@ -21,8 +21,15 @@ toolchains = Path("/workspace/.toolchains")
 
 if not env.get("JAVA_HOME") and (toolchains / "java21/bin/javac").exists():
     env["JAVA_HOME"] = str(toolchains / "java21")
+if not env.get("JAVA_HOME") and (root / ".cache/java21/bin/javac").exists():
+    env["JAVA_HOME"] = str(root / ".cache/java21")
 if not env.get("ANDROID_HOME") and (toolchains / "android-sdk").exists():
     env["ANDROID_HOME"] = str(toolchains / "android-sdk")
+if not env.get("ANDROID_HOME") and (root / ".cache/android-sdk").exists():
+    env["ANDROID_HOME"] = str(root / ".cache/android-sdk")
+trust = root / ".cache/java-cacerts"
+if trust.exists() and "-Djavax.net.ssl.trustStore=" not in env.get("JAVA_TOOL_OPTIONS", ""):
+    env["JAVA_TOOL_OPTIONS"] = (env.get("JAVA_TOOL_OPTIONS", "") + " -Djavax.net.ssl.trustStore=" + str(trust)).strip()
 
 for variable, directory in (
     ("ANDROID_USER_HOME", root / ".cache/android-user"),

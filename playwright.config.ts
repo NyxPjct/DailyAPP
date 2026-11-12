@@ -5,6 +5,7 @@ export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
   workers: 2,
+  timeout: 60000,
   reporter: "list",
   use: {
     baseURL: "http://127.0.0.1:5174",

@@ -1,8 +1,8 @@
-# DailyAPP 1.3 para uso pessoal
+# DailyAPP 1.4 para uso pessoal
 
 ## O que esta versão entrega
 
-A versão 1.3.0, código 9, acrescenta importação local de extratos CSV/OFX com revisão e verificação de duplicados, além da agenda com tarefas, receitas, contas e parcelas. Os recursos da 1.2 continuam disponíveis.
+A versão 1.4.0, código 10, acrescenta conferência explícita dos extratos com lançamentos previstos e busca geral. Os recursos anteriores continuam disponíveis. Os links abaixo ainda apontam para a versão 1.3 verificada enquanto os novos instaladores são preparados.
 
 O aplicativo abre em inglês por padrão. Para trocar, abra **Settings → App language** e selecione **Português**, **Español**, **Français** ou **Deutsch**. Telas, categorias, formulários, ajuda, datas, números e lembretes acompanham a escolha. Os dados digitados são preservados no idioma original, e a troca de idioma também muda a moeda: inglês usa USD, português usa BRL e espanhol, francês e alemão usam EUR. Uma cotação salva é aplicada sem internet. Se faltar uma taxa, o idioma muda e os valores permanecem na moeda anterior até conseguir uma cotação; o app mostra um aviso. A conversão aguarda o fechamento de formulários abertos. Em **Settings → App currency**, você pode escolher outra moeda manualmente, até a próxima troca de idioma. BRL, USD, EUR, GBP, CAD e AUD estão disponíveis, com conversão por cotação salva, atualização online ou taxa manual. O histórico permanece em centavos de BRL; campos novos aceitam a moeda escolhida. Sem internet, usa a última taxa salva. A data e a origem da cotação são exibidas. O idioma fica salvo e entra no backup; arquivos antigos mantêm a preferência atual. As capturas do README mostram inglês e os outros quatro idiomas.
 
@@ -14,11 +14,18 @@ As pastas `android/` e `ios/` são projetos nativos completos do Capacitor. A in
 
 O APK pessoal está disponível para [download direto no GitHub](https://github.com/NyxPjct/DailyAPP/raw/refs/heads/main/downloads/DailyAPP-1.3-pessoal.apk). As [Releases](https://github.com/NyxPjct/DailyAPP/releases) reúnem os instaladores publicados.
 
-Obtenha `artifacts/DailyAPP-1.3-pessoal.apk`, transfira-o para o celular Android e abra o arquivo. O sistema pode pedir autorização para instalar arquivos recebidos pelo aplicativo que está abrindo o APK. Depois da instalação, abra **DailyAPP** pela lista de aplicativos.
+Obtenha `artifacts/DailyAPP-1.4-pessoal.apk`, transfira-o para o celular Android e abra o arquivo. O sistema pode pedir autorização para instalar arquivos recebidos pelo aplicativo que está abrindo o APK. Depois da instalação, abra **DailyAPP** pela lista de aplicativos.
 
-Requer Android 7 ou superior e uma WebView atualizada. O pacote pessoal usa o build **Release**, com depuração da aplicação e da WebView desativadas, mas conserva o certificado de desenvolvimento da instalação anterior. É uma distribuição pessoal; a publicação na Play Store terá uma configuração própria de assinatura.
+Requer Android 7 ou superior e uma WebView atualizada. O pacote pessoal usa o build **Release**, com depuração da aplicação e da WebView desativadas, e usa um novo certificado de desenvolvimento pessoal. É uma distribuição pessoal; a publicação na Play Store terá uma configuração própria de assinatura.
 
-Se instalou o APK de teste anterior desta sessão, exporte um backup em Ajustes e abra o novo APK **sem desinstalar o DailyAPP**. O identificador `com.nyxpjct.dailyapp` e o certificado foram mantidos; o código da versão passa para 9, com nome 1.3.0. Isso permite atualizar preservando os dados. O formato local também foi mantido. A instalação sobre a versão anterior ainda deve ser confirmada em um aparelho real.
+**Migração de versões anteriores para a 1.4:** o ambiente de compilação foi recriado sem a chave privada anterior. Por isso, o APK 1.4 tem outro certificado, apesar de manter `com.nyxpjct.dailyapp`. Android não aceita instalar esse certificado por cima do anterior.
+
+1. Ainda no app antigo, exporte um backup em Ajustes para um local fora dos dados privados do aplicativo.
+2. Confira se o arquivo foi salvo. Se for protegido, tenha a senha disponível antes de continuar.
+3. Somente após conferir o backup, desinstale a versão antiga, instale o APK 1.4 e abra o DailyAPP.
+4. Importe o backup, confira a prévia e confirme a restauração. O formato local e os backups anteriores são aceitos.
+
+Desinstalar sem um backup externo pode apagar os registros. Esta migração e os seletores de arquivo ainda precisam ser confirmados em aparelho real.
 
 Para gerar futuras atualizações compatíveis, preserve a chave local de desenvolvimento em `.cache/android-user/debug.keystore`. Ela fica fora do Git e do ZIP de código. Compilar em uma máquina com uma chave diferente cria uma assinatura diferente; nesse caso, a atualização pode ser recusada pelo Android. Desinstalar ou limpar os dados pode apagar os registros; restaure um backup se precisar fazer isso.
 
@@ -63,7 +70,7 @@ Para compilar novamente usando o Mac do GitHub Actions:
 
 1. Salve suas alterações no repositório do GitHub. O código desta versão já está enviado.
 2. No GitHub, abra **Actions → iPhone - pacote pessoal sem assinatura → Run workflow**. Escolha a branch com o código atualizado.
-3. Aguarde a compilação e baixe o artefato **DailyAPP-iPhone-sem-assinatura** no final da execução. Extraia `DailyAPP-1.3-sem-assinatura.ipa` do ZIP.
+3. Aguarde a compilação e baixe o artefato **DailyAPP-iPhone-sem-assinatura** no final da execução. Extraia `DailyAPP-1.4-sem-assinatura.ipa` do ZIP.
 4. Assine o novo IPA para seu iPhone usando as instruções acima.
 
 O workflow `ios-personal.yml` é manual e usa permissões de leitura do repositório. O workflow `personal-release.yml` também é disparado por tags `personal-v*` e usa permissão de escrita para publicar os arquivos em uma Release. Ambos usam Xcode 26.3 no runner `macos-15`, dispensam certificados Apple no GitHub e não enviam o aplicativo às lojas. A disponibilidade de minutos macOS depende da sua conta GitHub. A compilação de lançamento iOS foi concluída na [execução de publicação da versão 1.3](https://github.com/NyxPjct/DailyAPP/actions/runs/40332345755); a assinatura e a instalação pessoal ainda precisam ser confirmadas no aparelho.
@@ -88,6 +95,14 @@ Não é preciso uma conta Apple Developer paga para usar o simulador. Uma equipe
 Esta máquina cloud é Linux: não possui Xcode e não gera um IPA assinado. O IPA desta versão foi compilado no runner macOS do GitHub. Para assinar e executar diretamente pelo Xcode, use o Mac e sua equipe pessoal. Confira teclado, importação e compartilhamento no aparelho.
 
 O manifesto `ios/App/App/PrivacyInfo.xcprivacy` está registrado no target e declara o acesso a timestamps de arquivos exigido pelo plugin Filesystem. O backup usa o cache privado e o seletor de compartilhamento do sistema. O app não solicita acesso amplo à pasta de documentos, câmera ou localização.
+
+## Usar os recursos da versão 1.4
+
+Em **Finanças → Importar extrato → Revisar lançamentos**, linhas com registros previstos compatíveis começam desmarcadas. Em **Conferir lançamento**, escolha explicitamente o previsto a confirmar. O app procura mesmo valor em centavos de BRL e tipo, até sete dias de diferença e contas ativas compatíveis. Confira a descrição original e as duas datas. **Confirmar revisão** marca o registro existente como pago/recebido e usa a data do extrato, preservando descrição, categoria, notas, identificação, lembretes, recorrência e parcelas. Não cria outra movimentação para essa linha. Um vínculo de conta compatível é mantido ou acrescentado pela conta escolhida na importação.
+
+Nada é conciliado automaticamente. Datas futuras do extrato e linhas identificadas como transferência/pagamento de fatura não confirmam previstos. Não há conferência de pagamentos parciais nem aproximação de valores. Se um registro mudou durante a revisão, o lote inteiro é recusado para nova conferência. Backups da 1.4 preservam os marcadores de todas as fontes vinculadas para evitar reimportações.
+
+O botão **Buscar** no topo abre a busca geral em qualquer tela principal. **Ctrl+K / Cmd+K** também abre quando não existe formulário aberto. Pesquise pelo menos dois caracteres para encontrar tarefas, movimentações, contas, metas, cartões e transferências, de todos os meses e incluindo arquivados. Use o tipo de resultado ou **Buscar apenas nas anotações**. A pesquisa ignora maiúsculas e acentos, considera as palavras juntas e mostra até 40 resultados. Abrir um resultado edita o registro original, no mês correspondente quando aplicável. O texto pesquisado não fica salvo.
 
 ## Usar os recursos da versão 1.3
 

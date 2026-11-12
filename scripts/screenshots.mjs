@@ -46,7 +46,7 @@ try {
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.clock.setFixedTime(new Date("2026-10-26T15:00:00Z"));
+  await page.clock.setFixedTime(new Date("2026-11-12T15:00:00Z"));
   await page.goto(`http://127.0.0.1:${server.address().port}`, {
     waitUntil: "networkidle",
   });
@@ -115,15 +115,15 @@ try {
     await page.evaluate(() => {
       const data = JSON.parse(localStorage.getItem("dailyapp.v1"));
       data.accounts = [
-        { id: "example-bank", name: "Daily Bank", kind: "bank", openingCents: 150000, openingDate: "2026-10-01" },
-        { id: "example-wallet", name: "Pocket", kind: "cash", openingCents: 20000, openingDate: "2026-10-01" },
-        { id: "example-savings", name: "Travel fund", kind: "savings", openingCents: 250000, openingDate: "2026-10-01" },
+        { id: "example-bank", name: "Daily Bank", kind: "bank", openingCents: 150000, openingDate: "2026-11-01" },
+        { id: "example-wallet", name: "Pocket", kind: "cash", openingCents: 20000, openingDate: "2026-11-01" },
+        { id: "example-savings", name: "Travel fund", kind: "savings", openingCents: 250000, openingDate: "2026-11-01" },
       ];
       data.transactions = data.transactions.map(t => ({ ...t, accountId: "example-bank" }));
-      data.transactions.push({ id: "previous-month", description: "September expenses", amountCents: 240000, type: "expense", date: "2026-09-19", category: "Outros", paid: true, notes: "" });
-      data.transfers = [{ id: "example-transfer", fromAccountId: "example-bank", toAccountId: "example-savings", amountCents: 50000, date: "2026-10-26", notes: "Monthly savings" }];
-      data.categoryBudgets = { "2026-10": { Alimentação: 50000, Moradia: 120000, Transporte: 20000, Saúde: 20000 } };
-      data.tasks = data.tasks.map((t,index) => ({ ...t, ...(index < 3 ? { focusDate: "2026-10-26" } : {}) }));
+      data.transactions.push({ id: "previous-month", description: "October expenses", amountCents: 240000, type: "expense", date: "2026-10-19", category: "Outros", paid: true, notes: "" });
+      data.transfers = [{ id: "example-transfer", fromAccountId: "example-bank", toAccountId: "example-savings", amountCents: 50000, date: "2026-11-12", notes: "Monthly savings" }];
+      data.categoryBudgets = { "2026-11": { Alimentação: 50000, Moradia: 120000, Transporte: 20000, Saúde: 20000 } };
+      data.tasks = data.tasks.map((t,index) => ({ ...t, ...(index < 3 ? { focusDate: "2026-11-12" } : {}) }));
       data.tasks[0].subtasks = [{ id: "step-1", title: "Choose the three main outcomes", completed: true }, { id: "step-2", title: "Reserve time in the calendar", completed: false }];
       localStorage.setItem("dailyapp.v1", JSON.stringify(data));
     });
@@ -152,7 +152,7 @@ try {
     await page.getByRole("button",{name:"Cancel",exact:true}).click();
     await page.evaluate(()=>{
       const data=JSON.parse(localStorage.getItem("dailyapp.v1"));
-      data.transactions.push({id:"calendar-phone",description:"Phone bill",amountCents:8500,type:"expense",date:"2026-10-26",category:"Outros",paid:false,notes:"",accountId:"example-bank"});
+      data.transactions.push({id:"calendar-phone",description:"Phone bill",amountCents:8500,type:"expense",date:"2026-11-12",category:"Outros",paid:false,notes:"",accountId:"example-bank"});
       localStorage.setItem("dailyapp.v1",JSON.stringify(data));
     });
     await page.reload({waitUntil:"networkidle"});
@@ -163,7 +163,7 @@ try {
     await page.screenshot({animations:"disabled",path:new URL("agenda-financas.png",target).pathname});
     await page.getByRole("button",{name:"My finances",exact:true}).click();
     await page.getByRole("button",{name:"Import statement",exact:true}).click();
-    await page.getByLabel("Statement file",{exact:true}).setInputFiles({name:"example-statement.csv",mimeType:"text/csv",buffer:Buffer.from("Date;Description;Amount;Currency\n2026-10-26;Phone bill;-85.00;BRL\n2026-10-26;Groceries;-145.90;BRL\n2026-10-26;Transfer to savings;-500.00;BRL\n")});
+    await page.getByLabel("Statement file",{exact:true}).setInputFiles({name:"example-statement.csv",mimeType:"text/csv",buffer:Buffer.from("Date;Description;Amount;Currency\n2026-11-12;Phone bill;-85.00;BRL\n2026-11-12;Groceries;-145.90;BRL\n2026-11-12;Transfer to savings;-500.00;BRL\n")});
     await page.getByLabel("Decimal separator",{exact:true}).selectOption(".");
     await page.getByLabel("Transaction account",{exact:true}).selectOption("example-bank");
     await page.screenshot({animations:"disabled",path:new URL("importar.png",target).pathname});
@@ -171,12 +171,29 @@ try {
     await expect(page.getByLabel("Import entry 1",{exact:true})).not.toBeChecked();
     await expect(page.getByLabel("Import entry 3",{exact:true})).not.toBeChecked();
     await page.screenshot({animations:"disabled",path:new URL("extrato.png",target).pathname});
+    await page.getByLabel("Review entry 1",{exact:true}).selectOption("calendar-phone");
+    await page.locator(".reconcile-choice").first().evaluate(element=>{const modal=element.closest(".modal");modal.scrollTop+=element.getBoundingClientRect().top-modal.getBoundingClientRect().top-140;});
+    await page.screenshot({animations:"disabled",path:new URL("conferencia.png",target).pathname});
+    await page.getByRole("button",{name:"Cancel",exact:true}).click();
+    await page.evaluate(()=>{
+      const data=JSON.parse(localStorage.getItem("dailyapp.v1"));
+      data.goals=[{id:"search-goal",name:"Travel fund",targetCents:500000,savedCents:100000,targetDate:"2027-06-30",notes:"Summer trip"}];
+      data.tasks.push({id:"search-task",title:"Plan travel budget",date:"2026-11-12",time:"18:00",category:"Pessoal",priority:"Média",completed:false,notes:"Compare hotel prices"});
+      data.transactions.push({id:"search-expense",description:"Travel savings fee",date:"2026-11-12",amountCents:1500,type:"expense",category:"Outros",paid:false,notes:"Travel checklist"});
+      localStorage.setItem("dailyapp.v1",JSON.stringify(data));
+    });
+    await page.reload({waitUntil:"networkidle"});
+    await page.getByRole("button",{name:"Global search",exact:true}).click();
+    await page.getByLabel("Search the whole app",{exact:true}).fill("travel");
+    await expect(page.locator(".global-search-results li")).toHaveCount(5);
+    await page.screenshot({animations:"disabled",path:new URL("busca.png",target).pathname});
+
 
   }
   expect(errors).toEqual([]);
   await context.close();
   }
-  console.log("Capturas da interface móvel nos cinco idiomas, conversão e recursos 1.3: docs/screenshots/");
+  console.log("Capturas da interface móvel nos cinco idiomas, conversão e recursos 1.4: docs/screenshots/");
 } finally {
   await browser?.close();
   await new Promise((resolve) => server.close(resolve));

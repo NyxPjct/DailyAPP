@@ -5423,5 +5423,179 @@ export const messages: Record<string, Record<ForeignLanguage, string>> = {
     "es": "Importar movimiento",
     "fr": "Importer l’opération",
     "de": "Buchung importieren"
+  },
+  "A busca inclui todos os meses e registros arquivados. O texto pesquisado não fica salvo.": {
+    "en": "Search covers all months and archived records. Your query is not saved.",
+    "es": "La búsqueda incluye todos los meses y registros archivados. El texto no se guarda.",
+    "fr": "La recherche couvre tous les mois et les données archivées. Votre recherche n’est pas enregistrée.",
+    "de": "Die Suche umfasst alle Monate und archivierten Einträge. Dein Suchtext wird nicht gespeichert."
+  },
+  "Abrir registro": {
+    "en": "Open record",
+    "es": "Abrir registro",
+    "fr": "Ouvrir l’entrée",
+    "de": "Eintrag öffnen"
+  },
+  "Ativa": {
+    "en": "Active",
+    "es": "Activa",
+    "fr": "Actif",
+    "de": "Aktiv"
+  },
+  "Busca geral": {
+    "en": "Global search",
+    "es": "Búsqueda general",
+    "fr": "Recherche globale",
+    "de": "Globale Suche"
+  },
+  "Buscar": {
+    "en": "Search",
+    "es": "Buscar",
+    "fr": "Rechercher",
+    "de": "Suchen"
+  },
+  "Buscar apenas nas anotações": {
+    "en": "Search notes only",
+    "es": "Buscar solo en las notas",
+    "fr": "Rechercher uniquement dans les notes",
+    "de": "Nur in Notizen suchen"
+  },
+  "Conferir lançamento {0}": {
+    "en": "Review entry {0}",
+    "es": "Revisar movimiento {0}",
+    "fr": "Vérifier l’opération {0}",
+    "de": "Buchung {0} prüfen"
+  },
+  "Confirmar previsto: {0} · {1} · {2} · {3}": {
+    "en": "Confirm planned: {0} · {1} · {2} · {3}",
+    "es": "Confirmar previsto: {0} · {1} · {2} · {3}",
+    "fr": "Confirmer l’opération prévue : {0} · {1} · {2} · {3}",
+    "de": "Geplanten Eintrag bestätigen: {0} · {1} · {2} · {3}"
+  },
+  "Confirmar revisão ({0})": {
+    "en": "Confirm review ({0})",
+    "es": "Confirmar revisión ({0})",
+    "fr": "Confirmer la vérification ({0})",
+    "de": "Prüfung bestätigen ({0})"
+  },
+  "Criar novo lançamento, se selecionado": {
+    "en": "Create a new entry if selected",
+    "es": "Crear un movimiento nuevo si se selecciona",
+    "fr": "Créer une nouvelle opération si sélectionnée",
+    "de": "Bei Auswahl einen neuen Eintrag erstellen"
+  },
+  "Digite pelo menos dois caracteres para buscar.": {
+    "en": "Enter at least two characters to search.",
+    "es": "Escribe al menos dos caracteres para buscar.",
+    "fr": "Saisissez au moins deux caractères pour rechercher.",
+    "de": "Gib mindestens zwei Zeichen für die Suche ein."
+  },
+  "Encontre registros de tarefas e finanças em um só lugar.": {
+    "en": "Find task and financial records in one place.",
+    "es": "Encuentra tareas y registros financieros en un solo lugar.",
+    "fr": "Retrouvez vos tâches et vos finances au même endroit.",
+    "de": "Finde Aufgaben und Finanzeinträge an einem Ort."
+  },
+  "Metas": {
+    "en": "Goals",
+    "es": "Metas",
+    "fr": "Objectifs",
+    "de": "Ziele"
+  },
+  "Movimentações": {
+    "en": "Transactions",
+    "es": "Movimientos",
+    "fr": "Opérations",
+    "de": "Buchungen"
+  },
+  "Nenhum resultado. Tente outro termo ou ajuste os filtros.": {
+    "en": "No results. Try another term or adjust the filters.",
+    "es": "Sin resultados. Prueba otro término o ajusta los filtros.",
+    "fr": "Aucun résultat. Essayez un autre terme ou modifiez les filtres.",
+    "de": "Keine Ergebnisse. Versuche einen anderen Begriff oder passe die Filter an."
+  },
+  "Nome, descrição, categoria, data ou anotação…": {
+    "en": "Name, description, category, date, or note…",
+    "es": "Nombre, descripción, categoría, fecha o nota…",
+    "fr": "Nom, description, catégorie, date ou note…",
+    "de": "Name, Beschreibung, Kategorie, Datum oder Notiz…"
+  },
+  "Novos: {0} · Previstos a confirmar: {1}": {
+    "en": "New: {0} · Planned to confirm: {1}",
+    "es": "Nuevos: {0} · Previstos por confirmar: {1}",
+    "fr": "Nouveaux : {0} · Prévus à confirmer : {1}",
+    "de": "Neu: {0} · Zu bestätigende geplante Einträge: {1}"
+  },
+  "O lançamento previsto mudou ou não é compatível. Reabra a revisão antes de confirmar.": {
+    "en": "The planned entry changed or is incompatible. Reopen the review before confirming.",
+    "es": "El movimiento previsto cambió o no es compatible. Vuelve a abrir la revisión antes de confirmar.",
+    "fr": "L’opération prévue a changé ou est incompatible. Rouvrez la vérification avant de confirmer.",
+    "de": "Der geplante Eintrag wurde geändert oder passt nicht. Öffne die Prüfung vor dem Bestätigen erneut."
+  },
+  "O registro mudou. Atualize a pesquisa e tente novamente.": {
+    "en": "The record changed. Refresh the search and try again.",
+    "es": "El registro cambió. Actualiza la búsqueda e inténtalo de nuevo.",
+    "fr": "L’entrée a changé. Actualisez la recherche et réessayez.",
+    "de": "Der Eintrag wurde geändert. Aktualisiere die Suche und versuche es erneut."
+  },
+  "Pendente": {
+    "en": "Pending",
+    "es": "Pendiente",
+    "fr": "En attente",
+    "de": "Offen"
+  },
+  "Pesquisar em todo o aplicativo": {
+    "en": "Search the whole app",
+    "es": "Buscar en toda la aplicación",
+    "fr": "Rechercher dans toute l’application",
+    "de": "Die gesamte App durchsuchen"
+  },
+  "Será confirmado: {0}. Data: {1} → {2}. Categoria, notas e identificação serão mantidas; nenhum novo lançamento será criado.": {
+    "en": "Will confirm: {0}. Date: {1} → {2}. Category, notes, and identity are preserved; no new entry is created.",
+    "es": "Se confirmará: {0}. Fecha: {1} → {2}. Se conservan categoría, notas e identidad; no se crea otro movimiento.",
+    "fr": "À confirmer : {0}. Date : {1} → {2}. La catégorie, les notes et l’identité sont conservées ; aucune nouvelle opération n’est créée.",
+    "de": "Wird bestätigt: {0}. Datum: {1} → {2}. Kategorie, Notizen und Kennung bleiben erhalten; es entsteht kein neuer Eintrag."
+  },
+  "Sugestões com o mesmo valor e tipo, até sete dias de diferença e contas compatíveis. Nada é vinculado automaticamente.": {
+    "en": "Suggestions have the same amount and type, dates within seven days, and compatible accounts. Nothing is linked automatically.",
+    "es": "Las sugerencias tienen igual importe y tipo, fechas a siete días como máximo y cuentas compatibles. Nada se vincula automáticamente.",
+    "fr": "Les suggestions ont le même montant et type, des dates espacées de sept jours au plus et des comptes compatibles. Aucune liaison automatique.",
+    "de": "Vorschläge haben denselben Betrag und Typ, höchstens sieben Tage Abstand und passende Konten. Nichts wird automatisch verknüpft."
+  },
+  "Tipo de resultado": {
+    "en": "Result type",
+    "es": "Tipo de resultado",
+    "fr": "Type de résultat",
+    "de": "Ergebnistyp"
+  },
+  "Tudo": {
+    "en": "Everything",
+    "es": "Todo",
+    "fr": "Tout",
+    "de": "Alles"
+  },
+  "Versão 1.4 · Feito para uma vida mais leve.": {
+    "en": "Version 1.4 · Made for a lighter life.",
+    "es": "Versión 1.4 · Para una vida más ligera.",
+    "fr": "Version 1.4 · Pour une vie plus légère.",
+    "de": "Version 1.4 · Für ein leichteres Leben."
+  },
+  "Versão 1.4 · Uso pessoal": {
+    "en": "Version 1.4 · Personal use",
+    "es": "Versión 1.4 · Uso personal",
+    "fr": "Version 1.4 · Usage personnel",
+    "de": "Version 1.4 · Persönliche Nutzung"
+  },
+  "{0} novos lançamentos e {1} previstos confirmados.": {
+    "en": "{0} new entries and {1} planned entries confirmed.",
+    "es": "{0} movimientos nuevos y {1} previstos confirmados.",
+    "fr": "{0} nouvelles opérations et {1} opérations prévues confirmées.",
+    "de": "{0} neue Einträge und {1} geplante Einträge bestätigt."
+  },
+  "{0} resultados encontrados; {1} exibidos.": {
+    "en": "{0} results found; {1} displayed.",
+    "es": "{0} resultados encontrados; {1} mostrados.",
+    "fr": "{0} résultats trouvés ; {1} affichés.",
+    "de": "{0} Ergebnisse gefunden; {1} angezeigt."
   }
 };

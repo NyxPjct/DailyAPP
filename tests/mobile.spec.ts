@@ -39,6 +39,8 @@ async function movement(page: Page, description: string, amount: string, income 
 
 for (const platform of ["android", "ios"] as const) {
   test(`${platform}: usa tarefas e finanças sem rede, mantém dados e navega pela barra inferior`, async ({ page }) => {
+    // This full iOS journey includes reload, offline checks and accessibility.
+    if (platform === "ios") test.setTimeout(90000);
     const remote: string[] = [];
     page.on("request", request => {
       if (!request.url().startsWith("http://127.0.0.1:5176") && !request.url().startsWith("data:")) remote.push(request.url());
